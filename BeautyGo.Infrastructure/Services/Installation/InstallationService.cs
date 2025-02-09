@@ -29,12 +29,12 @@ internal class InstallationService : IInstallationService
             GenerateSecureKeyString(32),
             BeautyGoCommonDefault.EnvironmentVariablePrivateKey);
 
-        Environment.SetEnvironmentVariable(BeautyGoCommonDefault.PrivateKeyName, securityPrivateKey, EnvironmentVariableTarget.Machine);
+        Environment.SetEnvironmentVariable(BeautyGoCommonDefault.PrivateKeyName, securityPrivateKey, EnvironmentVariableTarget.User);
     }
 
     public async Task InstallAsync()
     {
-        var environmentVariable = Environment.GetEnvironmentVariable(BeautyGoCommonDefault.PrivateKeyName, EnvironmentVariableTarget.Machine);
+        var environmentVariable = Environment.GetEnvironmentVariable(BeautyGoCommonDefault.PrivateKeyName, EnvironmentVariableTarget.User);
         if (environmentVariable == null)
         {
             CreateSecurityPrivateKey();
