@@ -1,0 +1,6 @@
+@BeautyGo.Services.Notifications_HostAddress = http://localhost:5067
+
+GET {{BeautyGo.Services.Notifications_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

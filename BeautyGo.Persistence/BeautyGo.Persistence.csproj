@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <UserSecretsId>31371537-9ccd-45b1-b5ef-63166cd4e569</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BeautyGo.Application\BeautyGo.Application.csproj" />
+    <ProjectReference Include="..\BeautyGo.Domain\BeautyGo.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
