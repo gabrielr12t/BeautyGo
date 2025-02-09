@@ -1,5 +1,4 @@
-﻿
-using BeautyGo.Application.Core.Abstractions.Data;
+﻿using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Integrations;
 using BeautyGo.Application.Core.Abstractions.Notifications;
 using BeautyGo.Application.EmailValidationToken.EntityEmailValidationTokenCreated;
@@ -71,6 +70,8 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
         await emailTokenValidation.Handle(this);
     }
 
+    #region Token validation implementations
+
     public async Task Handle(StoreEmailTokenValidation element)
     {
         var spec = new EntityByIdSpecification<StoreEmailTokenValidation>(element.Id)
@@ -102,4 +103,6 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
         await _emailNotificationService.SendAsync(message);
     }
+
+    #endregion
 }
