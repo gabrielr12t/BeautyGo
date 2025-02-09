@@ -8,7 +8,7 @@ using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities;
-using BeautyGo.Domain.Entities.Stores;
+using BeautyGo.Domain.Entities.Business;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Visitor.EmailTokenValidation;
@@ -24,7 +24,7 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
     #region Fields
 
     private readonly IBaseRepository<UserEmailTokenValidation> _userEmailTokenValidationRepository;
-    private readonly IBaseRepository<StoreEmailTokenValidation> _storeEmailTokenValidationRepository;
+    private readonly IBaseRepository<BeautyBusinessEmailTokenValidation> _businessEmailTokenValidationRepository;
     private readonly IBaseRepository<BeautyGoEmailTokenValidation> _emailValidationTokenRepository;
 
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
@@ -38,7 +38,7 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
     public SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler(
         IBaseRepository<UserEmailTokenValidation> userEmailTokenValidationRepository,
-        IBaseRepository<StoreEmailTokenValidation> storeEmailTokenValidationRepository,
+        IBaseRepository<BeautyBusinessEmailTokenValidation> businessEmailTokenValidationRepository,
         IBaseRepository<BeautyGoEmailTokenValidation> emailValidationTokenRepository,
         IReceitaFederalIntegrationService receitaFederalIntegration,
         IEmailNotificationService emailNotificationService,
@@ -46,7 +46,7 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
         AppSettings appSettings)
     {
         _userEmailTokenValidationRepository = userEmailTokenValidationRepository;
-        _storeEmailTokenValidationRepository = storeEmailTokenValidationRepository;
+        _businessEmailTokenValidationRepository = businessEmailTokenValidationRepository;
         _emailValidationTokenRepository = emailValidationTokenRepository;
         _emailNotificationService = emailNotificationService;
         _unitOfWork = unitOfWork;
@@ -72,20 +72,20 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
     #region Token validation implementations
 
-    public async Task Handle(StoreEmailTokenValidation element)
+    public async Task Handle(BeautyBusinessEmailTokenValidation element)
     {
-        var spec = new EntityByIdSpecification<StoreEmailTokenValidation>(element.Id)
-            .AddInclude(p => p.Store);
+        var spec = new EntityByIdSpecification<BeautyBusinessEmailTokenValidation>(element.Id)
+            .AddInclude(p => p.Business);
 
-        var storeEmailToken = await _storeEmailTokenValidationRepository.GetFirstOrDefaultAsync(spec);
+        var businessEmailToken = await _businessEmailTokenValidationRepository.GetFirstOrDefaultAsync(spec);
 
-        var cnpjReceitaFederalResponse = await _receitaFederalIntegration.GetCnpjDataAsync(storeEmailToken.Store.Cnpj);
+        var cnpjReceitaFederalResponse = await _receitaFederalIntegration.GetCnpjDataAsync(businessEmailToken.Business.Cnpj);
         if (!cnpjReceitaFederalResponse.HasValue)
-            throw new DomainException(DomainErrors.StoreEmailValidationToken.CnpjNotFound);
+            throw new DomainException(DomainErrors.BusinessEmailValidationToken.CnpjNotFound);
 
-        var url = $"{_apiSettings.Host}/{_apiSettings.Endpoints.StoreConfirmEmail}?{storeEmailToken.Token}";
+        var url = $"{_apiSettings.Host}/{_apiSettings.Endpoints.BusinessConfirmEmail}?{businessEmailToken.Token}";
 
-        var message = new StoreConfirmEmail(cnpjReceitaFederalResponse.Value.Email, storeEmailToken.Store.Name, url);
+        var message = new BeautyBusinessConfirmEmail(cnpjReceitaFederalResponse.Value.Email, businessEmailToken.Business.Name, url);
 
         await _emailNotificationService.SendAsync(message);
     }

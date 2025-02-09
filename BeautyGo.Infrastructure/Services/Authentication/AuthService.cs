@@ -144,14 +144,14 @@ public class AuthService : IAuthService
             return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
 
         ///AJUSTAR
-        RefreshTokenModel storedRefreshToken = null; //await _staticCacheManager.GetAsync<RefreshTokenModel>(cacheKey);
-        if (storedRefreshToken == null)
+        RefreshTokenModel businessRefreshToken = null; //await _staticCacheManager.GetAsync<RefreshTokenModel>(cacheKey);
+        if (businessRefreshToken == null)
             return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
 
-        if (storedRefreshToken.IsRevoked)
+        if (businessRefreshToken.IsRevoked)
             return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
 
-        if (_webHelper.GetUserAgent() != storedRefreshToken.FingerPrint)
+        if (_webHelper.GetUserAgent() != businessRefreshToken.FingerPrint)
             return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
 
         var user = await _userRepository.GetByIdAsync(userId);

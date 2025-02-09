@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Authentication\Commands\RefreshToken\" />
+    <Folder Include="Users\Commands\ChangePassword\" />
   </ItemGroup>
 
 </Project>

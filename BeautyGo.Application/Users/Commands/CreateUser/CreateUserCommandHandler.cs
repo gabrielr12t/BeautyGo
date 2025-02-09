@@ -83,19 +83,21 @@ internal class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, Res
         var saltKey = EncryptionHelper.CreateSaltKey(request.Password.Length);
         var hashedPassword = EncryptionHelper.CreatePasswordHash(request.Password, saltKey);
 
-        var user = User.CreateCustomer(
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            CommonHelper.EnsureNumericOnly(request.CPF));
+        //var user = User.CreateCustomer(
+        //    request.FirstName,
+        //    request.LastName,
+        //    request.Email,
+        //    CommonHelper.EnsureNumericOnly(request.CPF));
 
-        user.IncludeUserRole(customerRole);
-        user.IncludeUserPassword(hashedPassword, saltKey);
+        //user.AddUserRole(customerRole);
+        //user.AddUserPassword(hashedPassword, saltKey);
 
-        await userRepository.InsertAsync(user, cancellationToken);
+        //await userRepository.InsertAsync(user, cancellationToken);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        //await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Success(user.Id);
+        //return Result.Success(user.Id);
+
+        return Result.Success();
     }
 }

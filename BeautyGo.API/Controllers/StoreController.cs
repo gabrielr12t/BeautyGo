@@ -1,5 +1,5 @@
 ﻿using BeautyGo.Api.Controllers.Bases;
-using BeautyGo.Application.Stores.Commands.CreateStore;
+using BeautyGo.Application.Business.Commands.CreateBusiness;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
@@ -21,7 +21,7 @@ public class StoreController : BasePublicController
     [HttpPost("register")]
     [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RegisterCustomer([FromBody] CreateStoreCommand command) =>
+    public async Task<IActionResult> RegisterCustomer([FromBody] CreateBeautyBusinessCommand command) =>
         await Result.Create(command, DomainErrors.General.UnProcessableRequest)
             .Bind(command => mediator.Send(command))
             .Match(Ok, BadRequest);

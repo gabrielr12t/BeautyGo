@@ -25,19 +25,19 @@ internal static class ValidationErrors
         internal static Error PasswordIsRequired => new Error("ChangePassword.PasswordIsRequired", "The password is required.");
     }
 
-    internal static class CreateStore
+    internal static class CreateBusiness
     {
-        internal static Error NameIsRequired => new Error("CreateStore.NameIsRequired", "O nome é obrigatório.");
-        internal static Error NameInvalidLengthRequired => new Error("CreateStore.NameInvalidLengthRequired", "O nome da loja deve ter pelo menos 3 caracteres.");
-        internal static Error HomePageTitleIsRequired => new Error("CreateStore.HomePageTitleIsRequired", "O título da página inicial não pode ser vazio.");
-        internal static Error HomePageDescriptionIsRequired => new Error("CreateStore.HomePageDescriptionIsRequired", "A descrição da página inicial não pode ser vazia.");
-        internal static Error DescriptionIsRequired => new Error("CreateStore.DescriptionIsRequired", "A descrição não pode ser vazia.");
-        internal static Error CnpjIsRequired => new Error("CreateStore.CnpjIsRequired", "O CNPJ não pode ser vazio.");
-        internal static Error InvalidCnpj => new Error("CreateStore.InvalidCnpj", "O CNPJ informado é inválido.");
-        internal static Error CepIsRequired => new Error("CreateStore.CepIsRequired", "O CEP não pode ser vazio.");
-        internal static Error InvalidCep => new Error("CreateStore.InvalidCep", "O CEP informado é inválido.");
-        internal static Error PhoneIsRequired => new Error("CreateStore.PhoneIsRequired", "O telefone não pode ser vazio.");
-        internal static Error InvalidPhoneFormat => new Error("CreateStore.InvalidPhoneFormat", "O telefone deve estar no formato (XX) XXXXX-XXXX.");
+        internal static Error NameIsRequired => new Error("CreateBusiness.NameIsRequired", "O nome é obrigatório.");
+        internal static Error NameInvalidLengthRequired => new Error("CreateBusiness.NameInvalidLengthRequired", "O nome da loja deve ter pelo menos 3 caracteres.");
+        internal static Error HomePageTitleIsRequired => new Error("CreateBusiness.HomePageTitleIsRequired", "O título da página inicial não pode ser vazio.");
+        internal static Error HomePageDescriptionIsRequired => new Error("CreateBusiness.HomePageDescriptionIsRequired", "A descrição da página inicial não pode ser vazia.");
+        internal static Error DescriptionIsRequired => new Error("CreateBusiness.DescriptionIsRequired", "A descrição não pode ser vazia.");
+        internal static Error CnpjIsRequired => new Error("CreateBusiness.CnpjIsRequired", "O CNPJ não pode ser vazio.");
+        internal static Error InvalidCnpj => new Error("CreateBusiness.InvalidCnpj", "O CNPJ informado é inválido.");
+        internal static Error CepIsRequired => new Error("CreateBusiness.CepIsRequired", "O CEP não pode ser vazio.");
+        internal static Error InvalidCep => new Error("CreateBusiness.InvalidCep", "O CEP informado é inválido.");
+        internal static Error PhoneIsRequired => new Error("CreateBusiness.PhoneIsRequired", "O telefone não pode ser vazio.");
+        internal static Error InvalidPhoneFormat => new Error("CreateBusiness.InvalidPhoneFormat", "O telefone deve estar no formato (XX) XXXXX-XXXX.");
     }
 
     /// <summary>

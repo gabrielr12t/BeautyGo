@@ -61,7 +61,7 @@ internal class EmailNotificationService : IEmailNotificationService
         await _emailService.SendEmailAsync(mailRequest);
     }
 
-    public async Task SendAsync(StoreConfirmEmail message)
+    public async Task SendAsync(BeautyBusinessConfirmEmail message)
     {
         var mailRequest = new MailRequest(
             message.EmailTo,

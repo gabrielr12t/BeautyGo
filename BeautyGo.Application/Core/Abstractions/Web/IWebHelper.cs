@@ -12,9 +12,9 @@ public interface IWebHelper
 
     bool IsCurrentConnectionSecured();
 
-    string GetStoreHost(bool useSsl);
+    string GetBusinessHost(bool useSsl);
 
-    string GetStoreLocation(bool? useSsl = null);
+    string GetBusinessLocation(bool? useSsl = null);
 
     bool IsStaticResource();
 

@@ -114,19 +114,19 @@ public partial class PictureService : IPictureService
         return Task.FromResult(thumbFilePath);
     }
 
-    protected virtual Task<string> GetImagesPathUrlAsync(string storeLocation = null)
+    protected virtual Task<string> GetImagesPathUrlAsync(string businessLocation = null)
     {
         var pathBase = _httpContextAccessor.HttpContext.Request?.PathBase.Value ?? string.Empty;
-        var imagesPathUrl = _mediaSettings.UseAbsoluteImagePath ? storeLocation : $"{pathBase}/";
-        imagesPathUrl = string.IsNullOrEmpty(imagesPathUrl) ? _webHelper.GetStoreLocation() : imagesPathUrl;
+        var imagesPathUrl = _mediaSettings.UseAbsoluteImagePath ? businessLocation : $"{pathBase}/";
+        imagesPathUrl = string.IsNullOrEmpty(imagesPathUrl) ? _webHelper.GetBusinessLocation() : imagesPathUrl;
         imagesPathUrl += "images/";
 
         return Task.FromResult(imagesPathUrl);
     }
 
-    protected virtual async Task<string> GetThumbUrlAsync(string thumbFileName, string storeLocation = null)
+    protected virtual async Task<string> GetThumbUrlAsync(string thumbFileName, string businessLocation = null)
     {
-        var url = await GetImagesPathUrlAsync(storeLocation) + "thumbs/";
+        var url = await GetImagesPathUrlAsync(businessLocation) + "thumbs/";
 
         if (_mediaSettings.MultipleThumbDirectories)
         {
@@ -323,7 +323,7 @@ public partial class PictureService : IPictureService
 
     public virtual async Task<string> GetDefaultPictureUrlAsync(int targetSize = 0,
         PictureType defaultPictureType = PictureType.Entity,
-        string storeLocation = null)
+        string businessLocation = null)
     {
         var defaultImageFileName = defaultPictureType switch
         {
@@ -335,7 +335,7 @@ public partial class PictureService : IPictureService
             return string.Empty;
 
         if (targetSize == 0)
-            return await GetImagesPathUrlAsync(storeLocation) + defaultImageFileName;
+            return await GetImagesPathUrlAsync(businessLocation) + defaultImageFileName;
 
         var fileExtension = _fileProvider.GetFileExtension(filePath);
         var thumbFileName = $"{_fileProvider.GetFileNameWithoutExtension(filePath)}_{targetSize}{fileExtension}";
@@ -363,12 +363,12 @@ public partial class PictureService : IPictureService
             }
         }
 
-        return await GetThumbUrlAsync(thumbFileName, storeLocation);
+        return await GetThumbUrlAsync(thumbFileName, businessLocation);
     }
 
     public virtual async Task<string> GetDefaultPicturePathAsync(int targetSize = 0,
        PictureType defaultPictureType = PictureType.Entity,
-       string storeLocation = null)
+       string businessLocation = null)
     {
         var defaultImageFileName = defaultPictureType switch
         {
@@ -382,21 +382,21 @@ public partial class PictureService : IPictureService
     public virtual async Task<string> GetPictureUrlAsync(Guid pictureId,
         int targetSize = 0,
         bool showDefaultPicture = true,
-        string storeLocation = null,
+        string businessLocation = null,
         PictureType defaultPictureType = PictureType.Entity)
     {
         var picture = await GetPictureByIdAsync(pictureId);
-        return (await GetPictureUrlAsync(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType)).Url;
+        return (await GetPictureUrlAsync(picture, targetSize, showDefaultPicture, businessLocation, defaultPictureType)).Url;
     }
 
     public virtual async Task<(string Url, Picture Picture)> GetPictureUrlAsync(Picture picture,
         int targetSize = 0,
         bool showDefaultPicture = true,
-        string storeLocation = null,
+        string businessLocation = null,
         PictureType defaultPictureType = PictureType.Entity)
     {
         if (picture == null)
-            return showDefaultPicture ? (await GetDefaultPictureUrlAsync(targetSize, defaultPictureType, storeLocation), null) : (string.Empty, (Picture)null);
+            return showDefaultPicture ? (await GetDefaultPictureUrlAsync(targetSize, defaultPictureType, businessLocation), null) : (string.Empty, (Picture)null);
 
         byte[] pictureBinary = null;
         if (picture.IsNew)
@@ -405,7 +405,7 @@ public partial class PictureService : IPictureService
             pictureBinary = await LoadPictureBinaryAsync(picture);
 
             if ((pictureBinary?.Length ?? 0) == 0)
-                return showDefaultPicture ? (await GetDefaultPictureUrlAsync(targetSize, defaultPictureType, storeLocation), picture) : (string.Empty, picture);
+                return showDefaultPicture ? (await GetDefaultPictureUrlAsync(targetSize, defaultPictureType, businessLocation), picture) : (string.Empty, picture);
 
             //we do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
             picture = await UpdatePictureAsync(picture.Id,
@@ -430,7 +430,7 @@ public partial class PictureService : IPictureService
 
             var thumbFilePath = await GetThumbLocalPathAsync(thumbFileName);
             if (await GeneratedThumbExistsAsync(thumbFilePath, thumbFileName))
-                return (await GetThumbUrlAsync(thumbFileName, storeLocation), picture);
+                return (await GetThumbUrlAsync(thumbFileName, businessLocation), picture);
 
             pictureBinary ??= await LoadPictureBinaryAsync(picture);
 
@@ -457,7 +457,7 @@ public partial class PictureService : IPictureService
 
             var thumbFilePath = await GetThumbLocalPathAsync(thumbFileName);
             if (await GeneratedThumbExistsAsync(thumbFilePath, thumbFileName))
-                return (await GetThumbUrlAsync(thumbFileName, storeLocation), picture);
+                return (await GetThumbUrlAsync(thumbFileName, businessLocation), picture);
 
             pictureBinary ??= await LoadPictureBinaryAsync(picture);
 
@@ -490,7 +490,7 @@ public partial class PictureService : IPictureService
             }
         }
 
-        return (await GetThumbUrlAsync(thumbFileName, storeLocation), picture);
+        return (await GetThumbUrlAsync(thumbFileName, businessLocation), picture);
     }
 
     public virtual async Task<string> GetThumbLocalPathAsync(Picture picture, int targetSize = 0, bool showDefaultPicture = true)

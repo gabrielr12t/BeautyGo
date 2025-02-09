@@ -1,15 +1,15 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
-using BeautyGo.Domain.DomainEvents.EmailValidationToken;
 using BeautyGo.Domain.DomainEvents.Users;
 
 namespace BeautyGo.Domain.Entities.Users;
 
-public class User : BaseEntity, IAuditableEntity, IEmailValidationToken
+public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
 {
     public User()
     {
         UserRoles = new HashSet<UserRoleMapping>();
         Passwords = new List<UserPassword>();
+        Addresses = new List<UserAddressMapping>();
     }
 
     public string FirstName { get; set; }
@@ -42,15 +42,10 @@ public class User : BaseEntity, IAuditableEntity, IEmailValidationToken
 
     public Guid? ShippingAddressId { get; set; }
 
-    public HashSet<UserRoleMapping> UserRoles { get; set; }
+    public ICollection<UserRoleMapping> UserRoles { get; set; }
 
-    private ICollection<UserAddressMapping> _addresses;
-    public ICollection<UserAddressMapping> Addresses
-    {
-        get { return _addresses ?? new List<UserAddressMapping>(); }
-        set { _addresses = value; }
-    } 
-
+    public ICollection<UserAddressMapping> Addresses { get; set; }
+     
     public ICollection<UserPassword> Passwords { get; set; }
 
     #region Methods
@@ -79,29 +74,31 @@ public class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     public bool HasRole(UserRole role) =>
         UserRoles.Any(p => p.UserRole == role);
 
-    public void IncludeUserRole(UserRole userRole) =>
+    public void AddUserRole(UserRole userRole) =>
         UserRoles.Add(new UserRoleMapping { UserRoleId = userRole.Id, User = this });
 
-    public void IncludeUserPassword(string password, string salt) =>
+    public void AddUserPassword(string password, string salt) =>
         Passwords.Add(new UserPassword { User = this, Password = password, Salt = salt });
 
-    public static User CreateCustomer(string firstName, string lastName, string email, string cpf)
-    {
-        var user = new User
-        {
-            FirstName = firstName,
-            LastName = lastName,
-            Email = email,
-            Cpf = cpf,
-            IsActive = false,
-            EmailConfirmed = false,
-            CreatedOn = DateTime.Now,
-        };
+    //public abstract User Create(string firstName, string lastName, string email, string cpf);
 
-        user.AddDomainEvent(new EntityEmailValidationTokenCreatedEvent(user));
+    //public static User CreateCustomer(string firstName, string lastName, string email, string cpf)
+    //{
+    //    var user = new User
+    //    {
+    //        FirstName = firstName,
+    //        LastName = lastName,
+    //        Email = email,
+    //        Cpf = cpf,
+    //        IsActive = false,
+    //        EmailConfirmed = false,
+    //        CreatedOn = DateTime.Now,
+    //    };
 
-        return user;
-    }
+    //    user.AddDomainEvent(new EntityEmailValidationTokenCreatedEvent(user));
+
+    //    return user;
+    //}
 
     public BeautyGoEmailTokenValidation CreateEmailValidationToken()
     {

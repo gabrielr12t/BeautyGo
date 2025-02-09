@@ -12,6 +12,6 @@
     public class Endpoint
     {
         public string UserConfirmEmail { get; set; }
-        public string StoreConfirmEmail { get; set; }
+        public string BusinessConfirmEmail { get; set; }
     }
 }

@@ -8,7 +8,7 @@ public interface IEmailNotificationService
 
     Task SendAsync(UserConfirmEmail message);
 
-    Task SendAsync(StoreConfirmEmail message);
+    Task SendAsync(BeautyBusinessConfirmEmail message);
 
     Task SendAsync(PasswordChangedEmail passwordChangedEmail);
      

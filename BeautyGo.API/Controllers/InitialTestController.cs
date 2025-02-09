@@ -2,7 +2,7 @@ using BeautyGo.Api.Controllers.Bases;
 using BeautyGo.Application.Authentication.Commands.Login;
 using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Security;
-using BeautyGo.Application.Core.Abstractions.Stores;
+using BeautyGo.Application.Core.Abstractions.Business;
 using BeautyGo.Application.Users.Commands.CreateUser;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
@@ -17,13 +17,13 @@ namespace BeautyGo.Api.Controllers;
 [Route("[controller]")]
 public class InitialTestController : BaseController
 {
-    private IStoreContext storeContext;
+    private IBusinessContext storeContext;
     private readonly IEncryptionService _encryptionService;
     private readonly IAuthService _authService;
 
     public InitialTestController(
         IMediator mediator,
-        IStoreContext storeContext,
+        IBusinessContext storeContext,
         IEncryptionService encryptionService,
         IAuthService authService) : base(mediator)
     {

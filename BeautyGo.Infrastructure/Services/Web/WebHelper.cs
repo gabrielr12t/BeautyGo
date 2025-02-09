@@ -92,10 +92,10 @@ namespace BeautyGo.Infrasctructure.Services.Web
                 return string.Empty;
 
             //get store location
-            var storeLocation = GetStoreLocation(useSsl ?? IsCurrentConnectionSecured());
+            var businessLocation = GetBusinessLocation(useSsl ?? IsCurrentConnectionSecured());
 
             //add local path to the URL
-            var pageUrl = $"{storeLocation.TrimEnd('/')}{_httpContextAccessor.HttpContext.Request.Path}";
+            var pageUrl = $"{businessLocation.TrimEnd('/')}{_httpContextAccessor.HttpContext.Request.Path}";
 
             //add query string to the URL
             if (includeQueryString)
@@ -116,7 +116,7 @@ namespace BeautyGo.Infrasctructure.Services.Web
             return _httpContextAccessor.HttpContext.Request.IsHttps;
         }
 
-        public virtual string GetStoreHost(bool useSsl)
+        public virtual string GetBusinessHost(bool useSsl)
         {
             if (!IsRequestAvailable())
                 return string.Empty;
@@ -127,30 +127,30 @@ namespace BeautyGo.Infrasctructure.Services.Web
                 return string.Empty;
 
             //add scheme to the URL
-            var storeHost = $"{(useSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp)}{Uri.SchemeDelimiter}{hostHeader.FirstOrDefault()}";
+            var businessHost = $"{(useSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp)}{Uri.SchemeDelimiter}{hostHeader.FirstOrDefault()}";
 
             //ensure that host is ended with slash
-            storeHost = $"{storeHost.TrimEnd('/')}/";
+            businessHost = $"{businessHost.TrimEnd('/')}/";
 
-            return storeHost;
+            return businessHost;
         }
 
-        public virtual string GetStoreLocation(bool? useSsl = null)
+        public virtual string GetBusinessLocation(bool? useSsl = null)
         {
-            var storeLocation = string.Empty;
+            var businessLocation = string.Empty;
 
             //get store host
-            var storeHost = GetStoreHost(useSsl ?? IsCurrentConnectionSecured());
-            if (!string.IsNullOrEmpty(storeHost))
+            var businessHost = GetBusinessHost(useSsl ?? IsCurrentConnectionSecured());
+            if (!string.IsNullOrEmpty(businessHost))
             {
                 //add application path base if exists
-                storeLocation = IsRequestAvailable() ? $"{storeHost.TrimEnd('/')}{_httpContextAccessor.HttpContext.Request.PathBase}" : storeHost;
+                businessLocation = IsRequestAvailable() ? $"{businessHost.TrimEnd('/')}{_httpContextAccessor.HttpContext.Request.PathBase}" : businessHost;
             }
 
             //ensure that URL is ended with slash
-            storeLocation = $"{storeLocation.TrimEnd('/')}/";
+            businessLocation = $"{businessLocation.TrimEnd('/')}/";
 
-            return storeLocation;
+            return businessLocation;
         }
 
         public virtual bool IsStaticResource()

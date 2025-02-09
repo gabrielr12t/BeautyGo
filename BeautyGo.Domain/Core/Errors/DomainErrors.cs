@@ -75,7 +75,7 @@ public static class DomainErrors
             "Foi enviada uma nova chave para confirmação no seu e-mail.");
     }
 
-    public static class StoreEmailValidationToken
+    public static class BusinessEmailValidationToken
     {
         public static Error CnpjNotFound => new(
            "UserEmailValidationToken.CnpjNotFound",
@@ -124,34 +124,34 @@ public static class DomainErrors
            "Autenticação inválida.");
     }
 
-    public static class Store
+    public static class Business
     {
         public static Error InvalidCnpj => new(
-            "Store.InvalidCnpj",
+            "Business.InvalidCnpj",
             "Cnpj inválido.");
 
         public static Error CnpjRestricted => new(
-             "Store.CnpjRestricted",
+             "Business.CnpjRestricted",
              "Cnpj está com situação inválida na receira federal.");
 
         public static Error CnpjAlreadyExists => new(
-            "Store.CnpjAlreadyExists",
+            "Business.CnpjAlreadyExists",
             "Cnpj já cadastrado.");
 
         public static Error CnpjNameInvalid => new(
-            "Store.CnpjNameInvalid",
+            "Business.CnpjNameInvalid",
             "Nome inválido para o Cnpj.");
 
         public static Error NoImageUploaded => new(
-            "Store.NoImageUploaded",
+            "Business.NoImageUploaded",
             "Nenhuma imagem encontrada.");
 
         public static Error ImageExceedsMaximumAllowed => new(
-            "Store.ImageExceedsMaximumAllowed",
+            "Business.ImageExceedsMaximumAllowed",
             "Arquivo de imagem execeu o tamanha máximo permitido.");
 
         public static Error ImageNotValid => new(
-            "Store.ImageNotValid",
+            "Business.ImageNotValid",
             "Arquivo de imagem inválido.");
     }
 

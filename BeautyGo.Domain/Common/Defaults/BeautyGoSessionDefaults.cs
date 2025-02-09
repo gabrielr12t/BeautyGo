@@ -2,5 +2,5 @@
 
 public class BeautyGoSessionDefaults
 {
-    public static string StoreCode => "store-code";
+    public static string BusinessCode => "business-code";
 }
