@@ -32,7 +32,7 @@ internal class CreateUserOwnerRoleOnBeautyBusinessCreatedDomainEventHandler : ID
     public async Task Handle(EntityInsertedEvent<BeautyBusiness> notification, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<User>(notification.Entity.OwnerId).And(
+            new EntityByIdSpecification<User>(notification.Entity.CreatedId).And(
                 new UserWithRolesSpecification()));
 
         if (user == null)

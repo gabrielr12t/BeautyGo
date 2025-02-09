@@ -2,6 +2,7 @@
 using BeautyGo.Domain.DomainEvents.EmailValidationToken;
 using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Entities.Media;
+using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
 
@@ -9,6 +10,13 @@ namespace BeautyGo.Domain.Entities.Business;
 
 public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEmailValidationToken
 {
+    public BeautyBusiness()
+    {
+        Pictures = new List<BeautyBusinessPicture>();
+        Professionals = new List<Professional>();
+        BusinessWorkingHours = new List<BusinessWorkingHours>();
+    }
+
     public string Name { get; set; }
 
     public int Code { get; set; }
@@ -33,13 +41,16 @@ public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity
 
     public bool EmailConfirmed { get; set; }
 
-    public Guid OwnerId { get; set; }
-    public User Owner { get; set; }
+    public Guid CreatedId { get; set; }
+    public User Created { get; set; }
 
     public Guid? AddressId { get; set; }
     public Address Address { get; set; }
 
     public ICollection<BeautyBusinessPicture> Pictures { get; set; }
+    public ICollection<Professional> Professionals { get; set; }
+    public ICollection<Service> Services { get; set; }
+    public ICollection<BusinessWorkingHours> BusinessWorkingHours { get; set; }
 
     #region Methods
 
@@ -51,7 +62,7 @@ public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity
             HomePageTitle = homePageTitle,
             HomePageDescription = homePageDescription,
             Cnpj = CommonHelper.EnsureNumericOnly(cnpj),
-            OwnerId = ownerId,
+            CreatedId = ownerId,
             IsActive = false,
             EmailConfirmed = false,
             AddressId = addressId

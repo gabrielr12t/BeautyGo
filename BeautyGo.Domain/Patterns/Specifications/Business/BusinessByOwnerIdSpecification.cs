@@ -10,5 +10,5 @@ public class BusinessByOwnerIdSpecification : Specification<BeautyBusiness>
     public BusinessByOwnerIdSpecification(Guid ownerId) => _ownerId = ownerId;
 
     public override Expression<Func<BeautyBusiness, bool>> ToExpression() =>
-        business => business.OwnerId == _ownerId;
+        business => business.CreatedId == _ownerId;
 }

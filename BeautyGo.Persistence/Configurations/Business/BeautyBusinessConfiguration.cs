@@ -62,9 +62,9 @@ internal class BeautyBusinessConfiguration : BaseEntityConfiguration<BeautyBusin
         builder.Property(s => s.Deleted)
             .IsRequired();
 
-        builder.HasOne(s => s.Owner)
+        builder.HasOne(s => s.Created)
             .WithMany()
-            .HasForeignKey(s => s.OwnerId)
+            .HasForeignKey(s => s.CreatedId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(s => s.Address)
