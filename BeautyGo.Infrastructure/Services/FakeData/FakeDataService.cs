@@ -119,7 +119,7 @@ public class FakeDataService : IFakeDataService
 
         var ownerRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.OWNER);
         var customerRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.CUSTOMER);
-        var employeeRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.EMPLOYEE);
+        //var employeeRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.EMPLOYEE);
 
         var ownerRole = await _userRoleRepository.GetFirstOrDefaultAsync(ownerRoleSpecification);
 

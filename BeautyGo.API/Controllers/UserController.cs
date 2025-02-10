@@ -20,10 +20,19 @@ public class UserController : BaseController
     }
 
     [AllowAnonymous]
-    [HttpPost("register")]
+    [HttpPost("customer/register")]
     [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterCustomer([FromBody] CreateUserCommand command) =>
+        await Result.Create(command, DomainErrors.General.UnProcessableRequest)
+            .Bind(command => mediator.Send(command))
+            .Match(Ok, BadRequest);
+
+    [AllowAnonymous]
+    [HttpPost("professional/register")]
+    [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RegisterProfessional([FromBody] CreateUserCommand command) =>
         await Result.Create(command, DomainErrors.General.UnProcessableRequest)
             .Bind(command => mediator.Send(command))
             .Match(Ok, BadRequest);
@@ -44,5 +53,4 @@ public class UserController : BaseController
         await Result.Create(token, DomainErrors.General.UnProcessableRequest)
             .Bind(command => mediator.Send(new ConfirmEmailCommand(token)))
             .Match(Ok, BadRequest);
-
 }

@@ -17,34 +17,27 @@ namespace BeautyGo.Application.Business.Commands.CreateBusiness;
 internal class CreateBeautyBusinessCommandHandler : ICommandHandler<CreateBeautyBusinessCommand, Result>
 {
     private readonly IBaseRepository<BeautyBusiness> _storeRepository;
-    private readonly IBaseRepository<User> _userRepository;
     private readonly IBaseRepository<Address> _addressRepository;
 
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
     private readonly IViaCepIntegrationService _viaCepIntegration;
-    private readonly IOpenStreetMapIntegrationService _openStreetMapIntegrationService;
     private readonly IAuthService _authService;
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateBeautyBusinessCommandHandler(
         IBaseRepository<BeautyBusiness> storeRepository,
-        IBaseRepository<User> userRepository,
         IBaseRepository<Address> addressRepository,
-        IPictureService pictureService,
         IAuthService authService,
         IUnitOfWork unitOfWork,
         IReceitaFederalIntegrationService receitaFederalIntegration,
-        IViaCepIntegrationService viaCepIntegration,
-        IOpenStreetMapIntegrationService openStreetMapIntegrationService)
+        IViaCepIntegrationService viaCepIntegration)
     {
         _receitaFederalIntegration = receitaFederalIntegration;
         _storeRepository = storeRepository;
         _addressRepository = addressRepository;
         _authService = authService;
-        _userRepository = userRepository;
         _unitOfWork = unitOfWork;
         _viaCepIntegration = viaCepIntegration;
-        _openStreetMapIntegrationService = openStreetMapIntegrationService;
     }
 
     #region Utilities
@@ -95,13 +88,20 @@ internal class CreateBeautyBusinessCommandHandler : ICommandHandler<CreateBeauty
 
         await _addressRepository.InsertAsync(newAddress, cancellationToken);
 
-        var newStore = BeautyBusiness.Create(request.Name,
+        var newBusiness = BeautyBusiness.Create(request.Name,
             request.HomePageTitle,
             request.HomePageDescription,
             request.Cnpj,
             currentUser.Id, newAddress.Id);
 
-        await _storeRepository.InsertAsync(newStore, cancellationToken);
+        var hasWorkingHours = request.WorkingHours is not null && request.WorkingHours.Any();
+        if (hasWorkingHours)
+        {
+            var workingHours = request.WorkingHours.Select(p => BusinessWorkingHours.Create(p.Day, p.EndTime, p.EndTime));
+            newBusiness.AddWorkingHours(workingHours);
+        }
+
+        await _storeRepository.InsertAsync(newBusiness, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

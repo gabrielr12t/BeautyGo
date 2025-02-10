@@ -14,5 +14,8 @@ public record CreateBeautyBusinessCommand(
     string AddressLastName,
     string AddressCep,
     string AddressNumber,
-    string AddressPhoneNumber) : ICommand<Result>;
+    string AddressPhoneNumber,
+    ICollection<WorkingHoursDto> WorkingHours) : ICommand<Result>;
+
+public record WorkingHoursDto(DayOfWeek Day, TimeSpan StartTime, TimeSpan EndTime);
  

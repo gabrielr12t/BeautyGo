@@ -12,14 +12,14 @@ using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.Application.Business.Events.BusinessCreated;
 
-internal class CreateUserOwnerRoleOnBeautyBusinessCreatedDomainEventHandler : IDomainEventHandler<EntityInsertedEvent<BeautyBusiness>>
+internal class CreateUserRoleOnBeautyBusinessCreatedDomainEventHandler : IDomainEventHandler<EntityInsertedEvent<BeautyBusiness>>
 {
     private readonly IBaseRepository<UserRole> _userRoleRepository;
     private readonly IBaseRepository<User> _userRepository;
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateUserOwnerRoleOnBeautyBusinessCreatedDomainEventHandler(
+    public CreateUserRoleOnBeautyBusinessCreatedDomainEventHandler(
         IBaseRepository<UserRole> userRoleRepository,
         IBaseRepository<User> userRepository,
         IUnitOfWork unitOfWork)
@@ -39,15 +39,23 @@ internal class CreateUserOwnerRoleOnBeautyBusinessCreatedDomainEventHandler : ID
             throw new DomainException(DomainErrors.User.UserNotFound);
 
         var ownerRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.OWNER);
+        var professionalRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.PROFESSIONAL);
+
         var ownerRole = await _userRoleRepository.GetFirstOrDefaultAsync(ownerRoleSpecification, cancellationToken: cancellationToken);
+        var professionalRole = await _userRoleRepository.GetFirstOrDefaultAsync(professionalRoleSpecification, cancellationToken: cancellationToken);
 
         if (!user.HasRole(ownerRole))
         {
             user.AddUserRole(ownerRole);
-
-            _userRepository.Update(user);
-
-            await _unitOfWork.SaveChangesAsync();
         }
+
+        if (!user.HasRole(professionalRole))
+        {
+            user.AddUserRole(professionalRole);
+        }
+
+        _userRepository.Update(user);
+
+        await _unitOfWork.SaveChangesAsync();
     }
 }

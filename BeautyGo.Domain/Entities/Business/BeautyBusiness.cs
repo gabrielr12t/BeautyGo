@@ -39,12 +39,14 @@ public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity
 
     public bool IsActive { get; set; }
 
+    public string Email { get; set; }
+
     public bool EmailConfirmed { get; set; }
 
     public Guid CreatedId { get; set; }
     public User Created { get; set; }
 
-    public Guid? AddressId { get; set; }
+    public Guid AddressId { get; set; }
     public Address Address { get; set; }
 
     public ICollection<BeautyBusinessPicture> Pictures { get; set; }
@@ -71,6 +73,19 @@ public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity
         business.AddDomainEvent(new EntityEmailValidationTokenCreatedEvent(business));
 
         return business;
+    } 
+
+    public void AddWorkingHours(IEnumerable<BusinessWorkingHours> workingHours)
+    {
+        foreach (var workingHour in workingHours)
+        {
+            AddWorkingHours(workingHour);
+        }
+    }
+
+    public void AddWorkingHours(BusinessWorkingHours workingHours)
+    {
+        BusinessWorkingHours.Add(workingHours);
     }
 
     public void AddPicture(Picture picture) =>

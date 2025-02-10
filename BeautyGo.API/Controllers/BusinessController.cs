@@ -11,13 +11,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace BeautyGo.Api.Controllers;
 
 [Route("api/[controller]")]
-public class StoreController : BasePublicController
+[Authorize]
+public class BusinessController : BasePublicController
 {
-    public StoreController(IMediator mediator) : base(mediator)
+    public BusinessController(IMediator mediator) : base(mediator)
     {
     }
 
-    [Authorize]
     [HttpPost("register")]
     [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]

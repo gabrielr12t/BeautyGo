@@ -9,4 +9,11 @@ public class BusinessWorkingHours : BaseEntity
 
     public Guid BeautyBusinessId { get; set; }
     public BeautyBusiness BeautyBusiness { get; set; }
+
+    public static BusinessWorkingHours Create(DayOfWeek day, TimeSpan openTime, TimeSpan endTime)
+    {
+        var workingHour = new BusinessWorkingHours { Day = day, OpenTime = openTime, CloseTime = endTime };
+
+        return workingHour;
+    }
 }
