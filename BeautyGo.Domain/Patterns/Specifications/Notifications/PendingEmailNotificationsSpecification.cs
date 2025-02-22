@@ -1,5 +1,4 @@
 ﻿using BeautyGo.Domain.Entities.Notifications;
-using BeautyGo.Domain.Patterns.Specifications;
 using System.Linq.Expressions;
 
 namespace BeautyGo.Domain.Patterns.Specifications.Notifications

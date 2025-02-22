@@ -43,44 +43,19 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 
     #region Utilities
 
-    private async Task<User?> GetUserWithSpecificationsAsync(string email)
+    private async Task<bool> HasEmailTokenPendingValidationAsync(User user, CancellationToken cancellationToken)
     {
-        var userByEmailSpec = new UserByEmailSpecification(email)
-            .AddInclude(p => p.Passwords)
-            .AddInclude(p => p.UserRoles)
-            .AddInclude($"{nameof(User.UserRoles)}.{nameof(UserRoleMapping.UserRole)}");
-
-        return await _userRepository.GetFirstOrDefaultAsync(userByEmailSpec);
-    }
-
-    private Result ValidateUserState(User user)
-    {
-        if (!user.IsActive)
-            return Result.Failure(DomainErrors.User.UserNotActive);
-
-        return Result.Success();
-    }
-
-    private async Task<Result> HandleEmailValidationAsync(User user, CancellationToken cancellationToken)
-    {
-        if (user.EmailConfirmed)
-            return Result.Success();
-
-        var userTokenSpec = new UserEmailValidationTokenByUserIdSpecification(user.Id)
+        var userEmailValidationTokenValid = new UserEmailValidationTokenByUserIdSpecification(user.Id)
             .And(new ValidUserEmailValidationTokenSpecification(DateTime.Now));
 
-        var hasValidToken = await _userEmailValidationTokenRepository.ExistAsync(userTokenSpec);
+        return await _userEmailValidationTokenRepository.ExistAsync(userEmailValidationTokenValid);
+    }
 
-        if (!hasValidToken)
-        {
-            var userEmailToken = UserEmailTokenValidation.Create(DateTime.Now.AddMinutes(3), user.Id);
-            await _userEmailValidationTokenRepository.InsertAsync(userEmailToken, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return Result.Failure(DomainErrors.UserEmailValidationToken.NewToken);
-        }
-
-        return Result.Success();
+    private async Task CreateNewUserEmailValidationTokenAsync(User user, CancellationToken cancellationToken)
+    {
+        var userEmailToken = UserEmailTokenValidation.Create(user.Id);
+        await _userEmailValidationTokenRepository.InsertAsync(userEmailToken, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     private bool PasswordsMatch(UserPassword userPassword, string enteredPassword)
@@ -96,25 +71,32 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 
     public async Task<Result<TokenModel>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var user = await GetUserWithSpecificationsAsync(request.Email);
+        var userByEmailSpec = new UserByEmailSpecification(request.Email).AddInclude(p => p.Passwords);
+
+        var user = await _userRepository.GetFirstOrDefaultAsync(userByEmailSpec);
         if (user == null)
             return Result.Failure<TokenModel>(DomainErrors.User.UserNotFound);
 
         if (!PasswordsMatch(user.GetCurrentPassword(), request.Password))
-            return Result.Failure<TokenModel>(DomainErrors.Authentication.InvalidEmailOrPassword);
+            return Result.Failure<TokenModel>(DomainErrors.Authentication.InvalidEmailOrPassword); 
 
         if (!user.IsActive)
             return Result.Failure<TokenModel>(DomainErrors.User.UserNotActive);
 
-        var emailValidationResult = await HandleEmailValidationAsync(user, cancellationToken);
-        if (!emailValidationResult.IsSuccess)
-            return Result.Failure<TokenModel>(emailValidationResult.Error);
+        if (!user.EmailConfirmed && !await HasEmailTokenPendingValidationAsync(user, cancellationToken))
+            await CreateNewUserEmailValidationTokenAsync(user, cancellationToken);
 
-        //VALIDAR AQUI MUITAS TENTATIVAS
-
+        if (!user.EmailConfirmed)
+            return Result.Failure<TokenModel>(DomainErrors.UserEmailValidationToken.RequiredValidToken);
+         
         user.LastLoginDate = DateTime.Now;
 
         var token = await _authService.AuthenticateAsync(user);
+
+        _userRepository.Update(user);
+
+        await _unitOfWork.SaveChangesAsync();
+
         return Result.Success(token);
     }
 }

@@ -33,8 +33,8 @@ internal class BeautyBusinessEmailTokenConfiguration : BaseEntityConfiguration<B
         builder.HasIndex(e => e.BusinessId);
 
         builder.HasOne(p => p.Business)
-            .WithMany()
+            .WithMany(p => p.ValidationTokens)
             .HasForeignKey(p => p.BusinessId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

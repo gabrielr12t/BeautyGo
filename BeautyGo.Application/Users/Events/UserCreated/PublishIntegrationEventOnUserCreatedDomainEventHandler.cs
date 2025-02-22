@@ -13,8 +13,6 @@ internal class PublishIntegrationEventOnUserCreatedDomainEventHandler : IDomainE
 
     public async Task Handle(EntityInsertedEvent<User> notification, CancellationToken cancellationToken)
     {
-        _integrationEventPublisher.Publish(new UserCreatedIntegrationEvent(notification.Entity));
-
-        await Task.CompletedTask;
+        await _integrationEventPublisher.PublishAsync(new UserCreatedIntegrationEvent(notification.Entity));
     }
 }

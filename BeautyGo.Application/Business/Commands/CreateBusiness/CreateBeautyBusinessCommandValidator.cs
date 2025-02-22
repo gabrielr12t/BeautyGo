@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace BeautyGo.Application.Business.Commands.CreateBusiness;
 
-internal class CreateBeautyBusinessCommandValidator : AbstractValidator<CreateBeautyBusinessCommand>
+public class CreateBeautyBusinessCommandValidator : AbstractValidator<CreateBeautyBusinessCommand>
 {
     public CreateBeautyBusinessCommandValidator()
     {

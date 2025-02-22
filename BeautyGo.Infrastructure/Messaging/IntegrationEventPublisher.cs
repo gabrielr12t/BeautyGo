@@ -1,6 +1,9 @@
-﻿using BeautyGo.Application.Core.Abstractions.Messaging;
+﻿using BeautyGo.Application.Core.Abstractions.Data;
+using BeautyGo.Application.Core.Abstractions.Logging;
+using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Settings;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System.Text;
@@ -9,12 +12,14 @@ namespace BeautyGo.Infrastructure.Messaging;
 
 internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher, IDisposable
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly MessageBrokerSettings _messageBrokerSettings;
     private readonly IConnection _connection;
     private readonly IModel _channel;
 
-    public IntegrationEventPublisher(AppSettings appSettings)
+    public IntegrationEventPublisher(AppSettings appSettings, IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
         _messageBrokerSettings = appSettings.Get<MessageBrokerSettings>();
 
         IAsyncConnectionFactory connectionFactory = new ConnectionFactory
@@ -32,17 +37,27 @@ internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher, ID
         var initializer = new RabbitMQInitializer(_channel);
         initializer.ConfigureQueue(_messageBrokerSettings.QueueName, "dlx_exchange", 60000);
     }
-
-    public void Publish(IIntegrationEvent @event)
+     
+    public async Task PublishAsync(IIntegrationEvent @event)
     {
-        var payload = JsonConvert.SerializeObject(@event, typeof(IIntegrationEvent), new JsonSerializerSettings
+        using var scope = _serviceProvider.CreateScope();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var message = new Message(Ulid.NewUlid(), @event);
+
+        var payload = JsonConvert.SerializeObject(message, typeof(Message), new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.Auto,
+            TypeNameHandling = TypeNameHandling.All,
         });
 
         var body = Encoding.UTF8.GetBytes(payload);
 
         _channel.BasicPublish(string.Empty, _messageBrokerSettings.QueueName, body: body);
+
+        await logger.InformationAsync($"MESSAGE: {message.Id} - Publishing - {message}");
+
+        await unitOfWork.SaveChangesAsync();
     }
 
     public void Dispose()

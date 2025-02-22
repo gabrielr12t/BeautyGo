@@ -2,5 +2,5 @@
 
 public interface IIntegrationEventPublisher
 {
-    void Publish(IIntegrationEvent @event);  
+    Task PublishAsync(IIntegrationEvent @event);  
 }

@@ -1,8 +1,9 @@
-﻿using BeautyGo.Domain.Patterns.Visitor.EmailTokenValidation;
+﻿using BeautyGo.Domain.DomainEvents.EmailValidationToken;
+using BeautyGo.Domain.Patterns.Visitor.EmailTokenValidation;
 
 namespace BeautyGo.Domain.Entities.Users;
 
-public class UserEmailTokenValidation : BeautyGoEmailTokenValidation
+public class UserEmailTokenValidation : EmailTokenValidation
 {
     public Guid UserId { get; set; }
     public User User { get; set; }
@@ -10,17 +11,21 @@ public class UserEmailTokenValidation : BeautyGoEmailTokenValidation
     public override async Task Handle(IEntityValidationTokenHandle visitor) =>
         await visitor.Handle(this);
 
-    public static UserEmailTokenValidation Create(DateTime expireAt, Guid userId)
+    public static UserEmailTokenValidation Create(Guid userId, DateTime? expireAt = null)
     {
         var token = string.Concat(Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"));
 
-        return new UserEmailTokenValidation
+        var entity = new UserEmailTokenValidation
         {
             Token = token,
             CreatedAt = DateTime.Now,
-            ExpiresAt = expireAt,
+            ExpiresAt = expireAt ?? DateTime.Now.AddMinutes(10),
             UserId = userId,
             IsUsed = false
         };
+
+        entity.AddDomainEvent(new EmailValidationTokenCreatedEvent(entity));
+
+        return entity;
     }
 }

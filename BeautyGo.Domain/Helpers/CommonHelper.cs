@@ -15,11 +15,13 @@ public partial class CommonHelper
     private const string CPF_EXPRESSION = @"\d{11}";
     private const string CNPJ_EXPRESSION = @"(^\d{2}.\d{3}.\d{3}/\d{4}-\d{2}$)";
     private const string CEP_EXPRESSION = @"^\d{8}$";
+    private const string PHONE_EXPRESSION = @"^\d{10,11}$";
 
     private static readonly Regex _emailRegex;
     private static readonly Regex _cpfRegex;
     private static readonly Regex _cnpjRegex;
     private static readonly Regex _cepRegex;
+    private static readonly Regex _phoneRegex;
 
     #endregion
 
@@ -31,6 +33,7 @@ public partial class CommonHelper
         _cpfRegex = new Regex(CPF_EXPRESSION, RegexOptions.IgnoreCase);
         _cnpjRegex = new Regex(CNPJ_EXPRESSION, RegexOptions.IgnoreCase);
         _cepRegex = new Regex(CEP_EXPRESSION, RegexOptions.IgnoreCase);
+        _phoneRegex = new Regex(PHONE_EXPRESSION, RegexOptions.IgnoreCase);
     }
 
     #endregion
@@ -96,6 +99,12 @@ public partial class CommonHelper
             return string.Empty;
 
         return value.Replace(" ", string.Empty);
+    }
+
+    public static bool IsValidPhoneNumber(string phoneNumber)
+    {
+        EnsureNotNull(phoneNumber);
+        return _phoneRegex.IsMatch(Regex.Replace(phoneNumber, @"\D", ""));
     }
 
     public static bool IsValidCpf(string cpf)

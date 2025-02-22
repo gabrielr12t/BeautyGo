@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BeautyGo.Persistence.Configurations;
 
-internal class BeautyGoEmailTokenConfiguration : BaseEntityConfiguration<BeautyGoEmailTokenValidation>
+internal class BeautyGoEmailTokenConfiguration : BaseEntityConfiguration<EmailTokenValidation>
 {
-    public override void Configure(EntityTypeBuilder<BeautyGoEmailTokenValidation> builder)
+    public override void Configure(EntityTypeBuilder<EmailTokenValidation> builder)
     {
         base.Configure(builder);
 

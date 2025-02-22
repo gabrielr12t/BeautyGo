@@ -13,8 +13,6 @@ internal class PublishIntegrationEventOnUserConfirmedEmailEventHandler : IDomain
 
     public async Task Handle(UserConfirmEmailDomainEvent notification, CancellationToken cancellationToken)
     {
-        _integrationEventPublisher.Publish(new UserConfirmedEmailIntegrationEvent(notification.User));
-
-        await Task.CompletedTask;
+        await _integrationEventPublisher.PublishAsync(new UserConfirmedEmailIntegrationEvent(notification.User));
     }
 }

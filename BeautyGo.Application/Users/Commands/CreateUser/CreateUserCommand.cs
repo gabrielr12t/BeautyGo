@@ -1,4 +1,5 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Messaging;
+using BeautyGo.Contracts.Users;
 using BeautyGo.Domain.Core.Primitives.Results;
 
 namespace BeautyGo.Application.Users.Commands.CreateUser;
@@ -8,4 +9,6 @@ public record CreateUserCommand(
     string LastName, 
     string Email, 
     string Password, 
-    string CPF) : ICommand<Result>;
+    string CPF,
+    string Phone,
+    UserTypeEnum UserType) : ICommand<Result<CreateUserResponse>>;

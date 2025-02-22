@@ -2,7 +2,7 @@
 
 namespace BeautyGo.Domain.Entities;
 
-public abstract class BeautyGoEmailTokenValidation : BaseEntity
+public abstract class EmailTokenValidation : BaseEntity
 {
     public string Token { get; set; }
 

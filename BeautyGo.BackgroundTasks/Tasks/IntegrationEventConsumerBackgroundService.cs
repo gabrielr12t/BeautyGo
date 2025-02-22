@@ -36,7 +36,7 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
-        ConfigureQueueWithRetry(messageBrokerSettings.QueueName, "retry_queue", "dlx_exchange");
+        ConfigureQueueWithRetry(messageBrokerSettings.QueueName, "beauty_go_retry_queue", "dlx_exchange");
         StartConsumer(messageBrokerSettings.QueueName);
     }
 
@@ -88,30 +88,36 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         string body = Encoding.UTF8.GetString(eventArgs.Body.Span);
+        Message message = null;
 
         try
         {
-            var integrationEvent = DeserializeIntegrationEvent(body);
+            message = DeserializeIntegrationEvent(body);
 
-            await ProcessIntegrationEventAsync(scope.ServiceProvider, integrationEvent);
+            await logger.InformationAsync($"MESSAGE: {message.Id} - Received - {message}");
 
-            // Acknowledge mensagem processada com sucesso
+            await ProcessIntegrationEventAsync(scope.ServiceProvider, message.IntegrationEvent);
+
             _channel.BasicAck(eventArgs.DeliveryTag, false);
+
+            await logger.InformationAsync($"MESSAGE: {message.Id} - Processed - {message}");
         }
         catch (Exception ex)
         {
             // Log do erro
-            await logger.ErrorAsync($"Erro ao processar evento. Tentando retry. Erro: {ex.Message}", ex);
+            await logger.ErrorAsync($"MESSAGE: {message?.Id} - Error - {ex.Message} -{message}", ex);
 
             // Adiciona no retry com atraso exponencial
-            ScheduleRetry(eventArgs);
-
+            await ScheduleRetryAsync(eventArgs, message);
+        }
+        finally
+        {
             // Salva alterações se necessário
             await unitOfWork.SaveChangesAsync();
         }
     }
 
-    private void ScheduleRetry(BasicDeliverEventArgs eventArgs)
+    private async Task ScheduleRetryAsync(BasicDeliverEventArgs eventArgs, Message message)
     {
         const int maxRetryAttempts = 5;
 
@@ -126,6 +132,12 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
             _channel.BasicReject(eventArgs.DeliveryTag, false);
             return;
         }
+
+        using var scope = _serviceProvider.CreateScope();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        await logger.InformationAsync($"MESSAGE: {message?.Id} - Retrying {retryCount} - {message}");
 
         // Calcula o delay exponencial
         var delay = (int)Math.Pow(3, retryCount) * 1000; // 2^retryCount segundos
@@ -146,11 +158,11 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
             body: eventArgs.Body);
     }
 
-    private IIntegrationEvent DeserializeIntegrationEvent(string body)
+    private Message DeserializeIntegrationEvent(string body)
     {
-        return JsonConvert.DeserializeObject<IIntegrationEvent>(body, new JsonSerializerSettings
+        return JsonConvert.DeserializeObject<Message>(body, new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.All
         }) ?? throw new InvalidOperationException($"Falha ao desserializar evento: {body}");
     }
 

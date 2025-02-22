@@ -18,14 +18,14 @@ using BeautyGo.Domain.Settings;
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.EntityEmailValidationTokens.EntityValidationTokenCreated;
 
 internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler :
-    IIntegrationEventHandler<EntityEmailValidationTokenCreatedIntegrationEvent>,
+    IIntegrationEventHandler<EmailValidationTokenCreatedIntegrationEvent>,
     IEntityValidationTokenHandle
 {
     #region Fields
 
     private readonly IBaseRepository<UserEmailTokenValidation> _userEmailTokenValidationRepository;
     private readonly IBaseRepository<BeautyBusinessEmailTokenValidation> _businessEmailTokenValidationRepository;
-    private readonly IBaseRepository<BeautyGoEmailTokenValidation> _emailValidationTokenRepository;
+    private readonly IBaseRepository<EmailTokenValidation> _emailValidationTokenRepository;
 
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
     private readonly IEmailNotificationService _emailNotificationService;
@@ -39,7 +39,7 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
     public SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler(
         IBaseRepository<UserEmailTokenValidation> userEmailTokenValidationRepository,
         IBaseRepository<BeautyBusinessEmailTokenValidation> businessEmailTokenValidationRepository,
-        IBaseRepository<BeautyGoEmailTokenValidation> emailValidationTokenRepository,
+        IBaseRepository<EmailTokenValidation> emailValidationTokenRepository,
         IReceitaFederalIntegrationService receitaFederalIntegration,
         IEmailNotificationService emailNotificationService,
         IUnitOfWork unitOfWork,
@@ -56,9 +56,9 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
     #endregion
 
-    public async Task Handle(EntityEmailValidationTokenCreatedIntegrationEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(EmailValidationTokenCreatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        var spec = new EntityByIdSpecification<BeautyGoEmailTokenValidation>(
+        var spec = new EntityByIdSpecification<EmailTokenValidation>(
             notification.BeautyGoEmailTokenId);
 
         var emailTokenValidation = await _emailValidationTokenRepository.GetFirstOrDefaultAsync(

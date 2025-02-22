@@ -33,8 +33,8 @@ internal class UserEmailTokenConfiguration : BaseEntityConfiguration<UserEmailTo
         builder.HasIndex(e => e.UserId);
 
         builder.HasOne(p => p.User)
-            .WithMany()
+            .WithMany(p => p.ValidationTokens)
             .HasForeignKey(p => p.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

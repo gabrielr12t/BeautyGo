@@ -4,5 +4,5 @@ namespace BeautyGo.Domain.Entities;
 
 public interface IEmailValidationToken : IDomainEvent
 {
-    BeautyGoEmailTokenValidation CreateEmailValidationToken();
+    EmailTokenValidation CreateEmailValidationToken();
 }

@@ -58,9 +58,7 @@ internal class CreateBeautyBusinessCommandHandler : ICommandHandler<CreateBeauty
         if (!_receitaFederalIntegration.IsValidCnpjStatus(cnpjReceitaFederalResponse.Value.Status, cnpjReceitaFederalResponse.Value.Situacao))
             return Result.Failure(DomainErrors.Business.CnpjRestricted);
 
-        var VerifyCompanyNameSimilarity = CommonHelper.CheckProximityWithThreshold(
-            cnpjReceitaFederalResponse.Value.Nome.ToUpper(),
-            request.Name.ToUpper(), 0.8);
+        var VerifyCompanyNameSimilarity = CommonHelper.CheckProximityWithThreshold(cnpjReceitaFederalResponse.Value.Nome.ToUpper(), request.Name.ToUpper(), 0.8);
         if (!VerifyCompanyNameSimilarity)
             return Result.Failure(DomainErrors.Business.CnpjNameInvalid);
 

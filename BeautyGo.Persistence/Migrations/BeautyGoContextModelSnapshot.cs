@@ -220,38 +220,6 @@ namespace BeautyGo.Persistence.Migrations
                     b.ToTable("AuditEntries", (string)null);
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.BeautyGoEmailTokenValidation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsUsed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable((string)null);
-
-                    b.UseTpcMappingStrategy();
-                });
-
             modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusiness", b =>
                 {
                     b.Property<Guid>("Id")
@@ -310,6 +278,9 @@ namespace BeautyGo.Persistence.Migrations
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("Processed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Url")
                         .HasMaxLength(500)
@@ -521,6 +492,38 @@ namespace BeautyGo.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Addresses", "Common");
+                });
+
+            modelBuilder.Entity("BeautyGo.Domain.Entities.EmailTokenValidation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUsed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable((string)null);
+
+                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Logging.Log", b =>
@@ -801,6 +804,9 @@ namespace BeautyGo.Persistence.Migrations
                     b.Property<bool>("MustChangePassword")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("ShippingAddressId")
                         .HasColumnType("uniqueidentifier");
 
@@ -922,7 +928,7 @@ namespace BeautyGo.Persistence.Migrations
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusinessEmailTokenValidation", b =>
                 {
-                    b.HasBaseType("BeautyGo.Domain.Entities.BeautyGoEmailTokenValidation");
+                    b.HasBaseType("BeautyGo.Domain.Entities.EmailTokenValidation");
 
                     b.Property<Guid>("BusinessId")
                         .HasColumnType("uniqueidentifier");
@@ -937,7 +943,7 @@ namespace BeautyGo.Persistence.Migrations
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserEmailTokenValidation", b =>
                 {
-                    b.HasBaseType("BeautyGo.Domain.Entities.BeautyGoEmailTokenValidation");
+                    b.HasBaseType("BeautyGo.Domain.Entities.EmailTokenValidation");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -1239,9 +1245,9 @@ namespace BeautyGo.Persistence.Migrations
             modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusinessEmailTokenValidation", b =>
                 {
                     b.HasOne("BeautyGo.Domain.Entities.Business.BeautyBusiness", "Business")
-                        .WithMany()
+                        .WithMany("ValidationTokens")
                         .HasForeignKey("BusinessId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Business");
@@ -1250,9 +1256,9 @@ namespace BeautyGo.Persistence.Migrations
             modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserEmailTokenValidation", b =>
                 {
                     b.HasOne("BeautyGo.Domain.Entities.Users.User", "User")
-                        .WithMany()
+                        .WithMany("ValidationTokens")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1302,6 +1308,8 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("Professionals");
 
                     b.Navigation("Services");
+
+                    b.Navigation("ValidationTokens");
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Business.Service", b =>
@@ -1323,6 +1331,8 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("Passwords");
 
                     b.Navigation("UserRoles");
+
+                    b.Navigation("ValidationTokens");
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserRole", b =>

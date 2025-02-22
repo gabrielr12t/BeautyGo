@@ -1,8 +1,9 @@
 ﻿
-using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 using BeautyGo.Application.Core.Abstractions.Messaging;
+using BeautyGo.Domain.Core.Exceptions;
+using FluentValidation;
 
 namespace BeautyGo.Application.Core.Behaviours;
  
@@ -32,7 +33,7 @@ internal sealed class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavi
 
         if (failures.Count != 0)
         {
-            throw new ValidationException(failures);
+            throw new CustomValidationException(failures);
         }
 
         return await next();

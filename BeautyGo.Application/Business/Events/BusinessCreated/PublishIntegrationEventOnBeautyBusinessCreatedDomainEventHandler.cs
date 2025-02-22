@@ -13,8 +13,6 @@ internal class PublishIntegrationEventOnBeautyBusinessCreatedDomainEventHandler 
 
     public async Task Handle(EntityInsertedEvent<BeautyBusiness> notification, CancellationToken cancellationToken)
     {
-        _integrationEventPublisher.Publish(new BeautyBusinessCreatedIntegrationEvent(notification.Entity));
-
-        await Task.CompletedTask;
+        await _integrationEventPublisher.PublishAsync(new BeautyBusinessCreatedIntegrationEvent(notification.Entity));
     }
 }

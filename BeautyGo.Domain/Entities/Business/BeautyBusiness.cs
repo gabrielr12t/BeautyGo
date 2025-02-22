@@ -15,6 +15,7 @@ public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity
         Pictures = new List<BeautyBusinessPicture>();
         Professionals = new List<Professional>();
         BusinessWorkingHours = new List<BusinessWorkingHours>();
+        ValidationTokens = new List<BeautyBusinessEmailTokenValidation>();
     }
 
     public string Name { get; set; }
@@ -43,6 +44,8 @@ public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity
 
     public bool EmailConfirmed { get; set; }
 
+    public bool Processed { get; set; }
+
     public Guid CreatedId { get; set; }
     public User Created { get; set; }
 
@@ -53,6 +56,7 @@ public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity
     public ICollection<Professional> Professionals { get; set; }
     public ICollection<Service> Services { get; set; }
     public ICollection<BusinessWorkingHours> BusinessWorkingHours { get; set; }
+    public ICollection<BeautyBusinessEmailTokenValidation> ValidationTokens { get; set; }
 
     #region Methods
 
@@ -67,10 +71,11 @@ public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity
             CreatedId = ownerId,
             IsActive = false,
             EmailConfirmed = false,
-            AddressId = addressId
+            AddressId = addressId,
+            Processed = false
         };
 
-        business.AddDomainEvent(new EntityEmailValidationTokenCreatedEvent(business));
+        //business.AddDomainEvent(new EntityEmailValidationTokenCreatedEvent(business));
 
         return business;
     } 
@@ -91,7 +96,7 @@ public class BeautyBusiness : BaseEntity, IAuditableEntity, ISoftDeletableEntity
     public void AddPicture(Picture picture) =>
         Pictures.Add(new BeautyBusinessPicture { BeautyBusinessId = Id, PictureId = Id });
 
-    public BeautyGoEmailTokenValidation CreateEmailValidationToken()
+    public EmailTokenValidation CreateEmailValidationToken()
     {
         var token = string.Concat(Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"));
 

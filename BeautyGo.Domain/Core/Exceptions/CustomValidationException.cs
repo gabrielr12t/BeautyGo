@@ -3,9 +3,9 @@ using FluentValidation.Results;
 
 namespace BeautyGo.Domain.Core.Exceptions;
 
-public sealed class ValidationException : Exception
+public sealed class CustomValidationException : Exception
 {
-    public ValidationException(IEnumerable<ValidationFailure> failures)
+    public CustomValidationException(IEnumerable<ValidationFailure> failures)
         : base("One or more validation failures has occurred.") =>
         Errors = failures
             .Distinct()

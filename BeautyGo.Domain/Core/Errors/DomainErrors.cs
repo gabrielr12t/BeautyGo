@@ -100,6 +100,10 @@ public static class DomainErrors
            "User.InvalidEmail",
            "E-mail inválido.");
 
+        public static Error InvalidPhoneNumber => new(
+           "User.InvalidPhoneNumber",
+           "Número de telefone inválido.");
+
         public static Error InvalidCPF => new(
           "User.InvalidEmail",
           "CPF inválido.");
@@ -111,6 +115,10 @@ public static class DomainErrors
         public static Error EmailAlreadyExists => new(
             "User.EmailAlreadyExists",
             "E-mail já cadastrado.");
+
+        public static Error PhoneNumberAlreadyExists => new(
+            "User.PhoneNumberAlreadyExists",
+            "Telefone já cadastrado.");
     }
 
     public static class Authentication
@@ -140,7 +148,7 @@ public static class DomainErrors
 
         public static Error CnpjNameInvalid => new(
             "Business.CnpjNameInvalid",
-            "Nome inválido para o Cnpj.");
+            "Nome inválido para o Cnpj informado.");
 
         public static Error NoImageUploaded => new(
             "Business.NoImageUploaded",

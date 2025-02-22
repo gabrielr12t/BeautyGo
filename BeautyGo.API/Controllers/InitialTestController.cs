@@ -48,7 +48,7 @@ public class InitialTestController : BaseController
     public async Task<IActionResult> cadastrar()
     {
         var usuario = new CreateUserCommand("Gabriel", "Santos",
-            "gabriel_ps15@hotmail.com", "rua12team", "43660600865");
+            "gabriel_ps15@hotmail.com", "rua12team", "43660600865", "11994492428", Contracts.Users.UserTypeEnum.Professional);
 
         return Ok(await mediator.Send(usuario));
     }

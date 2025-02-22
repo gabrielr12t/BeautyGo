@@ -14,7 +14,7 @@ public static class DependencyInjection
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
-        services.Configure<BackgroundTaskSettings>(p => new BackgroundTaskSettings());
+        services.Configure<BackgroundTaskSettings>(configuration.GetSection(BackgroundTaskSettings.SettingsKey));
 
         services.AddHostedService<EmailNotificationConsumerBackgroundService>();
         services.AddHostedService<IntegrationEventConsumerBackgroundService>();

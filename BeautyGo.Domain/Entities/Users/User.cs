@@ -1,5 +1,6 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.DomainEvents.Users;
+using BeautyGo.Domain.Patterns.Visitor.Users;
 
 namespace BeautyGo.Domain.Entities.Users;
 
@@ -10,6 +11,17 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         UserRoles = new HashSet<UserRoleMapping>();
         Passwords = new List<UserPassword>();
         Addresses = new List<UserAddressMapping>();
+        ValidationTokens = new List<UserEmailTokenValidation>();
+
+        AddDomainEvent(new UserCreatedDomainEvent(this));
+    }
+
+    public User(string firstName, string lastName, string email, string phoneNumber) : this()
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        PhoneNumber = phoneNumber;
     }
 
     public string FirstName { get; set; }
@@ -34,6 +46,8 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
 
     public string Cpf { get; set; }
 
+    public string PhoneNumber { get; set; }
+
     public bool IsActive { get; set; }
 
     public bool MustChangePassword { get; set; }
@@ -45,10 +59,18 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     public ICollection<UserRoleMapping> UserRoles { get; set; }
 
     public ICollection<UserAddressMapping> Addresses { get; set; }
-     
+
     public ICollection<UserPassword> Passwords { get; set; }
+    public ICollection<UserEmailTokenValidation> ValidationTokens { get; set; }
 
     #region Methods
+
+    public abstract Task HandleUserRoleAccept(IUserRoleHandlerVisitor visitor);
+
+    public void ActivateUser()
+    {
+        IsActive = true;
+    }
 
     public void ChangeName(string firstName, string lastName)
     {
@@ -69,7 +91,7 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         $"{FirstName} {LastName}";
 
     public UserPassword GetCurrentPassword() =>
-        Passwords.OrderByDescending(p => p.CreatedOn).FirstOrDefault();
+        Passwords.MaxBy(p => p.CreatedOn);
 
     public bool HasRole(UserRole role) =>
         UserRoles.Any(p => p.UserRole == role);
@@ -80,27 +102,10 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     public void AddUserPassword(string password, string salt) =>
         Passwords.Add(new UserPassword { User = this, Password = password, Salt = salt });
 
-    //public abstract User Create(string firstName, string lastName, string email, string cpf);
+    public void AddValidationToken() =>
+        ValidationTokens.Add(UserEmailTokenValidation.Create(Id));
 
-    //public static User CreateCustomer(string firstName, string lastName, string email, string cpf)
-    //{
-    //    var user = new User
-    //    {
-    //        FirstName = firstName,
-    //        LastName = lastName,
-    //        Email = email,
-    //        Cpf = cpf,
-    //        IsActive = false,
-    //        EmailConfirmed = false,
-    //        CreatedOn = DateTime.Now,
-    //    };
-
-    //    user.AddDomainEvent(new EntityEmailValidationTokenCreatedEvent(user));
-
-    //    return user;
-    //}
-
-    public BeautyGoEmailTokenValidation CreateEmailValidationToken()
+    public EmailTokenValidation CreateEmailValidationToken()
     {
         var token = string.Concat(Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"));
 

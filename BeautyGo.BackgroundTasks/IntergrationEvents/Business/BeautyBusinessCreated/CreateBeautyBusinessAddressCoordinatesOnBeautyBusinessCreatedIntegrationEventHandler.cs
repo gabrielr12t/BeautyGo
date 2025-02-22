@@ -1,11 +1,11 @@
-﻿using BeautyGo.Application.Core.Abstractions.Data;
+﻿using BeautyGo.Application.Business.Events.BusinessCreated;
+using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Integrations;
-using BeautyGo.Application.Business.Events.BusinessCreated;
 using BeautyGo.BackgroundTasks.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
-using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Entities.Business;
+using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories;
 
@@ -42,7 +42,7 @@ internal class CreateBeautyBusinessAddressCoordinatesOnBeautyBusinessCreatedInte
     public async Task Handle(BeautyBusinessCreatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
         var business = await _businessRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<Domain.Entities.Business.BeautyBusiness>(notification.BusinessId).AddInclude(
+            new EntityByIdSpecification<BeautyBusiness>(notification.BusinessId).AddInclude(
                 p => p.Address), cancellationToken: cancellationToken);
 
         if (business is null)

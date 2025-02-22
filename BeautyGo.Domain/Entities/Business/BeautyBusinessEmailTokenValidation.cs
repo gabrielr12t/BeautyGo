@@ -2,7 +2,7 @@
 
 namespace BeautyGo.Domain.Entities.Business;
 
-public class BeautyBusinessEmailTokenValidation : BeautyGoEmailTokenValidation
+public class BeautyBusinessEmailTokenValidation : EmailTokenValidation
 {
     public Guid BusinessId { get; set; }
     public BeautyBusiness Business { get; set; }

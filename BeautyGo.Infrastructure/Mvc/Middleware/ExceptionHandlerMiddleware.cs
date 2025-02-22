@@ -35,7 +35,7 @@ public class ExceptionHandlerMiddleware
     private static (HttpStatusCode httpStatusCode, IReadOnlyCollection<Error>) GetHttpStatusCodeAndErrors(Exception exception) =>
         exception switch
         {
-            ValidationException validationException => (HttpStatusCode.BadRequest, validationException.Errors),
+            CustomValidationException validationException => (HttpStatusCode.BadRequest, validationException.Errors),
             DomainException domainException => (HttpStatusCode.BadRequest, new[] { domainException.Error }),
             HttpIntegrationException httpIntegrationException => (HttpStatusCode.BadRequest, httpIntegrationException.Errors),
             _ => (HttpStatusCode.InternalServerError, new[] { DomainErrors.General.ServerError })
