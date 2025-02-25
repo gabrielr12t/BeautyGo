@@ -1,4 +1,4 @@
-﻿namespace BeautyGo.Infrasctructure.Services.Authentication;
+﻿namespace BeautyGo.Infrastructure.Services.Authentication;
 
 public static partial class BeautyGoAuthenticationDefaults
 {

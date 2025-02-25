@@ -1,6 +1,6 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Security;
 
-namespace BeautyGo.Infrasctructure.Services.Security
+namespace BeautyGo.Infrastructure.Services.Security
 {
     internal class EnvironmentVariableService : IEnvironmentVariableService
     {

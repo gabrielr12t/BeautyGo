@@ -7,7 +7,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using System.Net;
 
-namespace BeautyGo.Infrasctructure.Services.Web;
+namespace BeautyGo.Infrastructure.Services.Web;
 
 public class WebHelper : IWebHelper
 {

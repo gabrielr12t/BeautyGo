@@ -2,10 +2,10 @@
 using BeautyGo.Domain.Common.Defaults;
 using System.Security.Cryptography;
 
-namespace BeautyGo.Infrasctructure.Services.Installation;
+namespace BeautyGo.Infrastructure.Services.Installation;
 
 internal class InstallationService : IInstallationService
-{ 
+{
     private IEncryptionService _encryptionService;
 
     public InstallationService(IEncryptionService encryptionService)

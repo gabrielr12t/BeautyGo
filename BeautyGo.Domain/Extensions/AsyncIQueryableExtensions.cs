@@ -214,10 +214,10 @@ public static class AsyncIQueryableExtensions
             : AsyncExtensions.ToDictionaryAsync(source, keySelector, comparer);
     }
 
-    public static Task<List<TSource>> ToListAsync<TSource>(this IQueryable<TSource> source)
-    {
-        return AsyncExtensions.ToListAsync(source);
-    }
+    //public static Task<List<TSource>> ToListAsync<TSource>(this IQueryable<TSource> source)
+    //{
+    //    return AsyncExtensions.ToListAsync(source);
+    //}
 
     public static async Task<IPagedList<T>> ToPagedListAsync<T>(this IQueryable<T> source, int pageIndex, int pageSize, bool getOnlyTotalCount = false)
     {

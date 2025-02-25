@@ -20,7 +20,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace BeautyGo.Infrasctructure.Services.Authentication;
+namespace BeautyGo.Infrastructure.Services.Authentication;
 
 public class AuthService : IAuthService
 {

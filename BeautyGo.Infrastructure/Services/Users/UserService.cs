@@ -1,6 +1,6 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Users;
 
-namespace BeautyGo.Infrasctructure.Services.Users;
+namespace BeautyGo.Infrastructure.Services.Users;
 
 public class UserService : IUserService
 {

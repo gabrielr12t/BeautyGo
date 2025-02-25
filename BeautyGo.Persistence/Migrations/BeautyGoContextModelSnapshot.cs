@@ -220,7 +220,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.ToTable("AuditEntries", (string)null);
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusiness", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.Business", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -242,12 +242,15 @@ namespace BeautyGo.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Deleted")
+                    b.Property<DateTime?>("Deleted")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("DocumentValidated")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -279,9 +282,6 @@ namespace BeautyGo.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<bool>("Processed")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Url")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -307,10 +307,10 @@ namespace BeautyGo.Persistence.Migrations
                         .IsUnique()
                         .HasFilter("[Url] IS NOT NULL");
 
-                    b.ToTable("BeautyBusiness", "Business");
+                    b.ToTable("Business", "Businesses");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusinessPicture", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessPicture", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -335,10 +335,10 @@ namespace BeautyGo.Persistence.Migrations
                     b.HasIndex("BeautyBusinessId", "PictureId")
                         .IsUnique();
 
-                    b.ToTable("BeautyBusinessPicturies", "Business");
+                    b.ToTable("BeautyBusinessPicturies", "Businesses");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BusinessWorkingHours", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessWorkingHours", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -366,7 +366,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.ToTable("BusinessWorkingHours", "AvailableHours");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.Service", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.Service", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -397,10 +397,10 @@ namespace BeautyGo.Persistence.Migrations
 
                     b.HasIndex("BeautyBusinessId");
 
-                    b.ToTable("Services", "Business");
+                    b.ToTable("Services", "Businesses");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.ServicePicture", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.ServicePicture", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -524,6 +524,63 @@ namespace BeautyGo.Persistence.Migrations
                     b.ToTable((string)null);
 
                     b.UseTpcMappingStrategy();
+                });
+
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Events.Event", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EventSource")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Executed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Schedule")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Event", "Events");
+                });
+
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Events.EventError", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Event", "EventErrors");
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Logging.Log", b =>
@@ -926,7 +983,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.ToTable("UserRolesMapping", "User");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusinessEmailTokenValidation", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessEmailTokenValidation", b =>
                 {
                     b.HasBaseType("BeautyGo.Domain.Entities.EmailTokenValidation");
 
@@ -938,7 +995,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.HasIndex("Token")
                         .IsUnique();
 
-                    b.ToTable("EmailTokens", "Business");
+                    b.ToTable("EmailTokens", "Businesses");
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserEmailTokenValidation", b =>
@@ -1002,7 +1059,7 @@ namespace BeautyGo.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeautyGo.Domain.Entities.Business.Service", "Service")
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Service", "Service")
                         .WithMany()
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1065,7 +1122,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("ModifiedBy");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusiness", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.Business", b =>
                 {
                     b.HasOne("BeautyGo.Domain.Entities.Common.Address", "Address")
                         .WithMany()
@@ -1084,9 +1141,9 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("Created");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusinessPicture", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessPicture", b =>
                 {
-                    b.HasOne("BeautyGo.Domain.Entities.Business.BeautyBusiness", "BeautyBusiness")
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Business", "BeautyBusiness")
                         .WithMany("Pictures")
                         .HasForeignKey("BeautyBusinessId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1103,9 +1160,9 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("Picture");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BusinessWorkingHours", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessWorkingHours", b =>
                 {
-                    b.HasOne("BeautyGo.Domain.Entities.Business.BeautyBusiness", "BeautyBusiness")
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Business", "BeautyBusiness")
                         .WithMany("BusinessWorkingHours")
                         .HasForeignKey("BeautyBusinessId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1114,9 +1171,9 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("BeautyBusiness");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.Service", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.Service", b =>
                 {
-                    b.HasOne("BeautyGo.Domain.Entities.Business.BeautyBusiness", "BeautyBusiness")
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Business", "BeautyBusiness")
                         .WithMany("Services")
                         .HasForeignKey("BeautyBusinessId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1125,7 +1182,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("BeautyBusiness");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.ServicePicture", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.ServicePicture", b =>
                 {
                     b.HasOne("BeautyGo.Domain.Entities.Media.Picture", "Picture")
                         .WithMany()
@@ -1133,19 +1190,30 @@ namespace BeautyGo.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeautyGo.Domain.Entities.Business.Service", null)
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Service", null)
                         .WithMany("Pictures")
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeautyGo.Domain.Entities.Business.Service", "Service")
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Service", "Service")
                         .WithMany()
                         .HasForeignKey("ServiceId1");
 
                     b.Navigation("Picture");
 
                     b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Events.EventError", b =>
+                {
+                    b.HasOne("BeautyGo.Domain.Entities.Events.Event", "Event")
+                        .WithMany("EventErrors")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Media.PictureBinary", b =>
@@ -1178,13 +1246,13 @@ namespace BeautyGo.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeautyGo.Domain.Entities.Business.Service", "Service")
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Service", "Service")
                         .WithMany()
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BeautyGo.Domain.Entities.Business.Service", null)
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Service", null)
                         .WithMany("Profissionals")
                         .HasForeignKey("ServiceId1");
 
@@ -1242,9 +1310,9 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("UserRole");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusinessEmailTokenValidation", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessEmailTokenValidation", b =>
                 {
-                    b.HasOne("BeautyGo.Domain.Entities.Business.BeautyBusiness", "Business")
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Business", "Business")
                         .WithMany("ValidationTokens")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1275,7 +1343,7 @@ namespace BeautyGo.Persistence.Migrations
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Professionals.Professional", b =>
                 {
-                    b.HasOne("BeautyGo.Domain.Entities.Business.BeautyBusiness", "Business")
+                    b.HasOne("BeautyGo.Domain.Entities.Businesses.Business", "Business")
                         .WithMany("Professionals")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1299,7 +1367,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("WaitingLists");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.BeautyBusiness", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.Business", b =>
                 {
                     b.Navigation("BusinessWorkingHours");
 
@@ -1312,11 +1380,16 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("ValidationTokens");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Business.Service", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.Service", b =>
                 {
                     b.Navigation("Pictures");
 
                     b.Navigation("Profissionals");
+                });
+
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Events.Event", b =>
+                {
+                    b.Navigation("EventErrors");
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Media.Picture", b =>

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 
-namespace BeautyGo.Infrasctructure.Services.Cryptography;
+namespace BeautyGo.Infrastructure.Services.Cryptography;
 
 internal sealed class PasswordHasher : IPasswordHasher, IPasswordHashChecker, IDisposable
 {

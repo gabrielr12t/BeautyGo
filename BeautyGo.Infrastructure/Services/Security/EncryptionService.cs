@@ -5,11 +5,11 @@ using BeautyGo.Domain.Settings;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace BeautyGo.Infrasctructure.Services.Security;
+namespace BeautyGo.Infrastructure.Services.Security;
 
 public class EncryptionService : IEncryptionService
 {
-    protected readonly AppSettings _appSettings; 
+    protected readonly AppSettings _appSettings;
 
     public EncryptionService(AppSettings appSettings)
     {

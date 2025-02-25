@@ -9,7 +9,7 @@ using BeautyGo.Domain.Common.Defaults;
 using BeautyGo.Domain.Helpers;
 using System;
 
-namespace BeautyGo.Infrasctructure.Services.Web
+namespace BeautyGo.Infrastructure.Services.Web
 {
     internal class WebWorkContext : IWebWorkContext
     {

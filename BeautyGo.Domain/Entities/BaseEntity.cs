@@ -9,6 +9,7 @@ public abstract class BaseEntity : IEquatable<BaseEntity>
     public DateTime CreatedOn { get; set; }
 
     private readonly List<IDomainEvent> _domainEvents = new();
+
     public IReadOnlyCollection<IDomainEvent> DomainEvents =>
         _domainEvents.AsReadOnly();
 

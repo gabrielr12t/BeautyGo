@@ -1,4 +1,5 @@
 ﻿using BeautyGo.BackgroundTasks.Services.Emails;
+using BeautyGo.BackgroundTasks.Services.Events;
 using BeautyGo.BackgroundTasks.Services.Integrations;
 using BeautyGo.BackgroundTasks.Settings;
 using BeautyGo.BackgroundTasks.Tasks;
@@ -18,9 +19,11 @@ public static class DependencyInjection
 
         services.AddHostedService<EmailNotificationConsumerBackgroundService>();
         services.AddHostedService<IntegrationEventConsumerBackgroundService>();
+        services.AddHostedService<EventNotificationProducerBackgroundService>();
 
         services.AddScoped<IEmailNotificationsConsumer, EmailNotificationsConsumer>();
         services.AddScoped<IIntegrationEventConsumer, IntegrationEventConsumer>();
+        services.AddScoped<IEventNotificationProducer, EventNotificationProducer>();
 
         return services;
     }

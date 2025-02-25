@@ -30,6 +30,8 @@ public static class DependencyInjection
         services.AddDbContext<BeautyGoContext>((sp, options) =>
                 options
                     .UseSqlServer(connectionSettings.Value)
+                    .EnableSensitiveDataLogging()
+                    .EnableThreadSafetyChecks()
                     .AddInterceptors(
                         sp.GetRequiredService<AuditableEntitySaveChangesInterceptor>(),
                         sp.GetRequiredService<DispatchDomainEventInterceptor>(),

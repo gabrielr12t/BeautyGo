@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace BeautyGo.Infrasctructure.Services.Authentication.Events;
+namespace BeautyGo.Infrastructure.Services.Authentication.Events;
 
 public class AuthBearerEvents : JwtBearerEvents
 {
@@ -52,7 +52,7 @@ public class AuthBearerEvents : JwtBearerEvents
     }
 
     public override async Task Challenge(JwtBearerChallengeContext context)
-    { 
+    {
         await _logger.WarningAsync($"Authentication Challenge: {context.Error}");
 
         await _unitOfWork.SaveChangesAsync();

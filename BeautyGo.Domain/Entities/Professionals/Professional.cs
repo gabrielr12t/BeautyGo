@@ -1,5 +1,4 @@
 ﻿using BeautyGo.Domain.Entities.Appointments;
-using BeautyGo.Domain.Entities.Business;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Visitor.Users;
 
@@ -16,7 +15,7 @@ public class Professional : User
     }
 
     public Guid BusinessId { get; set; }
-    public BeautyBusiness Business { get; set; }
+    public Businesses.Business Business { get; set; }
 
     public ICollection<ProfessionalService> Services { get; set; }
     public ICollection<Appointment> Appointments { get; set; }

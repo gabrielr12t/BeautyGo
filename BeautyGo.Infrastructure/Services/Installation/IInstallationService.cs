@@ -1,4 +1,4 @@
-﻿namespace BeautyGo.Infrasctructure.Services.Installation
+﻿namespace BeautyGo.Infrastructure.Services.Installation
 {
     public interface IInstallationService
     {

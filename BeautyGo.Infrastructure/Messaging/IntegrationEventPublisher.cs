@@ -44,18 +44,18 @@ internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher, ID
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        var message = new Message(Ulid.NewUlid(), @event);
+        //var message = new Message(Ulid.NewUlid(), @event);
 
-        var payload = JsonConvert.SerializeObject(message, typeof(Message), new JsonSerializerSettings
+        var payload = JsonConvert.SerializeObject(@event, typeof(IIntegrationEvent), new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.All,
+            TypeNameHandling = TypeNameHandling.Auto,
         });
 
         var body = Encoding.UTF8.GetBytes(payload);
 
         _channel.BasicPublish(string.Empty, _messageBrokerSettings.QueueName, body: body);
 
-        await logger.InformationAsync($"MESSAGE: {message.Id} - Publishing - {message}");
+        await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Publishing - {@event}");
 
         await unitOfWork.SaveChangesAsync();
     }

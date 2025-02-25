@@ -3,7 +3,7 @@ using BeautyGo.Domain.Common.Defaults;
 using Microsoft.AspNetCore.Http;
 using System.Text;
 
-namespace BeautyGo.Infrasctructure.Services.Business
+namespace BeautyGo.Infrastructure.Services.Business
 {
     internal class BusinessContext : IBusinessContext
     {
@@ -13,7 +13,7 @@ namespace BeautyGo.Infrasctructure.Services.Business
         {
             _httpContextAccessor = httpContextAccessor;
         }
-         
+
         public Guid GetBusinessCode()
         {
             var businessCode = _httpContextAccessor.HttpContext?.Session.Get(BeautyGoSessionDefaults.BusinessCode);

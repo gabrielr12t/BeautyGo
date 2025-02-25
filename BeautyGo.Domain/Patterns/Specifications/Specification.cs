@@ -59,4 +59,10 @@ public abstract class Specification<T>
         ThenByExpression = thenByExpression;
         return this;
     }
+
+    public Specification<T> Size(int size)
+    {
+        Limit = size;
+        return this;
+    }
 }

@@ -88,27 +88,28 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         string body = Encoding.UTF8.GetString(eventArgs.Body.Span);
-        Message message = null;
+        IIntegrationEvent @event = null;
 
         try
         {
-            message = DeserializeIntegrationEvent(body);
+            @event = DeserializeIntegrationEvent(body);
 
-            await logger.InformationAsync($"MESSAGE: {message.Id} - Received - {message}");
+            //await logger.InformationAsync($"MESSAGE: {message.Id} - Received - {message}");
+            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Received - {@event}");
 
-            await ProcessIntegrationEventAsync(scope.ServiceProvider, message.IntegrationEvent);
+            await ProcessIntegrationEventAsync(scope.ServiceProvider, @event);
 
             _channel.BasicAck(eventArgs.DeliveryTag, false);
 
-            await logger.InformationAsync($"MESSAGE: {message.Id} - Processed - {message}");
+            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Processed - {@event}");
         }
         catch (Exception ex)
         {
             // Log do erro
-            await logger.ErrorAsync($"MESSAGE: {message?.Id} - Error - {ex.Message} -{message}", ex);
+            await logger.ErrorAsync($"MESSAGE: {@event.GetType()} - Error - {ex.Message} -{@event}", ex);
 
             // Adiciona no retry com atraso exponencial
-            await ScheduleRetryAsync(eventArgs, message);
+            await ScheduleRetryAsync(eventArgs, @event);
         }
         finally
         {
@@ -117,7 +118,7 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         }
     }
 
-    private async Task ScheduleRetryAsync(BasicDeliverEventArgs eventArgs, Message message)
+    private async Task ScheduleRetryAsync(BasicDeliverEventArgs eventArgs, IIntegrationEvent @event)
     {
         const int maxRetryAttempts = 5;
 
@@ -137,7 +138,7 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        await logger.InformationAsync($"MESSAGE: {message?.Id} - Retrying {retryCount} - {message}");
+        await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Retrying {retryCount} - {@event}");
 
         // Calcula o delay exponencial
         var delay = (int)Math.Pow(3, retryCount) * 1000; // 2^retryCount segundos
@@ -158,11 +159,11 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
             body: eventArgs.Body);
     }
 
-    private Message DeserializeIntegrationEvent(string body)
+    private IIntegrationEvent DeserializeIntegrationEvent(string body)
     {
-        return JsonConvert.DeserializeObject<Message>(body, new JsonSerializerSettings
+        return JsonConvert.DeserializeObject<IIntegrationEvent>(body, new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.All
+            TypeNameHandling = TypeNameHandling.Auto
         }) ?? throw new InvalidOperationException($"Falha ao desserializar evento: {body}");
     }
 

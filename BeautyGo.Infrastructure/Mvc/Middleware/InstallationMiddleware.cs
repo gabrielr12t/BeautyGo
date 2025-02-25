@@ -1,4 +1,4 @@
-﻿using BeautyGo.Infrasctructure.Services.Installation;
+﻿using BeautyGo.Infrastructure.Services.Installation;
 using Microsoft.AspNetCore.Http;
 
 namespace BeautyGo.Infrastructure.Mvc.Middleware;

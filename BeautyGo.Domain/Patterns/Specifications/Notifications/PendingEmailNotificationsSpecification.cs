@@ -7,8 +7,10 @@ namespace BeautyGo.Domain.Patterns.Specifications.Notifications
     {
         private readonly DateTime _date;
 
-        public PendingEmailNotificationsSpecification(DateTime date) =>
+        public PendingEmailNotificationsSpecification(DateTime date)
+        {
             _date = date;
+        }
 
         public override Expression<Func<EmailNotification, bool>> ToExpression() =>
             notification => !notification.IsSent

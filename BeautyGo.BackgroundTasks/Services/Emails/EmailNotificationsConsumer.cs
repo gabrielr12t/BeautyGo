@@ -23,15 +23,14 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
         _emailNotificationService = emailNotificationService;
     }
 
-    public async Task ConsumeAsync(
-        CancellationToken cancellationToken = default)
+    public async Task ConsumeAsync(int batchSize, CancellationToken cancellationToken = default)
     {
-        var pendingEmailNotificationsSpecification = new PendingEmailNotificationsSpecification(DateTime.Now);
+        var pendingEmailNotificationsSpecification = new PendingEmailNotificationsSpecification(DateTime.Now).Size(batchSize);
         var pendingEmailNotifications = await _emailNotificationRepository.GetAsync(pendingEmailNotificationsSpecification);
 
         var sendNotificationEmailTasks = new List<Task>();
 
-        foreach (var notification in pendingEmailNotifications)
+        foreach (EmailNotification notification in pendingEmailNotifications)
         {
             try
             {

@@ -8,14 +8,14 @@ using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities;
-using BeautyGo.Domain.Entities.Business;
+using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Visitor.EmailTokenValidation;
 using BeautyGo.Domain.Repositories;
 using BeautyGo.Domain.Settings;
 
-namespace BeautyGo.BackgroundTasks.IntergrationEvents.EntityEmailValidationTokens.EntityValidationTokenCreated;
+namespace BeautyGo.BackgroundTasks.IntergrationEvents.EntityEmailTokenValidations.EntityEmailTokenValidationCreated;
 
 internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler :
     IIntegrationEventHandler<EmailValidationTokenCreatedIntegrationEvent>,
@@ -24,7 +24,7 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
     #region Fields
 
     private readonly IBaseRepository<UserEmailTokenValidation> _userEmailTokenValidationRepository;
-    private readonly IBaseRepository<BeautyBusinessEmailTokenValidation> _businessEmailTokenValidationRepository;
+    private readonly IBaseRepository<BusinessEmailTokenValidation> _businessEmailTokenValidationRepository;
     private readonly IBaseRepository<EmailTokenValidation> _emailValidationTokenRepository;
 
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
@@ -38,7 +38,7 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
     public SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler(
         IBaseRepository<UserEmailTokenValidation> userEmailTokenValidationRepository,
-        IBaseRepository<BeautyBusinessEmailTokenValidation> businessEmailTokenValidationRepository,
+        IBaseRepository<BusinessEmailTokenValidation> businessEmailTokenValidationRepository,
         IBaseRepository<EmailTokenValidation> emailValidationTokenRepository,
         IReceitaFederalIntegrationService receitaFederalIntegration,
         IEmailNotificationService emailNotificationService,
@@ -72,9 +72,9 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
     #region Token validation implementations
 
-    public async Task Handle(BeautyBusinessEmailTokenValidation element)
+    public async Task Handle(BusinessEmailTokenValidation element)
     {
-        var spec = new EntityByIdSpecification<BeautyBusinessEmailTokenValidation>(element.Id)
+        var spec = new EntityByIdSpecification<BusinessEmailTokenValidation>(element.Id)
             .AddInclude(p => p.Business);
 
         var businessEmailToken = await _businessEmailTokenValidationRepository.GetFirstOrDefaultAsync(spec);

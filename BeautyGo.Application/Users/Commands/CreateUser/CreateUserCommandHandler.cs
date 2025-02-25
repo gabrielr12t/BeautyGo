@@ -33,7 +33,8 @@ internal class CreateUserCommandHandler :
 
     #region Ctor
 
-    public CreateUserCommandHandler(IBaseRepository<User> userRepository,
+    public CreateUserCommandHandler(
+        IBaseRepository<User> userRepository,
         IBaseRepository<UserRole> userRoleRepository,
         IUnitOfWork unitOfWork,
         IMediator mediator,

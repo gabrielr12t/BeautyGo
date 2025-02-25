@@ -2,5 +2,5 @@
 
 internal interface IEmailNotificationsConsumer
 {
-    Task ConsumeAsync(CancellationToken cancellationToken = default);
+    Task ConsumeAsync(int batchSize, CancellationToken cancellationToken = default);
 }

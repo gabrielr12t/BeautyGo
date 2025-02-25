@@ -5,6 +5,7 @@ using BeautyGo.BackgroundTasks.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using System.Data.SqlTypes;
 
 namespace BeautyGo.BackgroundTasks.Tasks;
 
@@ -28,13 +29,13 @@ internal class EmailNotificationConsumerBackgroundService : BackgroundService
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        await logger.InformationAsync("EmailNotificationConsumerBackgroundService is starting.");
+        await logger.InformationAsync($"{nameof(EmailNotificationConsumerBackgroundService)} is starting.");
 
         stoppingToken.Register(() => logger.InformationAsync("EmailNotificationConsumerBackgroundService background task is stopping."));
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            await logger.InformationAsync("EmailNotificationConsumerBackgroundService background task is doing background work.");
+            //await logger.InformationAsync("EmailNotificationConsumerBackgroundService background task is doing background work.");
 
             await ConsumeEventNotificationsAsync(stoppingToken);
 
@@ -43,7 +44,7 @@ internal class EmailNotificationConsumerBackgroundService : BackgroundService
             await Task.Delay(_backgroundTaskSettings.SleepTimeInMilliseconds, stoppingToken);
         }
 
-        await logger.InformationAsync("EmailNotificationConsumerBackgroundService background task is stopping.");
+        //await logger.InformationAsync("EmailNotificationConsumerBackgroundService background task is stopping.");
 
         await Task.CompletedTask;
     }
@@ -51,18 +52,25 @@ internal class EmailNotificationConsumerBackgroundService : BackgroundService
     private async Task ConsumeEventNotificationsAsync(CancellationToken stoppingToken)
     {
         using IServiceScope scope = _serviceProvider.CreateScope();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         try
         {
             var emailNotificationsConsumer = scope.ServiceProvider.GetRequiredService<IEmailNotificationsConsumer>();
 
-            await emailNotificationsConsumer.ConsumeAsync(stoppingToken);
+            await emailNotificationsConsumer.ConsumeAsync(
+                _backgroundTaskSettings.NotificationsBatchSize, 
+                stoppingToken);
         }
         catch (Exception e)
         {
             var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
 
             await logger.ErrorAsync($"ERROR: Failed to process the batch of notifications: {e.Message}", e);
+        }
+        finally
+        {
+            await unitOfWork.SaveChangesAsync();
         }
     }
 }

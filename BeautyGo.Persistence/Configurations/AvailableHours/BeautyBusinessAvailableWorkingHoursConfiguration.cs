@@ -1,4 +1,4 @@
-﻿using BeautyGo.Domain.Entities.Business;
+﻿using BeautyGo.Domain.Entities.Businesses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

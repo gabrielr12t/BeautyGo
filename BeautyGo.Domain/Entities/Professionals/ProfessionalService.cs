@@ -1,4 +1,4 @@
-﻿using BeautyGo.Domain.Entities.Business;
+﻿using BeautyGo.Domain.Entities.Businesses;
 
 namespace BeautyGo.Domain.Entities.Professionals;
 

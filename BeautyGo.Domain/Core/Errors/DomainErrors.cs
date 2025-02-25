@@ -23,6 +23,11 @@ public static class DomainErrors
         public static Error NotFound => new Error("General.NotFound", "Não encontrado.");
     }
 
+    public static class Event
+    {
+        public static Error MaxAttemps => new Error("Event.MaxAttemps", "Tentativa máxima de executar o evento");
+    }
+
     public static class Password
     {
         public static Error TooShort => new Error("Password.TooShort", "A senha é muito curta.");
@@ -134,21 +139,21 @@ public static class DomainErrors
 
     public static class Business
     {
-        public static Error InvalidCnpj => new(
+        public static Error InvalidCnpj(string cnpj) => new(
             "Business.InvalidCnpj",
-            "Cnpj inválido.");
+            $"Cnpj '{cnpj}' inválido.");
 
-        public static Error CnpjRestricted => new(
+        public static Error CnpjRestricted(string cnpj) => new(
              "Business.CnpjRestricted",
-             "Cnpj está com situação inválida na receira federal.");
+             $"Cnpj '{cnpj}' está com situação inválida na receira federal.");
 
         public static Error CnpjAlreadyExists => new(
             "Business.CnpjAlreadyExists",
             "Cnpj já cadastrado.");
 
-        public static Error CnpjNameInvalid => new(
+        public static Error CnpjNameInvalid(string cnpj) => new(
             "Business.CnpjNameInvalid",
-            "Nome inválido para o Cnpj informado.");
+            $"Nome inválido para o Cnpj '{cnpj}' informado.");
 
         public static Error NoImageUploaded => new(
             "Business.NoImageUploaded",
@@ -161,6 +166,10 @@ public static class DomainErrors
         public static Error ImageNotValid => new(
             "Business.ImageNotValid",
             "Arquivo de imagem inválido.");
+
+        public static Error BusinessNotFound(Guid businessId) => new(
+            "Business.BusinessNotFound",
+            $"Loja '{businessId}' não encontrada.");
     }
 
     public static class Address
@@ -168,5 +177,9 @@ public static class DomainErrors
         public static Error CepNotFound => new(
                 "Address.CepNotFound",
                 "Cep não encontrado.");
+
+        public static Error CoordinatesNotFoundToBusiness(Guid businessId) => new(
+                "Address.CoordinatesNotFoundToBusiness",
+                $"Coordenadas não encontrada para a loja: '{businessId}'.");
     }
 }

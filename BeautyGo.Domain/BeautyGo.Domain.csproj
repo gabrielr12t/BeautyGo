@@ -33,7 +33,6 @@
     <Folder Include="Entities\Logging\" />
     <Folder Include="Entities\Users\" />
     <Folder Include="Interfaces\" />
-    <Folder Include="Settings\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,20 +2,20 @@
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.FakeData;
 using BeautyGo.Domain.Common.Defaults;
-using BeautyGo.Domain.Entities.Business;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
 using BeautyGo.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
+using BeautyGo.Domain.Entities.Businesses;
 
 public class FakeDataService : IFakeDataService
 {
     #region Fields
 
     private readonly IBaseRepository<User> _userRepository;
-    private readonly IBaseRepository<BeautyBusiness> _storeRepository;
+    private readonly IBaseRepository<Business> _storeRepository;
     private readonly IBaseRepository<UserRole> _userRoleRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IServiceProvider _serviceProvider;
@@ -26,7 +26,7 @@ public class FakeDataService : IFakeDataService
 
     public FakeDataService(
         IBaseRepository<User> userRepository,
-        IBaseRepository<BeautyBusiness> storeRepository,
+        IBaseRepository<Business> storeRepository,
         IBaseRepository<UserRole> userRoleRepository,
         IUnitOfWork unitOfWork,
         IServiceProvider serviceProvider)

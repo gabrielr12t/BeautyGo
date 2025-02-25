@@ -1,5 +1,5 @@
 ﻿using BeautyGo.Api.Controllers.Bases;
-using BeautyGo.Application.Business.Commands.CreateBusiness;
+using BeautyGo.Application.Businesses.Commands.CreateBusiness;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;

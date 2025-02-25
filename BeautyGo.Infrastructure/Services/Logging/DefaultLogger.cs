@@ -6,7 +6,7 @@ using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories;
 
-namespace BeautyGo.Infrasctructure.Services.Logging;
+namespace BeautyGo.Infrastructure.Services.Logging;
 
 public class DefaultLogger : ILogger
 {
@@ -95,7 +95,7 @@ public class DefaultLogger : ILogger
         //}, pageIndex, pageSize);
 
         //return logs;
-        
+
         return null;
 
     }
@@ -151,7 +151,7 @@ public class DefaultLogger : ILogger
     public virtual async Task ErrorAsync(string message, Exception exception = null, User user = null)
     {
         //don't log thread abort exception
-        if (exception is System.Threading.ThreadAbortException)
+        if (exception is ThreadAbortException)
             return;
 
         if (IsEnabled(LogLevel.Error))
