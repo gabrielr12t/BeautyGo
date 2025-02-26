@@ -35,7 +35,8 @@ internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher, ID
         _channel = _connection.CreateModel();
 
         var initializer = new RabbitMQInitializer(_channel);
-        initializer.ConfigureQueue(_messageBrokerSettings.QueueName, "dlx_exchange", 60000);
+
+        _channel.QueueDeclare(_messageBrokerSettings.QueueName, false, false, false);
     }
      
     public async Task PublishAsync(IIntegrationEvent @event)
@@ -43,8 +44,6 @@ internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher, ID
         using var scope = _serviceProvider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-        //var message = new Message(Ulid.NewUlid(), @event);
 
         var payload = JsonConvert.SerializeObject(@event, typeof(IIntegrationEvent), new JsonSerializerSettings
         {
