@@ -42,6 +42,8 @@ using BeautyGo.Infrastructure.Services.Logging;
 using BeautyGo.Infrastructure.Services.Cryptography;
 using BeautyGo.Infrastructure.Services.Business;
 using BeautyGo.Infrastructure.Services.Authentication.Events;
+using BeautyGo.Application.Core.Abstractions.OutboxMessages;
+using BeautyGo.Infrastructure.Services.OutboxMessages;
 
 namespace BeautyGo.Infrastructure;
 
@@ -82,6 +84,7 @@ public static class DependencyInjection
         services.AddScoped<IInstallationService, InstallationService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFakeDataService, FakeDataService>();
+        services.AddScoped<IOutboxMessageService, OutboxMessageService>();
 
         services.AddScoped<IReceitaFederalIntegrationService, ReceitaFederalIntegrationService>();
         services.AddScoped<IViaCepIntegrationService, ViaCepIntegration>();

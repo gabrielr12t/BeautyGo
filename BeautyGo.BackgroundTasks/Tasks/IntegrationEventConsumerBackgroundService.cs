@@ -74,9 +74,9 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         {
             string body = Encoding.UTF8.GetString(eventArgs.Body.Span);
 
-            var integrationEvent = JsonConvert.DeserializeObject<IIntegrationEvent>(body, new JsonSerializerSettings
+            @event = JsonConvert.DeserializeObject<IIntegrationEvent>(body, new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.Auto
+                TypeNameHandling = TypeNameHandling.All
             });
 
             await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Received - {@event}");

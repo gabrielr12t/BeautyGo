@@ -1,5 +1,4 @@
 ﻿using BeautyGo.Domain.Entities;
-using BeautyGo.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
 
@@ -30,7 +29,7 @@ public sealed class OutboxEventDispatcherInterceptor : SaveChangesInterceptor
             .Select(domainEvent => new OutboxMessage
             {
                 Id = Guid.NewGuid(),
-                OcurredOn = DateTime.Now,
+                OccurredOn = DateTime.Now,
                 Type = domainEvent.GetType().Name,
                 Content = JsonConvert.SerializeObject(
                     domainEvent,

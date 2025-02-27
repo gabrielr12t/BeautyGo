@@ -17,7 +17,6 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
     private readonly ILogger _logger;
     private readonly IEventBus _publisher;
     private readonly IOutboxMessageRepository _outboxRepository;
-    private static readonly ConcurrentDictionary<string, Type> TypeCache = new();
 
     #endregion
 
@@ -46,6 +45,8 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
     {
         try
         {
+            await _logger.InformationAsync($"Publishin outbox message on event bus: {message.Id}");
+
             var deserializedMessage = JsonConvert
                 .DeserializeObject<IIntegrationEvent>(
                     message.Content,
@@ -60,8 +61,14 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         }
         catch (Exception ex)
         {
+            await _logger.ErrorAsync($"Error publishing outbox message on event bus: {message.Id}");
+
             updateQueue.Enqueue(
                 new OutboxUpdate { Id = message.Id, ProcessedOn = DateTime.Now, Error = ex.ToString() });
+        }
+        finally
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 
@@ -90,17 +97,15 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         {
             foreach (var updatedMessage in updateQueue)
             {
-                var message = await _outboxRepository.GetFirstOrDefaultAsync(new EntityByIdSpecification<OutboxMessage>(updatedMessage.Id));
+                var message = await _outboxRepository.GetFirstOrDefaultAsync(new EntityByIdSpecification<OutboxMessage>(updatedMessage.Id), true);
                 if (message != null)
                 {
                     message.ProcessedOn = updatedMessage.ProcessedOn;
                     message.Error = updatedMessage.Error;
 
-                    _outboxRepository.Update(message);
-
                     await _unitOfWork.SaveChangesAsync();
                 }
             }
-        } 
+        }
     }
 }
