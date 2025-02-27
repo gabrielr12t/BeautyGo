@@ -7,9 +7,9 @@ namespace BeautyGo.Application.EmailValidationToken.EntityEmailValidationTokenCr
 internal class PublishIntegrationEventOnEntityEmailValidationTokenCreatedEventHandler
     : IDomainEventHandler<EmailValidationTokenCreatedEvent>
 {
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
+    private readonly IEventBus _integrationEventPublisher;
 
-    public PublishIntegrationEventOnEntityEmailValidationTokenCreatedEventHandler(IIntegrationEventPublisher integrationEventPublisher) => 
+    public PublishIntegrationEventOnEntityEmailValidationTokenCreatedEventHandler(IEventBus integrationEventPublisher) => 
         _integrationEventPublisher = integrationEventPublisher;
 
     public async Task Handle(EmailValidationTokenCreatedEvent notification, CancellationToken cancellationToken)

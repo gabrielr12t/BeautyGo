@@ -6,9 +6,9 @@ namespace BeautyGo.Application.Businesses.Events.BusinessCreated;
 
 internal class PublishIntegrationEventOnBusinessCreatedDomainEventHandler : IDomainEventHandler<EntityInsertedEvent<Business>>
 {
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
+    private readonly IEventBus _integrationEventPublisher;
 
-    public PublishIntegrationEventOnBusinessCreatedDomainEventHandler(IIntegrationEventPublisher integrationEventPublisher)
+    public PublishIntegrationEventOnBusinessCreatedDomainEventHandler(IEventBus integrationEventPublisher)
         => _integrationEventPublisher = integrationEventPublisher;
 
     public async Task Handle(EntityInsertedEvent<Business> notification, CancellationToken cancellationToken)

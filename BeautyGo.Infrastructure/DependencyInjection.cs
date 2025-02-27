@@ -66,7 +66,7 @@ public static class DependencyInjection
         services.AddRateLimiterIp();
         services.AddHttpContextAccessor();
 
-        services.AddSingleton<IIntegrationEventPublisher, IntegrationEventPublisher>();
+        services.AddSingleton<IEventBus, RabbitMQEventBus>();
         services.AddScoped<IUserIdentifierProvider, UserIdentifierProvider>();
         services.AddTransient<IPasswordHasher, PasswordHasher>();
         services.AddTransient<IPasswordHashChecker, PasswordHasher>();

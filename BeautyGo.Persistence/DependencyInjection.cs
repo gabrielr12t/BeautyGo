@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ILogRepository, LogRepository>();
+        services.AddScoped<IOutboxMessagerepository, OutboxMessagerepository>();
 
         return services;
     }

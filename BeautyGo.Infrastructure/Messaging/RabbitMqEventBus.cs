@@ -10,14 +10,14 @@ using System.Text;
 
 namespace BeautyGo.Infrastructure.Messaging;
 
-internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher, IDisposable
+internal sealed class RabbitMQEventBus : IEventBus, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly MessageBrokerSettings _messageBrokerSettings;
     private readonly IConnection _connection;
     private readonly IModel _channel;
 
-    public IntegrationEventPublisher(AppSettings appSettings, IServiceProvider serviceProvider)
+    public RabbitMQEventBus(AppSettings appSettings, IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _messageBrokerSettings = appSettings.Get<MessageBrokerSettings>();
@@ -39,7 +39,7 @@ internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher, ID
         _channel.QueueDeclare(_messageBrokerSettings.QueueName, false, false, false);
     }
      
-    public async Task PublishAsync(IIntegrationEvent @event)
+    public async Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceProvider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
@@ -56,7 +56,7 @@ internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher, ID
 
         await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Publishing - {@event}");
 
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public void Dispose()

@@ -14,7 +14,7 @@ namespace BeautyGo.BackgroundTasks.Services.Events;
 
 public class EventNotificationProducer : IEventNotificationProducer
 {
-    #region MyRegion
+    #region Fields
 
     private readonly IMediator _mediator;
     private readonly ILogger _logger;

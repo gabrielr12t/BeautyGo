@@ -6,9 +6,9 @@ namespace BeautyGo.Application.Businesses.Events.DocumentValidated;
 
 internal class PublishIntegrationEventOnBusinessDocumentValidatedEventHandler : IDomainEventHandler<BusinessDocumentValidatedDomainEvent>
 {
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
+    private readonly IEventBus _integrationEventPublisher;
 
-    public PublishIntegrationEventOnBusinessDocumentValidatedEventHandler(IIntegrationEventPublisher integrationEventPublisher)
+    public PublishIntegrationEventOnBusinessDocumentValidatedEventHandler(IEventBus integrationEventPublisher)
     {
         _integrationEventPublisher = integrationEventPublisher;
     }

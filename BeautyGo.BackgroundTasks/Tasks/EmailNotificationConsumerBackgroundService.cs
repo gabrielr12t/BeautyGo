@@ -5,7 +5,6 @@ using BeautyGo.BackgroundTasks.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using System.Data.SqlTypes;
 
 namespace BeautyGo.BackgroundTasks.Tasks;
 

@@ -6,9 +6,9 @@ namespace BeautyGo.Application.Users.Events.EmailConfirmed;
 
 internal class PublishIntegrationEventOnUserConfirmedEmailEventHandler : IDomainEventHandler<UserConfirmEmailDomainEvent>
 {
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
+    private readonly IEventBus _integrationEventPublisher;
 
-    public PublishIntegrationEventOnUserConfirmedEmailEventHandler(IIntegrationEventPublisher integrationEventPublisher) =>
+    public PublishIntegrationEventOnUserConfirmedEmailEventHandler(IEventBus integrationEventPublisher) =>
         _integrationEventPublisher = integrationEventPublisher;
 
     public async Task Handle(UserConfirmEmailDomainEvent notification, CancellationToken cancellationToken)
