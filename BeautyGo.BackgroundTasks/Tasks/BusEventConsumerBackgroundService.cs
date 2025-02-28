@@ -22,8 +22,6 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
     private readonly RabbitMqRetryPolicy _retryPolicy;
     private readonly MessageBrokerSettings _settings;
 
-    private const string DLQName = "beautygo-hub-queue-homolog-dlq"; // Dead Letter Queue
-
     public BusEventConsumerBackgroundService(AppSettings appSettings, IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
@@ -43,7 +41,7 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
         _channel = _connection.CreateModel();
 
         _channel.QueueDeclare(_settings.QueueName, false, false, false);
-        _channel.QueueDeclare(DLQName, durable: true, exclusive: false, autoDelete: false);
+        _channel.QueueDeclare(_settings.DLQName, durable: true, exclusive: false, autoDelete: false);
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -97,7 +95,7 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
             await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex);
 
             _channel.BasicNack(eventArgs.DeliveryTag, false, false);
-            _channel.BasicPublish("", DLQName, null, eventArgs.Body.ToArray());
+            _channel.BasicPublish("", _settings.DLQName, null, eventArgs.Body.ToArray());
         }
         finally
         {

@@ -15,5 +15,7 @@
         public string Password { get; set; }
 
         public string QueueName { get; set; }
+
+        public string DLQName { get; set; }
     }
 }
