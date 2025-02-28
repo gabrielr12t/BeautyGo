@@ -15,12 +15,12 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
     private readonly IServiceProvider _serviceProvider;
     private readonly MessageBrokerSettings _messageBrokerSettings;
     private readonly IConnection _connection;
-    private readonly IModel _channel;
+    private readonly IModel _channel; 
 
     public RabbitMqBusEvent(AppSettings appSettings, IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        _messageBrokerSettings = appSettings.Get<MessageBrokerSettings>();
+        _messageBrokerSettings = appSettings.Get<MessageBrokerSettings>(); 
 
         IAsyncConnectionFactory connectionFactory = new ConnectionFactory
         {
@@ -38,7 +38,7 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
 
         _channel.QueueDeclare(_messageBrokerSettings.QueueName, false, false, false);
     }
-     
+
     public async Task PublishAsync(IBusEvent @event, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceProvider.CreateScope();

@@ -13,18 +13,22 @@ using System.Text;
 
 namespace BeautyGo.BackgroundTasks.Tasks;
 
-internal sealed class IntegrationEventConsumerBackgroundService : IHostedService, IDisposable
+internal sealed class BusEventConsumerBackgroundService : IHostedService, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IModel _channel;
     private readonly IConnection _connection;
 
+    private readonly RabbitMqRetryPolicy _retryPolicy;
     private readonly MessageBrokerSettings _settings;
 
-    public IntegrationEventConsumerBackgroundService(AppSettings appSettings, IServiceProvider serviceProvider)
+    private const string DLQName = "beautygo-hub-queue-homolog-dlq"; // Dead Letter Queue
+
+    public BusEventConsumerBackgroundService(AppSettings appSettings, IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _settings = appSettings.Get<MessageBrokerSettings>();
+        _retryPolicy = new RabbitMqRetryPolicy(serviceProvider.GetRequiredService<ILogger>());
 
         var factory = new ConnectionFactory
         {
@@ -38,13 +42,14 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
-        _channel.QueueDeclare(_settings.QueueName, false, false, false); 
+        _channel.QueueDeclare(_settings.QueueName, false, false, false);
+        _channel.QueueDeclare(DLQName, durable: true, exclusive: false, autoDelete: false);
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
         var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.Received +=  OnIntegrationEventReceived;
+        consumer.Received += OnIntegrationEventReceived;
         _channel.BasicConsume(_settings.QueueName, false, consumer);
 
         return Task.CompletedTask;
@@ -68,7 +73,7 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        IBusEvent @event = null;
+        IBusEvent? @event = null;
 
         try
         {
@@ -79,29 +84,32 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
                 TypeNameHandling = TypeNameHandling.All
             });
 
-            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Received - {@event}");
+            await logger.InformationAsync($"MESSAGE: {@event?.GetType()} - Received - {@event}");
 
             await ProcessIntegrationEventAsync(scope.ServiceProvider, @event);
 
             _channel.BasicAck(eventArgs.DeliveryTag, false);
 
-            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Processed - {@event}");
+            await logger.InformationAsync($"MESSAGE: {@event?.GetType()} - Processed - {@event}");
         }
         catch (Exception ex)
         {
-            await logger.ErrorAsync($"MESSAGE: {@event.GetType()} - Error - {ex.Message} -{@event}", ex);
+            await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex);
+
+            _channel.BasicNack(eventArgs.DeliveryTag, false, false);
+            _channel.BasicPublish("", DLQName, null, eventArgs.Body.ToArray());
         }
         finally
         {
             await unitOfWork.SaveChangesAsync();
         }
-    } 
+    }
 
     private async Task ProcessIntegrationEventAsync(IServiceProvider serviceProvider, IBusEvent integrationEvent)
     {
         var eventConsumer = serviceProvider.GetRequiredService<IBusEventConsumer>();
-        await eventConsumer.ConsumeAsync(integrationEvent);
-    } 
-} 
-   
-     
+
+        await _retryPolicy.ExecuteAsync(() => eventConsumer.ConsumeAsync(integrationEvent));
+    }
+}
+

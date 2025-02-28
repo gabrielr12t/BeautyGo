@@ -19,7 +19,7 @@ public static class DependencyInjection
         services.Configure<BackgroundTaskSettings>(configuration.GetSection(BackgroundTaskSettings.SettingsKey));
 
         services.AddHostedService<EmailNotificationConsumerBackgroundService>();
-        services.AddHostedService<IntegrationEventConsumerBackgroundService>();
+        services.AddHostedService<BusEventConsumerBackgroundService>();
         services.AddHostedService<EventNotificationProducerBackgroundService>();
         services.AddHostedService<ProcessOutboxMessagesProducerBackgroundService>();
 
