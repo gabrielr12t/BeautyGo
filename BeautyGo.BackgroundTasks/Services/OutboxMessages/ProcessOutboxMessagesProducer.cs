@@ -93,7 +93,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
 
     public async Task ProduceAsync(CancellationToken cancellationToken)
     {
-        var unprocessedOutboxMessages = await _outboxRepository.GetRecentUnprocessedOutboxMessages(10);
+        var unprocessedOutboxMessages = await _outboxRepository.GetRecentUnprocessedOutboxMessages(5);
 
         var updateQueue = new ConcurrentQueue<OutboxUpdate>();
 

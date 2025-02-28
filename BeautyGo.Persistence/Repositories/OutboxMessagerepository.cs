@@ -28,7 +28,7 @@ internal class OutboxMessagerepository : BaseRepository<OutboxMessage>, IOutboxM
     {
         var unProcessedOutboxMessagesSpec = new UnprocessedOutboxMessagesSpecification(5);
 
-        var query = Query(true);
+        var query = Query();
 
         query = query.Where(unProcessedOutboxMessagesSpec.ToExpression());
 
