@@ -20,7 +20,7 @@ internal class OutboxMessageService : IOutboxMessageService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default)
+    public async Task PublishAsync(IBusEvent @event, CancellationToken cancellationToken = default)
     {
         var type = @event.GetType().Name;
         var content = JsonConvert.SerializeObject(

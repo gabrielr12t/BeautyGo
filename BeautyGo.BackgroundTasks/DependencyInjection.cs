@@ -24,7 +24,7 @@ public static class DependencyInjection
         services.AddHostedService<ProcessOutboxMessagesProducerBackgroundService>();
 
         services.AddScoped<IEmailNotificationsConsumer, EmailNotificationsConsumer>();
-        services.AddScoped<IIntegrationEventConsumer, IntegrationEventConsumer>();
+        services.AddScoped<IBusEventConsumer, BusEventConsumer>();
         services.AddScoped<IEventNotificationProducer, EventNotificationProducer>();
         services.AddScoped<IProcessOutboxMessagesProducer, ProcessOutboxMessagesProducer>();
 

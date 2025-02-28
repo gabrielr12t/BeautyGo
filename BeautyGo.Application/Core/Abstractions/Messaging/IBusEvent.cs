@@ -2,6 +2,6 @@
 
 namespace BeautyGo.Application.Core.Abstractions.Messaging;
 
-public interface IIntegrationEvent : INotification
+public interface IBusEvent : INotification
 {
 }

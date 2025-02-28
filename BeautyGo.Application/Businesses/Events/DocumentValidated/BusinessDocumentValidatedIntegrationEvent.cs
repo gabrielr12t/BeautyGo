@@ -2,4 +2,4 @@
 
 namespace BeautyGo.Application.Businesses.Events.DocumentValidated;
 
-public record BusinessDocumentValidatedIntegrationEvent(Guid BusinessId) : IIntegrationEvent;
+public record BusinessDocumentValidatedIntegrationEvent(Guid BusinessId) : IBusEvent;

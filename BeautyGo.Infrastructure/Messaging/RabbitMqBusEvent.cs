@@ -10,14 +10,14 @@ using System.Text;
 
 namespace BeautyGo.Infrastructure.Messaging;
 
-internal sealed class RabbitMQEventBus : IEventBus, IDisposable
+internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly MessageBrokerSettings _messageBrokerSettings;
     private readonly IConnection _connection;
     private readonly IModel _channel;
 
-    public RabbitMQEventBus(AppSettings appSettings, IServiceProvider serviceProvider)
+    public RabbitMqBusEvent(AppSettings appSettings, IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _messageBrokerSettings = appSettings.Get<MessageBrokerSettings>();
@@ -39,13 +39,13 @@ internal sealed class RabbitMQEventBus : IEventBus, IDisposable
         _channel.QueueDeclare(_messageBrokerSettings.QueueName, false, false, false);
     }
      
-    public async Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default)
+    public async Task PublishAsync(IBusEvent @event, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceProvider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        var payload = JsonConvert.SerializeObject(@event, typeof(IIntegrationEvent), new JsonSerializerSettings
+        var payload = JsonConvert.SerializeObject(@event, typeof(IBusEvent), new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
         });

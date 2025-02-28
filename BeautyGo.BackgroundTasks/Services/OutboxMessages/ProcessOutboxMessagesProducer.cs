@@ -14,7 +14,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger _logger;
-    private readonly IEventBus _publisher;
+    private readonly IPublisherBusEvent _publisher;
     private readonly IOutboxMessageRepository _outboxRepository;
     private readonly SemaphoreSlim _semaphore;
 
@@ -25,7 +25,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
     public ProcessOutboxMessagesProducer(
        IUnitOfWork unitOfWork,
        ILogger logger,
-       IEventBus publisher,
+       IPublisherBusEvent publisher,
        IOutboxMessageRepository outboxRepository)
     {
         _unitOfWork = unitOfWork;
@@ -49,7 +49,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
             await _logger.InformationAsync($"Publishin outbox message on event bus: {message.Id}");
 
             var deserializedMessage = JsonConvert
-                .DeserializeObject<IIntegrationEvent>(
+                .DeserializeObject<IBusEvent>(
                     message.Content,
                     new JsonSerializerSettings
                     {

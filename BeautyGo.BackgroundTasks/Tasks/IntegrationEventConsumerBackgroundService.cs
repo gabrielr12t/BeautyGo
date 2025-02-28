@@ -68,13 +68,13 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        IIntegrationEvent @event = null;
+        IBusEvent @event = null;
 
         try
         {
             string body = Encoding.UTF8.GetString(eventArgs.Body.Span);
 
-            @event = JsonConvert.DeserializeObject<IIntegrationEvent>(body, new JsonSerializerSettings
+            @event = JsonConvert.DeserializeObject<IBusEvent>(body, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All
             });
@@ -97,9 +97,9 @@ internal sealed class IntegrationEventConsumerBackgroundService : IHostedService
         }
     } 
 
-    private async Task ProcessIntegrationEventAsync(IServiceProvider serviceProvider, IIntegrationEvent integrationEvent)
+    private async Task ProcessIntegrationEventAsync(IServiceProvider serviceProvider, IBusEvent integrationEvent)
     {
-        var eventConsumer = serviceProvider.GetRequiredService<IIntegrationEventConsumer>();
+        var eventConsumer = serviceProvider.GetRequiredService<IBusEventConsumer>();
         await eventConsumer.ConsumeAsync(integrationEvent);
     } 
 } 

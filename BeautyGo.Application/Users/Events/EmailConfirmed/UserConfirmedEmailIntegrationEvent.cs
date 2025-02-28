@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace BeautyGo.Application.Users.Events.EmailConfirmed;
 
-public class UserConfirmedEmailIntegrationEvent : IIntegrationEvent
+public class UserConfirmedEmailIntegrationEvent : IBusEvent
 {
     internal UserConfirmedEmailIntegrationEvent(User userCreatedDomainEvent) => UserId = userCreatedDomainEvent.Id;
 

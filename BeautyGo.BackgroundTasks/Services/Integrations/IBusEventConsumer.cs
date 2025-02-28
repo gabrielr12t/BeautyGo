@@ -2,7 +2,7 @@
 
 namespace BeautyGo.BackgroundTasks.Services.Integrations;
 
-internal interface IIntegrationEventConsumer
+internal interface IBusEventConsumer
 {
-    Task ConsumeAsync(IIntegrationEvent integrationEvent);
+    Task ConsumeAsync(IBusEvent integrationEvent);
 }

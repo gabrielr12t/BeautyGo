@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace BeautyGo.Application.Users.Events.UserCreated;
 
-public sealed class UserCreatedIntegrationEvent : IIntegrationEvent
+public sealed class UserCreatedIntegrationEvent : IBusEvent
 {
     internal UserCreatedIntegrationEvent(User userCreatedDomainEvent) => 
         UserId = userCreatedDomainEvent.Id;

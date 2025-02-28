@@ -3,13 +3,13 @@ using MediatR;
 
 namespace BeautyGo.BackgroundTasks.Services.Integrations;
 
-internal sealed class IntegrationEventConsumer : IIntegrationEventConsumer
+internal sealed class BusEventConsumer : IBusEventConsumer
 {
     private readonly IMediator _mediator;
 
-    public IntegrationEventConsumer(IMediator mediator) =>
+    public BusEventConsumer(IMediator mediator) =>
         _mediator = mediator;
 
-    public async Task ConsumeAsync(IIntegrationEvent integrationEvent) => 
+    public async Task ConsumeAsync(IBusEvent integrationEvent) => 
         await _mediator.Publish(integrationEvent);
 }
