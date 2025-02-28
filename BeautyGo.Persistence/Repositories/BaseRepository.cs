@@ -33,14 +33,14 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     #region Insert
 
-    public async Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         await _dbSet.AddAsync(entity, cancellationToken);
 
         entity.AddDomainEvent(new EntityInsertedEvent<TEntity>(entity));
     }
 
-    public async Task InsertRangeAsync(IReadOnlyCollection<TEntity> entities)
+    public virtual async Task InsertRangeAsync(IReadOnlyCollection<TEntity> entities)
     {
         await _dbSet.AddRangeAsync(entities);
 
@@ -52,7 +52,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     #region Update
 
-    public void Update(TEntity entity)
+    public virtual void Update(TEntity entity)
     {
         _dbSet.Update(entity);
 
@@ -63,14 +63,14 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     #region Delete
 
-    public void Remove(TEntity entity)
+    public virtual void Remove(TEntity entity)
     {
         _dbSet.Remove(entity);
 
         entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
     }
 
-    public void Remove(IReadOnlyCollection<TEntity> entities)
+    public virtual void Remove(IReadOnlyCollection<TEntity> entities)
     {
         _dbSet.RemoveRange(entities);
 
@@ -78,7 +78,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
             entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
     }
 
-    public void Truncate()
+    public virtual void Truncate()
     {
         foreach (TEntity entity in Query())
         {
@@ -91,7 +91,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     #region Raw
 
-    public async Task<int> ExecuteSqlAsync(string sql,
+    public virtual async Task<int> ExecuteSqlAsync(string sql,
         IEnumerable<SqlParameter> parameters, CancellationToken cancellationToken = default) =>
         await _context.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
 
@@ -99,14 +99,14 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     #region Query Specification
 
-    public async Task<IList<TEntity>> GetByIdAsync(IReadOnlyList<Guid> ids)
+    public virtual async Task<IList<TEntity>> GetByIdAsync(IReadOnlyList<Guid> ids)
     {
         var specification = new EntityByIdsSpecification<TEntity>(ids);
 
         return await Query().GetQuerySpecification(specification).ToListAsync();
     }
 
-    public async Task<TEntity> GetByIdAsync(Guid id)
+    public virtual async Task<TEntity> GetByIdAsync(Guid id)
     {
         if (id == Guid.Empty)
             return default;
@@ -120,7 +120,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
             .FirstOrDefaultAsync(specification.ToExpression());
     }
 
-    public async Task<TEntity> GetFirstOrDefaultAsync(
+    public virtual async Task<TEntity> GetFirstOrDefaultAsync(
         Specification<TEntity> specification,
         bool asTracking = false,
         CancellationToken cancellationToken = default)
@@ -132,7 +132,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
             .FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
     }
 
-    public async Task<bool> ExistAsync(
+    public virtual async Task<bool> ExistAsync(
         Specification<TEntity> specification, CancellationToken cancellationToken = default)
     {
         return await Query(false)
@@ -140,7 +140,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
             .AnyAsync(cancellationToken);
     }
 
-    public async Task<IList<TEntity>> GetAsync(
+    public virtual async Task<IList<TEntity>> GetAsync(
         Specification<TEntity> specification,
         bool asTracking = true)
     {
@@ -149,7 +149,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
             .ToListAsync();
     }
 
-    public async Task<IPagedList<TResult>> GetAllPagedAsync<TResult>(
+    public virtual async Task<IPagedList<TResult>> GetAllPagedAsync<TResult>(
         Specification<TEntity> specification,
         Func<TEntity, TResult> resultSelector = null,
         int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false)
@@ -161,7 +161,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
             .ToPagedListAsync(pageIndex, pageSize, getOnlyTotalCount);
     }
 
-    public async Task<IPagedList<TEntity>> GetAllPagedAsync(
+    public virtual async Task<IPagedList<TEntity>> GetAllPagedAsync(
         Specification<TEntity> specification,
         int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false)
     {

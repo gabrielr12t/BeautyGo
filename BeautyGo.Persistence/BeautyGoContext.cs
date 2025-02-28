@@ -2,15 +2,10 @@
 using BeautyGo.Domain.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeautyGo.Persistence;
- 
+
 public sealed class BeautyGoContext : DbContext
 {
     private readonly IConfiguration _configuration;

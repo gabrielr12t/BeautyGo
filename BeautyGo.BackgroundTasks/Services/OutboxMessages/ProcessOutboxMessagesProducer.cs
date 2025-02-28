@@ -2,7 +2,6 @@
 using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Entities;
-using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
@@ -17,6 +16,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
     private readonly ILogger _logger;
     private readonly IEventBus _publisher;
     private readonly IOutboxMessageRepository _outboxRepository;
+    private readonly SemaphoreSlim _semaphore;
 
     #endregion
 
@@ -32,6 +32,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         _logger = logger;
         _publisher = publisher;
         _outboxRepository = outboxRepository;
+        _semaphore = new(1, 1);
     }
 
     #endregion
@@ -68,7 +69,16 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         }
         finally
         {
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _semaphore.WaitAsync(cancellationToken);
+
+            try
+            {
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
     }
 
@@ -97,13 +107,13 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         {
             foreach (var updatedMessage in updateQueue)
             {
-                var message = await _outboxRepository.GetFirstOrDefaultAsync(new EntityByIdSpecification<OutboxMessage>(updatedMessage.Id), true);
+                var message = await _outboxRepository.GetByIdAsync(updatedMessage.Id);
                 if (message != null)
                 {
                     message.ProcessedOn = updatedMessage.ProcessedOn;
                     message.Error = updatedMessage.Error;
 
-                    await _unitOfWork.SaveChangesAsync();
+                    await _outboxRepository.UpdateAsync(message);
                 }
             }
         }

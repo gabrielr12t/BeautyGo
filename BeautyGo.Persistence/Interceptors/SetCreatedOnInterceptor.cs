@@ -21,7 +21,7 @@ public class SetCreatedOnInterceptor : SaveChangesInterceptor
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
-    private void SetCreatedOn(DbContext? context)
+    private void SetCreatedOn(DbContext context)
     {
         if (context == null) return;
 

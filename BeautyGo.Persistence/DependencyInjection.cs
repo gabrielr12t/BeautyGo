@@ -5,9 +5,11 @@ using BeautyGo.Domain.Repositories;
 using BeautyGo.Domain.Settings;
 using BeautyGo.Persistence.Interceptors;
 using BeautyGo.Persistence.Repositories;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Data;
 using System.Reflection;
 
 namespace BeautyGo.Persistence;
@@ -31,7 +33,6 @@ public static class DependencyInjection
                 options
                     .UseSqlServer(connectionSettings.Value)
                     .EnableSensitiveDataLogging()
-                    .EnableThreadSafetyChecks()
                     .AddInterceptors(
                         sp.GetRequiredService<AuditableEntitySaveChangesInterceptor>(),
                         sp.GetRequiredService<DispatchDomainEventInterceptor>(),
@@ -39,6 +40,7 @@ public static class DependencyInjection
                         sp.GetRequiredService<SetCreatedOnInterceptor>()),
                     contextLifetime: ServiceLifetime.Scoped);
 
+        services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionSettings.Value));
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ILogRepository, LogRepository>();
