@@ -2,6 +2,7 @@ using Serilog;
 using BeautyGo.Persistence;
 using BeautyGo.Infrastructure;
 using BeautyGo.BackgroundTasks;
+using BeautyGo.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,13 +19,13 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services
     .AddHttpContextAccessor()
-     .AddInfrastructure(builder.Configuration, builder.Environment)
-     .AddPersistence(builder.Configuration)
-     .AddBackgroundTasks(builder.Configuration);
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration, builder.Environment)
+    .AddPersistence(builder.Configuration)
+    .AddBackgroundTasks(builder.Configuration);
 
 
 var app = builder.Build();
 
 
 app.Run();
- 

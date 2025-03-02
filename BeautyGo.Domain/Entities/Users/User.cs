@@ -16,12 +16,13 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         AddDomainEvent(new UserCreatedDomainEvent(this));
     }
 
-    public User(string firstName, string lastName, string email, string phoneNumber) : this()
+    public User(string firstName, string lastName, string email, string phoneNumber, string cpf) : this()
     {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         PhoneNumber = phoneNumber;
+        Cpf = cpf;
     }
 
     public string FirstName { get; set; }
@@ -84,6 +85,7 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     {
         EmailConfirmed = true;
         IsActive = true;
+        LastActivityDate = DateTime.Now;
         AddDomainEvent(new UserConfirmEmailDomainEvent(this));
     }
 

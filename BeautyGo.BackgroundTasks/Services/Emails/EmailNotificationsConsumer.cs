@@ -1,9 +1,14 @@
-﻿using BeautyGo.Application.Core.Abstractions.Data;
+﻿using BeautyGo.Application.Businesses.Commands.BusinessCreated;
+using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Notifications;
 using BeautyGo.Contracts.Emails;
+using BeautyGo.Domain.Core.Events;
+using BeautyGo.Domain.Entities.Events;
 using BeautyGo.Domain.Entities.Notifications;
 using BeautyGo.Domain.Patterns.Specifications.Notifications;
 using BeautyGo.Domain.Repositories;
+using MediatR;
+using Newtonsoft.Json;
 
 namespace BeautyGo.BackgroundTasks.Services.Emails;
 
@@ -12,15 +17,18 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
     private readonly IBaseRepository<EmailNotification> _emailNotificationRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailNotificationService _emailNotificationService;
+    private readonly IMediator _mediator;
 
     public EmailNotificationsConsumer(
         IBaseRepository<EmailNotification> emailNotificationRepository,
         IUnitOfWork unitOfWork,
-        IEmailNotificationService emailNotificationService)
+        IEmailNotificationService emailNotificationService,
+        IMediator mediator)
     {
         _emailNotificationRepository = emailNotificationRepository;
         _unitOfWork = unitOfWork;
         _emailNotificationService = emailNotificationService;
+        _mediator = mediator;
     }
 
     public async Task ConsumeAsync(int batchSize, CancellationToken cancellationToken = default)
@@ -29,6 +37,20 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
         var pendingEmailNotifications = await _emailNotificationRepository.GetAsync(pendingEmailNotificationsSpecification);
 
         var sendNotificationEmailTasks = new List<Task>();
+
+        var eventTest = new BusinessCreatedEvent(Guid.NewGuid());
+
+        var newBusinessEvent = Event.Create(
+          Guid.NewGuid(),
+          eventTest,
+          DateTime.Now);
+
+        var @event = JsonConvert.DeserializeObject<IEvent>(newBusinessEvent.EventSource, new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All
+        });
+
+        await _mediator.Publish(@event, cancellationToken);
 
         foreach (EmailNotification notification in pendingEmailNotifications)
         {

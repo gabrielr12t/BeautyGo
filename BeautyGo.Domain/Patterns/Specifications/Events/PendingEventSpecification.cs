@@ -1,6 +1,4 @@
 ﻿using BeautyGo.Domain.Entities.Events;
-using BeautyGo.Domain.Patterns.Singletons;
-using BeautyGo.Domain.Settings;
 using System.Linq.Expressions;
 
 namespace BeautyGo.Domain.Patterns.Specifications.Events;

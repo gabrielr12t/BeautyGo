@@ -38,8 +38,9 @@ public class UserController : BaseController
         .Bind(command => mediator.Send(new CreateUserCommand(request.FirstName, request.LastName, request.Email, request.Password, request.CPF, request.Password, UserTypeEnum.Professional)))
         .Match(Ok, BadRequest);
 
+    //É GET PQ NÃO TEMOS UM CLIENT AINDA, O EMAIL IRÁ DIRECIONAR PARA O CLIENT E O CLIENT FAZ UM REQUEST POST PARA ESSE ENDPOINT
     [AllowAnonymous]
-    [HttpPost("register/confirm")]
+    [HttpGet("register/confirm")]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ConfirmEmail([FromQuery] string token) =>

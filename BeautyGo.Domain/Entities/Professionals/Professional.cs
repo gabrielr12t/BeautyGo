@@ -6,8 +6,8 @@ namespace BeautyGo.Domain.Entities.Professionals;
 
 public class Professional : User
 {
-    public Professional(string firstName, string lastName, string email, string phoneNumber)
-        : base(firstName, lastName, email, phoneNumber)
+    public Professional(string firstName, string lastName, string email, string phoneNumber, string cpf)
+        : base(firstName, lastName, email, phoneNumber, cpf)
     {
         Services = new List<ProfessionalService>();
         Appointments = new List<Appointment>();

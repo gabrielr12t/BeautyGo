@@ -1,14 +1,19 @@
-﻿using BeautyGo.Application.Core.Abstractions.Authentication;
+﻿using BeautyGo.Application.Businesses.Commands.BusinessCreated;
+using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Core.Errors;
+using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.Core.Primitives.Results;
+using BeautyGo.Domain.Entities.Events;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications.UserEmailValidationTokens;
 using BeautyGo.Domain.Patterns.Specifications.Users;
 using BeautyGo.Domain.Repositories;
+using MediatR;
+using Newtonsoft.Json;
 
 namespace BeautyGo.Application.Authentication.Commands.Login;
 
@@ -19,8 +24,9 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
     private readonly IBaseRepository<UserRole> _roleRepository;
     private readonly IBaseRepository<User> _userRepository;
     private readonly IBaseRepository<UserEmailTokenValidation> _userEmailValidationTokenRepository;
+    private readonly IBaseRepository<Event> _eventRepository;
     private readonly IAuthService _authService;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork; 
 
     #endregion
 
@@ -29,6 +35,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
     public LoginCommandHandler(IBaseRepository<UserRole> roleRepository,
         IBaseRepository<User> userRepository,
         IBaseRepository<UserEmailTokenValidation> userEmailValidationTokenRepository,
+        IBaseRepository<Event> eventRepository,
         IAuthService authService,
         IUnitOfWork unitOfWork)
     {
@@ -37,6 +44,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
         _userEmailValidationTokenRepository = userEmailValidationTokenRepository;
         _authService = authService;
         _unitOfWork = unitOfWork;
+        _eventRepository = eventRepository; 
     }
 
     #endregion
@@ -77,8 +85,21 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
         if (user == null)
             return Result.Failure<TokenModel>(DomainErrors.User.UserNotFound);
 
+        #region TEST EVENT
+
+        var eventTest = new BusinessCreatedEvent(Guid.NewGuid());
+
+        var newBusinessEvent = Event.Create(
+          user.Id,
+          eventTest,
+          DateTime.Now);
+
+        await _eventRepository.InsertAsync(newBusinessEvent, cancellationToken); 
+
+        #endregion
+
         if (!PasswordsMatch(user.GetCurrentPassword(), request.Password))
-            return Result.Failure<TokenModel>(DomainErrors.Authentication.InvalidEmailOrPassword); 
+            return Result.Failure<TokenModel>(DomainErrors.Authentication.InvalidEmailOrPassword);
 
         if (!user.IsActive)
             return Result.Failure<TokenModel>(DomainErrors.User.UserNotActive);
@@ -88,7 +109,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 
         if (!user.EmailConfirmed)
             return Result.Failure<TokenModel>(DomainErrors.UserEmailValidationToken.RequiredValidToken);
-         
+
         user.LastLoginDate = DateTime.Now;
 
         var token = await _authService.AuthenticateAsync(user);

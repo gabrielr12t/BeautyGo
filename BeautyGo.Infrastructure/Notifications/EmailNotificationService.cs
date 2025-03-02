@@ -8,7 +8,6 @@ internal class EmailNotificationService : IEmailNotificationService
 {
     private readonly IEmailService _emailService;
 
-
     public EmailNotificationService(
         IEmailService emailService)
     {

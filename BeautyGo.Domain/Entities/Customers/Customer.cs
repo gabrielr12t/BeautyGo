@@ -6,8 +6,8 @@ namespace BeautyGo.Domain.Entities.Customers;
 
 public class Customer : User
 {
-    public Customer(string firstName, string lastName, string email, string phoneNumber) 
-        : base(firstName, lastName, email, phoneNumber)
+    public Customer(string firstName, string lastName, string email, string phoneNumber, string cpf)
+        : base(firstName, lastName, email, phoneNumber, cpf)
     {
         Appointments = new List<Appointment>();
         Feedbacks = new List<Feedback>();

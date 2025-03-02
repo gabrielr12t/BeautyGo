@@ -28,6 +28,8 @@ public static class DependencyInjection
         services.AddScoped<IEventNotificationProducer, EventNotificationProducer>();
         services.AddScoped<IProcessOutboxMessagesProducer, ProcessOutboxMessagesProducer>();
 
+        services.AddScoped<IRabbitMqRetryPolicy, RabbitMqRetryPolicy>();
+
         return services;
     }
 }

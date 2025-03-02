@@ -30,6 +30,10 @@ public sealed class BeautyGoContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+        modelBuilder.HasSequence<int>("CodeSequence")
+            .StartsAt(1_000)
+            .IncrementsBy(1);
+
         base.OnModelCreating(modelBuilder);
     }
 

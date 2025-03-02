@@ -83,7 +83,7 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
         if (!cnpjReceitaFederalResponse.HasValue)
             throw new DomainException(DomainErrors.BusinessEmailValidationToken.CnpjNotFound);
 
-        var url = $"{_apiSettings.Host}/{_apiSettings.Endpoints.BusinessConfirmEmail}?{businessEmailToken.Token}";
+        var url = $"{_apiSettings.Host}/{_apiSettings.Endpoints.BusinessConfirmEmail}?token={businessEmailToken.Token}";
 
         var message = new BeautyBusinessConfirmEmail(cnpjReceitaFederalResponse.Value.Email, businessEmailToken.Business.Name, url);
 
@@ -97,7 +97,7 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
         var userEmailToken = await _userEmailTokenValidationRepository.GetFirstOrDefaultAsync(spec);
 
-        var url = $"{_apiSettings.Host}/{_apiSettings.Endpoints.UserConfirmEmail}?{userEmailToken.Token}";
+        var url = $"{_apiSettings.Host}/{_apiSettings.Endpoints.UserConfirmEmail}?token={userEmailToken.Token}";
 
         var message = new UserConfirmEmail(userEmailToken.User.Email, userEmailToken.User.FullName(), url);
 

@@ -14,19 +14,18 @@ using System.Text;
 namespace BeautyGo.BackgroundTasks.Tasks;
 
 internal sealed class BusEventConsumerBackgroundService : IHostedService, IDisposable
-{
+{  
     private readonly IServiceProvider _serviceProvider;
     private readonly IModel _channel;
-    private readonly IConnection _connection;
-
-    private readonly RabbitMqRetryPolicy _retryPolicy;
+    private readonly IConnection _connection; 
     private readonly MessageBrokerSettings _settings;
 
-    public BusEventConsumerBackgroundService(AppSettings appSettings, IServiceProvider serviceProvider)
-    {
+    public BusEventConsumerBackgroundService(
+        AppSettings appSettings, 
+        IServiceProvider serviceProvider)
+    { 
         _serviceProvider = serviceProvider;
         _settings = appSettings.Get<MessageBrokerSettings>();
-        _retryPolicy = new RabbitMqRetryPolicy(serviceProvider.GetRequiredService<ILogger>());
 
         var factory = new ConnectionFactory
         {
@@ -41,7 +40,7 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
         _channel = _connection.CreateModel();
 
         _channel.QueueDeclare(_settings.QueueName, false, false, false);
-        _channel.QueueDeclare(_settings.DLQName, durable: true, exclusive: false, autoDelete: false);
+        _channel.QueueDeclare(_settings.DLQName, durable: true, exclusive: false, autoDelete: false); 
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -107,7 +106,9 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
     {
         var eventConsumer = serviceProvider.GetRequiredService<IBusEventConsumer>();
 
-        await _retryPolicy.ExecuteAsync(() => eventConsumer.ConsumeAsync(integrationEvent));
+        using var scope = _serviceProvider.CreateScope();
+        var retryPolicy = scope.ServiceProvider.GetRequiredService<IRabbitMqRetryPolicy>();
+        await retryPolicy.ExecuteAsync(() => eventConsumer.ConsumeAsync(integrationEvent));
     }
 }
 

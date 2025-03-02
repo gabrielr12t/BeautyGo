@@ -24,4 +24,8 @@
     <ProjectReference Include="..\BeautyGo.Domain\BeautyGo.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IntergrationEvents\Users\UserCreated\" />
+  </ItemGroup>
+
 </Project>

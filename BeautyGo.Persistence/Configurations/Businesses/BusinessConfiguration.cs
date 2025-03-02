@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BeautyGo.Domain.Entities.Businesses;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BeautyGo.Persistence.Configurations.Businesses;
 
-internal class BusinessConfiguration : BaseEntityConfiguration<Domain.Entities.Businesses.Business>
+internal class BusinessConfiguration : BaseEntityConfiguration<Business>
 {
-    public override void Configure(EntityTypeBuilder<Domain.Entities.Businesses.Business> builder)
+    public override void Configure(EntityTypeBuilder<Business> builder)
     {
         base.Configure(builder);
 
@@ -15,7 +16,14 @@ internal class BusinessConfiguration : BaseEntityConfiguration<Domain.Entities.B
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(p => p.Code)
+           .HasDefaultValueSql("NEXT VALUE FOR CodeSequence");
+
+        builder.HasIndex(p => p.Code)
+            .HasDatabaseName("IX_CODE");
+
         builder.HasIndex(p => p.Name)
+            .HasDatabaseName("IX_NAME")
             .IsUnique();
 
         builder.Property(s => s.HomePageTitle)
@@ -28,6 +36,7 @@ internal class BusinessConfiguration : BaseEntityConfiguration<Domain.Entities.B
             .HasMaxLength(500);
 
         builder.HasIndex(p => p.Url)
+           .HasDatabaseName("IX_URL")
            .IsUnique();
 
         builder.Property(s => s.Description)
@@ -37,6 +46,7 @@ internal class BusinessConfiguration : BaseEntityConfiguration<Domain.Entities.B
             .HasMaxLength(20);
 
         builder.HasIndex(p => p.Cnpj)
+            .HasDatabaseName("IX_CNPJ")
             .IsUnique();
 
         builder.Property(s => s.Host)
@@ -46,6 +56,7 @@ internal class BusinessConfiguration : BaseEntityConfiguration<Domain.Entities.B
             .HasMaxLength(20);
 
         builder.HasIndex(p => p.Phone)
+            .HasDatabaseName("IX_PHONE")
            .IsUnique();
 
         //builder.Property(s => s.Code)

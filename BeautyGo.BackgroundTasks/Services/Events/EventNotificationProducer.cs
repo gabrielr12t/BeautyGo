@@ -58,13 +58,15 @@ public class EventNotificationProducer : IEventNotificationProducer
                     TypeNameHandling = TypeNameHandling.All
                 });
 
-                pendingEvent.MarkAsExecuted();
-
                 tasks.Add(_mediator.Publish(@event, cancellationToken));
+
+                pendingEvent.MarkAsExecuted();
             }
             catch (Exception ex)
             {
                 pendingEvent.Attempts++;
+
+                pendingEvent.Status = EventStatus.Error;
 
                 pendingEvent.EventErrors.Add(EventError.Create(ex.Message, pendingEvent.Id));
 

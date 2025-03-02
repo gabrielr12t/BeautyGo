@@ -1,6 +1,5 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.DomainEvents.Businesses;
-using BeautyGo.Domain.DomainEvents.EmailValidationToken;
 using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Entities.Media;
 using BeautyGo.Domain.Entities.Professionals;
@@ -65,6 +64,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     {
         var business = new Business
         {
+            Id = Guid.NewGuid(),
             Name = name,
             HomePageTitle = homePageTitle,
             HomePageDescription = homePageDescription,

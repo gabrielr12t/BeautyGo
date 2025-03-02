@@ -3,12 +3,12 @@ using Polly;
 
 namespace BeautyGo.BackgroundTasks;
 
-public class RabbitMqRetryPolicy
+public class RabbitMqRetryPolicy : IRabbitMqRetryPolicy
 {
     private readonly AsyncPolicy _retryPolicy;
     private readonly ILogger _logger;
 
-    public RabbitMqRetryPolicy(ILogger logger = null)
+    public RabbitMqRetryPolicy(ILogger logger)
     {
         _logger = logger;
 
