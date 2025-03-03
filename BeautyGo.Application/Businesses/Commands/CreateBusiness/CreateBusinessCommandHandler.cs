@@ -1,5 +1,4 @@
-﻿using BeautyGo.Application.Businesses.Commands.BusinessCreated;
-using BeautyGo.Application.Core.Abstractions.Authentication;
+﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Integrations;
 using BeautyGo.Application.Core.Abstractions.Messaging;
@@ -23,9 +22,7 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
     private readonly IViaCepIntegrationService _viaCepIntegration;
     private readonly IAuthService _authService;
-    private readonly IUnitOfWork _unitOfWork;
-
-    private DateTime _triggerTimeToValidateDocument => DateTime.Now.AddMinutes(1);
+    private readonly IUnitOfWork _unitOfWork; 
 
     public CreateBusinessCommandHandler(
         IBaseRepository<Business> storeRepository,
@@ -97,6 +94,8 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
             request.Cnpj,
             currentUser.Id, newAddress.Id);
 
+        newBusiness.AddValidationToken();
+
         var hasWorkingHours = request.WorkingHours is not null && request.WorkingHours.Any();
         if (hasWorkingHours)
         {
@@ -104,13 +103,7 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
             newBusiness.AddWorkingHours(workingHours);
         }
 
-        var newBusinessEvent = Event.Create(
-            currentUser.Id,
-            new BusinessCreatedEvent(newBusiness.Id),
-            _triggerTimeToValidateDocument);
-
         await _storeRepository.InsertAsync(newBusiness, cancellationToken); 
-        await _eventRepository.InsertAsync(newBusinessEvent, cancellationToken);
         
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

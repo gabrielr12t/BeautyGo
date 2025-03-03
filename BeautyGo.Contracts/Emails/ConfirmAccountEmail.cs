@@ -1,6 +1,6 @@
 ﻿namespace BeautyGo.Contracts.Emails;
 
-public record UserConfirmEmail(
+public record ConfirmAccountEmail(
    string EmailTo,
    string Name,
    string Link) : IEmailNotification;

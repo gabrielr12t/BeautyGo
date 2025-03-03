@@ -6,7 +6,7 @@ namespace BeautyGo.Infrastructure.Notifications;
 
 internal class EmailNotificationService : IEmailNotificationService
 {
-    protected readonly IEmailService _emailService;
+    public readonly IEmailService _emailService;
 
     public EmailNotificationService(
         IEmailService emailService)

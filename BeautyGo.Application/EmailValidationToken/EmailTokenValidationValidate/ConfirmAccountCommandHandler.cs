@@ -1,0 +1,43 @@
+﻿using BeautyGo.Application.Core.Abstractions.Data;
+using BeautyGo.Application.Core.Abstractions.Messaging;
+using BeautyGo.Domain.Core.Errors;
+using BeautyGo.Domain.Core.Primitives.Results;
+using BeautyGo.Domain.Entities;
+using BeautyGo.Domain.Patterns.Specifications.EmailTokenValidations;
+using BeautyGo.Domain.Repositories;
+
+namespace BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
+
+internal class ConfirmAccountCommandHandler : ICommandHandler<ConfirmAccountCommand, Result>
+{
+    private readonly IBaseRepository<EmailTokenValidation> _businessEmailTokenValidationRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public ConfirmAccountCommandHandler(
+        IBaseRepository<EmailTokenValidation> businessEmailTokenValidationRepository,
+        IUnitOfWork unitOfWork)
+    {
+        _businessEmailTokenValidationRepository = businessEmailTokenValidationRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<Result> Handle(ConfirmAccountCommand request, CancellationToken cancellationToken)
+    {
+        var validTokenSpec = new EmailTokenValidationByTokenSpecification(request.Token)
+            .And(new EmailValidationTokenValidSpecification(DateTime.Now));
+
+        var emailValidationToken = await _businessEmailTokenValidationRepository.GetFirstOrDefaultAsync(validTokenSpec);
+
+        if (emailValidationToken is null)
+            return Result.Failure(DomainErrors.UserEmailValidationToken.ExpiredToken);
+
+        emailValidationToken.MarkTokenAsUsed();
+        emailValidationToken.Validate();
+
+        _businessEmailTokenValidationRepository.Update(emailValidationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+}

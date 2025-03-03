@@ -1,4 +1,4 @@
-﻿namespace BeautyGo.Application.Users.Events.PasswordChanged;
+﻿namespace BeautyGo.Application.Users.Commands.PasswordChanged;
 
 
 //continuar

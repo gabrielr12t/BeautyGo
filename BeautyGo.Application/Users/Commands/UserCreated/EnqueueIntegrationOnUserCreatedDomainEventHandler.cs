@@ -2,7 +2,7 @@
 using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.Entities.Users;
 
-namespace BeautyGo.Application.Users.Events.UserCreated;
+namespace BeautyGo.Application.Users.Commands.UserCreated;
 
 internal class EnqueueIntegrationOnUserCreatedDomainEventHandler : IDomainEventHandler<EntityInsertedEvent<User>>
 {

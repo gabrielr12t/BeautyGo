@@ -1,5 +1,6 @@
 ﻿using BeautyGo.Api.Controllers.Bases;
 using BeautyGo.Application.Businesses.Commands.CreateBusiness;
+using BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
@@ -25,6 +26,15 @@ public class BusinessController : BasePublicController
         await Result.Create(command, DomainErrors.General.UnProcessableRequest)
             .Bind(command => mediator.Send(command))
             .Match(Ok, BadRequest);
+
+    [AllowAnonymous]
+    [HttpGet("register/confirm")]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmAccount([FromQuery] string token) =>
+       await Result.Create(token, DomainErrors.General.UnProcessableRequest)
+       .Bind(command => mediator.Send(new ConfirmAccountCommand(token)))
+       .Match(Ok, BadRequest);
 
     [HttpGet("{storeHost}")]
     public async Task<IActionResult> Details(string storeHost)

@@ -2,11 +2,11 @@
 using BeautyGo.Domain.Entities.Users;
 using Newtonsoft.Json;
 
-namespace BeautyGo.Application.Users.Events.UserCreated;
+namespace BeautyGo.Application.Users.Commands.UserCreated;
 
 public sealed class UserCreatedIntegrationEvent : IBusEvent
 {
-    internal UserCreatedIntegrationEvent(User userCreatedDomainEvent) => 
+    internal UserCreatedIntegrationEvent(User userCreatedDomainEvent) =>
         UserId = userCreatedDomainEvent.Id;
 
     [JsonConstructor]

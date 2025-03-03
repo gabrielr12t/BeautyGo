@@ -18,6 +18,8 @@ public abstract class EmailTokenValidation : BaseEntity
         ExpiresAt = DateTime.Now.AddDays(-1);
     }
 
+    public abstract void Validate();
+
     public abstract Task Handle(IEntityValidationTokenHandle visitor);
 
     public void GenerateNewToken() =>

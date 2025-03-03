@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DomainEvents\Users\" />
     <Folder Include="Entities\Media\" />
     <Folder Include="Entities\Logging\" />
     <Folder Include="Entities\Users\" />

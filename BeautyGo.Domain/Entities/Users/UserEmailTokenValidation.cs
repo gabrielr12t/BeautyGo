@@ -6,7 +6,12 @@ namespace BeautyGo.Domain.Entities.Users;
 public class UserEmailTokenValidation : EmailTokenValidation
 {
     public Guid UserId { get; set; }
-    public User User { get; set; }
+    public virtual User User { get; set; }
+
+    public override void Validate()
+    {
+        User?.ConfirmAccount();
+    }
 
     public override async Task Handle(IEntityValidationTokenHandle visitor) =>
         await visitor.Handle(this);

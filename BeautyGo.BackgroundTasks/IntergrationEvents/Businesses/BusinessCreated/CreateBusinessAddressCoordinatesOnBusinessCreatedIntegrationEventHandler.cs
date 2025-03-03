@@ -5,7 +5,6 @@ using BeautyGo.BackgroundTasks.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Businesses;
-using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories;
 

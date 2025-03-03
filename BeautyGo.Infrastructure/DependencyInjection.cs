@@ -91,8 +91,8 @@ public static class DependencyInjection
         services.AddScoped<IOpenStreetMapIntegrationService, OpenStreetMapIntegrationService>();
 
         services.AddTransient<IEmailNotificationService, EmailNotificationService>();
-        services.AddTransient<IUserEmailNotificationService, UserEmailNotificationService>();
-        services.AddTransient<IBusinessEmailNotificationService, BusinessEmailNotificationService>();
+        services.AddTransient<IUserEmailNotificationPublisher, UserEmailNotificationService>();
+        services.AddTransient<IBusinessEmailNotificationPublisher, BusinessEmailNotificationService>();
         services.AddTransient<EmailService>();
         services.AddTransient<IEmailService>(serviceProvicer =>
         {

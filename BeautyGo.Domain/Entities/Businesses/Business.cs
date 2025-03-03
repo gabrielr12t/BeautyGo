@@ -18,6 +18,8 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
         ValidationTokens = new List<BusinessEmailTokenValidation>();
     }
 
+    #region Properties
+
     public string Name { get; set; }
 
     public int Code { get; set; }
@@ -58,6 +60,8 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     public ICollection<BusinessWorkingHours> BusinessWorkingHours { get; set; }
     public ICollection<BusinessEmailTokenValidation> ValidationTokens { get; set; }
 
+    #endregion
+
     #region Methods
 
     public static Business Create(string name, string homePageTitle, string homePageDescription, string cnpj, Guid ownerId, Guid addressId)
@@ -74,16 +78,23 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
             EmailConfirmed = false,
             AddressId = addressId,
             DocumentValidated = false,
-        }; 
+        };
 
         return business;
     }
 
-    public void ValidateDocument()
+    public void ConfirmAccount()
     {
-        DocumentValidated = true;
+        EmailConfirmed = true;
+        IsActive = true;
+        AddDomainEvent(new BusinessAccountConfirmedDomainEvent(this));
+    }
 
-        AddDomainEvent(new BusinessDocumentValidatedDomainEvent(this));
+    public void ConfirmDocument()
+    {
+        EmailConfirmed = true;
+
+        AddDomainEvent(new DocumentConfirmedDomainEvent(this));
     }
 
     public void AddWorkingHours(IEnumerable<BusinessWorkingHours> workingHours)
@@ -102,17 +113,20 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     public void AddPicture(Picture picture) =>
         Pictures.Add(new BusinessPicture { BeautyBusinessId = Id, PictureId = Id });
 
+    public void AddValidationToken() =>
+        ValidationTokens.Add(BusinessEmailTokenValidation.Create(Id));
+
     public EmailTokenValidation CreateEmailValidationToken()
     {
         var token = string.Concat(Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"));
 
         return new BusinessEmailTokenValidation
         {
-            CreatedOn = DateTime.Now,
-            ExpiresAt = DateTime.Now.AddMinutes(5),
-            IsUsed = false,
+            Token = token,
+            CreatedAt = DateTime.Now,
+            ExpiresAt = DateTime.Now.AddMinutes(10),
             BusinessId = Id,
-            Token = token
+            IsUsed = false
         };
     }
 

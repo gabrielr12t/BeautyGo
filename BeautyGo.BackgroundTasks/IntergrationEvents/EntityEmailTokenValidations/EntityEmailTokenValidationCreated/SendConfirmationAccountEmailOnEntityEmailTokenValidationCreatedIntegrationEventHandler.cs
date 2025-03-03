@@ -18,7 +18,7 @@ using BeautyGo.Domain.Settings;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.EntityEmailTokenValidations.EntityEmailTokenValidationCreated;
 
-internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler :
+public class SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler :
     IIntegrationEventHandler<EmailValidationTokenCreatedIntegrationEvent>,
     IEntityValidationTokenHandle
 {
@@ -30,8 +30,8 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
     private readonly IBaseRepository<EmailNotification> _emailRespotory;
 
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
-    private readonly IUserEmailNotificationService _userEmailNotificationService;
-    private readonly IBusinessEmailNotificationService _businessEmailNotificationService;
+    private readonly IUserEmailNotificationPublisher _userEmailNotificationPublisher;
+    private readonly IBusinessEmailNotificationPublisher _businessEmailNotificationPublisher;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ApiSettings _apiSettings;
 
@@ -39,15 +39,15 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
     #region Ctor
 
-    public SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler(
+    public SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler(
         IBaseRepository<UserEmailTokenValidation> userEmailTokenValidationRepository,
         IBaseRepository<BusinessEmailTokenValidation> businessEmailTokenValidationRepository,
         IBaseRepository<EmailTokenValidation> emailValidationTokenRepository,
         IReceitaFederalIntegrationService receitaFederalIntegration,
         IUnitOfWork unitOfWork,
         AppSettings appSettings,
-        IUserEmailNotificationService userEmailNotificationService,
-        IBusinessEmailNotificationService businessEmailNotificationService,
+        IUserEmailNotificationPublisher userEmailNotificationPublisher,
+        IBusinessEmailNotificationPublisher businessEmailNotificationPublisher,
         IBaseRepository<EmailNotification> emailRespotory)
     {
         _userEmailTokenValidationRepository = userEmailTokenValidationRepository;
@@ -56,8 +56,8 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
         _unitOfWork = unitOfWork;
         _apiSettings = appSettings.Get<ApiSettings>();
         _receitaFederalIntegration = receitaFederalIntegration;
-        _userEmailNotificationService = userEmailNotificationService;
-        _businessEmailNotificationService = businessEmailNotificationService;
+        _userEmailNotificationPublisher = userEmailNotificationPublisher;
+        _businessEmailNotificationPublisher = businessEmailNotificationPublisher;
         _emailRespotory = emailRespotory;
     }
 
@@ -92,9 +92,9 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
         var url = $"{_apiSettings.Host}/{_apiSettings.Endpoints.BusinessConfirmEmail}?token={businessEmailToken.Token}";
 
-        var message = new BusinessConfirmEmail(cnpjReceitaFederalResponse.Value.Email, businessEmailToken.Business.Name, url);
+        var message = new ConfirmAccountEmail(cnpjReceitaFederalResponse.Value.Email, businessEmailToken.Business.Name, url);
 
-        await _businessEmailNotificationService.SendAsync(message);
+        await _businessEmailNotificationPublisher.PublishAsync(message);
     }
 
     public async Task Handle(UserEmailTokenValidation element)
@@ -106,9 +106,9 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
         var url = $"{_apiSettings.Host}/{_apiSettings.Endpoints.UserConfirmEmail}?token={userEmailToken.Token}";
 
-        var message = new UserConfirmEmail(userEmailToken.User.Email, userEmailToken.User.FullName(), url);
+        var message = new ConfirmAccountEmail(userEmailToken.User.Email, userEmailToken.User.FullName(), url);
 
-        await _userEmailNotificationService.SendAsync(message);
+        await _userEmailNotificationPublisher.PublishAsync(message);
     }
 
     #endregion

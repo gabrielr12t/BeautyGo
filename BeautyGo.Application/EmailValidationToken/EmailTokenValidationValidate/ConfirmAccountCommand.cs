@@ -1,8 +1,7 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Primitives.Results;
 
-namespace BeautyGo.Application.Users.Commands.ConfirmEmailUser;
+namespace BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
 
-public record ConfirmEmailCommand(
+public record ConfirmAccountCommand(
     string Token) : ICommand<Result>;
-

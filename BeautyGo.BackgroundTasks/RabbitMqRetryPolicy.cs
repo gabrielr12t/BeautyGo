@@ -16,9 +16,7 @@ public class RabbitMqRetryPolicy : IRabbitMqRetryPolicy
         {
             TimeSpan.FromSeconds(10),  // 1º Retry  
             TimeSpan.FromMinutes(1),   // 2º Retry  
-            TimeSpan.FromMinutes(10),  // 3º Retry  
-            TimeSpan.FromHours(2),     // 4º Retry  
-            TimeSpan.FromDays(4)       // 5º Retry  
+            TimeSpan.FromMinutes(2),  // 3º Retry    
         };
 
         _retryPolicy = Policy

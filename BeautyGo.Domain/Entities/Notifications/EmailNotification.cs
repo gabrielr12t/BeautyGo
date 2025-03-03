@@ -11,4 +11,16 @@ public class EmailNotification : BaseEntity
     public int RetryCount { get; set; }
     public DateTime? FailedDate { get; set; }
     public string ErrorMessage { get; set; }
+
+    public static EmailNotification Create(string recipientEmail, string subject, string body, DateTime scheduleDate, bool isSent = false)
+    {
+        return new EmailNotification
+        {
+            Subject = subject,
+            Body = body,
+            ScheduledDate = scheduleDate,
+            IsSent = isSent,
+            RecipientEmail = recipientEmail
+        };
+    }
 }

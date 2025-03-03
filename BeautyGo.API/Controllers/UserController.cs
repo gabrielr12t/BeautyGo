@@ -1,5 +1,5 @@
 ﻿using BeautyGo.Api.Controllers.Bases;
-using BeautyGo.Application.Users.Commands.ConfirmEmailUser;
+using BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
 using BeautyGo.Application.Users.Commands.CreateUser;
 using BeautyGo.Application.Users.Commands.UpdateUser;
 using BeautyGo.Contracts.Authentication;
@@ -37,15 +37,14 @@ public class UserController : BaseController
         await Result.Create(request, DomainErrors.General.UnProcessableRequest)
         .Bind(command => mediator.Send(new CreateUserCommand(request.FirstName, request.LastName, request.Email, request.Password, request.CPF, request.Password, UserTypeEnum.Professional)))
         .Match(Ok, BadRequest);
-
-    //É GET PQ NÃO TEMOS UM CLIENT AINDA, O EMAIL IRÁ DIRECIONAR PARA O CLIENT E O CLIENT FAZ UM REQUEST POST PARA ESSE ENDPOINT
+    
     [AllowAnonymous]
     [HttpGet("register/confirm")]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ConfirmEmail([FromQuery] string token) =>
+    public async Task<IActionResult> ConfirmAccount([FromQuery] string token) =>
         await Result.Create(token, DomainErrors.General.UnProcessableRequest)
-        .Bind(command => mediator.Send(new ConfirmEmailCommand(token)))
+        .Bind(command => mediator.Send(new ConfirmAccountCommand(token)))
         .Match(Ok, BadRequest);
 
     [HttpPut("update")]

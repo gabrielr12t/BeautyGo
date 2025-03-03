@@ -30,6 +30,9 @@ internal class BusinessEmailTokenConfiguration : BaseEntityConfiguration<Busines
         builder.HasIndex(e => e.Token)
             .IsUnique();
 
+        builder.Navigation(p => p.Business)
+            .AutoInclude();
+
         builder.HasIndex(e => e.BusinessId);
 
         builder.HasOne(p => p.Business)

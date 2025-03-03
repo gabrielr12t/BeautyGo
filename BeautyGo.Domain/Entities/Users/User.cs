@@ -6,6 +6,8 @@ namespace BeautyGo.Domain.Entities.Users;
 
 public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
 {
+    #region Ctor
+
     public User()
     {
         UserRoles = new HashSet<UserRoleMapping>();
@@ -24,6 +26,10 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         PhoneNumber = phoneNumber;
         Cpf = cpf;
     }
+
+    #endregion
+
+    #region Properties
 
     public string FirstName { get; set; }
 
@@ -64,6 +70,8 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     public ICollection<UserPassword> Passwords { get; set; }
     public ICollection<UserEmailTokenValidation> ValidationTokens { get; set; }
 
+    #endregion
+
     #region Methods
 
     public abstract Task HandleUserRoleAccept(IUserRoleHandlerVisitor visitor);
@@ -81,12 +89,12 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         AddDomainEvent(new UserNameChangedDomainEvent(this));
     }
 
-    public void ConfirmEmail()
+    public void ConfirmAccount()
     {
         EmailConfirmed = true;
         IsActive = true;
         LastActivityDate = DateTime.Now;
-        AddDomainEvent(new UserConfirmEmailDomainEvent(this));
+        AddDomainEvent(new UserConfirmedAccountDomainEvent(this));
     }
 
     public string FullName() =>

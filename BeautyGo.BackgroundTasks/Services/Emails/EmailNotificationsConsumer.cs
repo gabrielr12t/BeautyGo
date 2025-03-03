@@ -38,20 +38,6 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
 
         var sendNotificationEmailTasks = new List<Task>();
 
-        var eventTest = new BusinessCreatedEvent(Guid.NewGuid());
-
-        var newBusinessEvent = Event.Create(
-          Guid.NewGuid(),
-          eventTest,
-          DateTime.Now);
-
-        var @event = JsonConvert.DeserializeObject<IEvent>(newBusinessEvent.EventSource, new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.All
-        });
-
-        await _mediator.Publish(@event, cancellationToken);
-
         foreach (EmailNotification notification in pendingEmailNotifications)
         {
             try

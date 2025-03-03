@@ -32,6 +32,9 @@ internal class UserEmailTokenConfiguration : BaseEntityConfiguration<UserEmailTo
 
         builder.HasIndex(e => e.UserId);
 
+        builder.Navigation(p => p.User)
+            .AutoInclude();
+
         builder.HasOne(p => p.User)
             .WithMany(p => p.ValidationTokens)
             .HasForeignKey(p => p.UserId)
