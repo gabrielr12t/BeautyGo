@@ -43,7 +43,7 @@ internal class EmailNotificationConsumerBackgroundService : BackgroundService
             await Task.Delay(_backgroundTaskSettings.SleepTimeInMilliseconds, stoppingToken);
         }
 
-        //await logger.InformationAsync("EmailNotificationConsumerBackgroundService background task is stopping.");
+        await logger.InformationAsync("EmailNotificationConsumerBackgroundService background task is stopping.");
 
         await Task.CompletedTask;
     }

@@ -34,7 +34,7 @@ internal class ProcessOutboxMessagesProducerBackgroundService : BackgroundServic
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            await logger.InformationAsync($"{nameof(ProcessOutboxMessagesProducerBackgroundService)} background task is doing background work.");
+            //await logger.InformationAsync($"{nameof(ProcessOutboxMessagesProducerBackgroundService)} background task is doing background work.");
 
             await ProduceEventNotificationsAsync(stoppingToken);
 

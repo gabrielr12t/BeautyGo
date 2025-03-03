@@ -2,4 +2,4 @@
 
 public record WelcomeEmail(
     string EmailTo,
-    string Name); 
+    string Name) : IEmailNotification; 

@@ -27,6 +27,14 @@ internal class SendConfirmationEmailOnBusinessDocumentValidatedIntegrationEventH
 
     public async Task Handle(BusinessDocumentValidatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
+
+        //var userByIdSpecification = new EntityByIdSpecification<User>(notification.UserId);
+        //var user = await _userRepository.GetFirstOrDefaultAsync(userByIdSpecification);
+
+        //var message = new WelcomeEmail(user.Email, user.FullName());
+
+        //await _emailNotificationService.SendAsync(message);
+
         var business = await _businessRepository.GetFirstOrDefaultAsync(new EntityByIdSpecification<Business>(notification.BusinessId));
 
         await _logger.InformationAsync($"Enviando email de confirmação para o cnpj criado: {business.Cnpj}");

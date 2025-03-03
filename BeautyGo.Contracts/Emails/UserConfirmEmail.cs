@@ -3,4 +3,4 @@
 public record UserConfirmEmail(
    string EmailTo,
    string Name,
-   string Link);
+   string Link) : IEmailNotification;

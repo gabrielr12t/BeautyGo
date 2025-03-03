@@ -9,6 +9,7 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Entities.Businesses;
+using BeautyGo.Domain.Entities.Notifications;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Visitor.EmailTokenValidation;
@@ -26,9 +27,11 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
     private readonly IBaseRepository<UserEmailTokenValidation> _userEmailTokenValidationRepository;
     private readonly IBaseRepository<BusinessEmailTokenValidation> _businessEmailTokenValidationRepository;
     private readonly IBaseRepository<EmailTokenValidation> _emailValidationTokenRepository;
+    private readonly IBaseRepository<EmailNotification> _emailRespotory;
 
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
-    private readonly IEmailNotificationService _emailNotificationService;
+    private readonly IUserEmailNotificationService _userEmailNotificationService;
+    private readonly IBusinessEmailNotificationService _businessEmailNotificationService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ApiSettings _apiSettings;
 
@@ -41,17 +44,21 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
         IBaseRepository<BusinessEmailTokenValidation> businessEmailTokenValidationRepository,
         IBaseRepository<EmailTokenValidation> emailValidationTokenRepository,
         IReceitaFederalIntegrationService receitaFederalIntegration,
-        IEmailNotificationService emailNotificationService,
         IUnitOfWork unitOfWork,
-        AppSettings appSettings)
+        AppSettings appSettings,
+        IUserEmailNotificationService userEmailNotificationService,
+        IBusinessEmailNotificationService businessEmailNotificationService,
+        IBaseRepository<EmailNotification> emailRespotory)
     {
         _userEmailTokenValidationRepository = userEmailTokenValidationRepository;
         _businessEmailTokenValidationRepository = businessEmailTokenValidationRepository;
         _emailValidationTokenRepository = emailValidationTokenRepository;
-        _emailNotificationService = emailNotificationService;
         _unitOfWork = unitOfWork;
         _apiSettings = appSettings.Get<ApiSettings>();
         _receitaFederalIntegration = receitaFederalIntegration;
+        _userEmailNotificationService = userEmailNotificationService;
+        _businessEmailNotificationService = businessEmailNotificationService;
+        _emailRespotory = emailRespotory;
     }
 
     #endregion
@@ -85,9 +92,9 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
         var url = $"{_apiSettings.Host}/{_apiSettings.Endpoints.BusinessConfirmEmail}?token={businessEmailToken.Token}";
 
-        var message = new BeautyBusinessConfirmEmail(cnpjReceitaFederalResponse.Value.Email, businessEmailToken.Business.Name, url);
+        var message = new BusinessConfirmEmail(cnpjReceitaFederalResponse.Value.Email, businessEmailToken.Business.Name, url);
 
-        await _emailNotificationService.SendAsync(message);
+        await _businessEmailNotificationService.SendAsync(message);
     }
 
     public async Task Handle(UserEmailTokenValidation element)
@@ -101,7 +108,7 @@ internal class SendConfirmationEmailOnEntityEmailTokenValidationCreatedIntegrati
 
         var message = new UserConfirmEmail(userEmailToken.User.Email, userEmailToken.User.FullName(), url);
 
-        await _emailNotificationService.SendAsync(message);
+        await _userEmailNotificationService.SendAsync(message);
     }
 
     #endregion

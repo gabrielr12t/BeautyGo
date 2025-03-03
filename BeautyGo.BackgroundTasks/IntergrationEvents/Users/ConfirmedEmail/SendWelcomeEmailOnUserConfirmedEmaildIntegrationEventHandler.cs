@@ -8,15 +8,15 @@ using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.Users.ConfirmedEmail;
 
-internal class SendWelcomeEmailOnUserConfirmEmaildIntegrationEventHandler
+internal class SendWelcomeEmailOnUserConfirmedEmaildIntegrationEventHandler
     : IIntegrationEventHandler<UserConfirmedEmailIntegrationEvent>
 {
     private readonly IBaseRepository<User> _userRepository;
-    private readonly IEmailNotificationService _emailNotificationService;
+    private readonly IUserEmailNotificationService _emailNotificationService;
 
-    public SendWelcomeEmailOnUserConfirmEmaildIntegrationEventHandler(
+    public SendWelcomeEmailOnUserConfirmedEmaildIntegrationEventHandler(
         IBaseRepository<User> userRepository,
-        IEmailNotificationService emailNotificationService)
+        IUserEmailNotificationService emailNotificationService)
     {
         _userRepository = userRepository;
         _emailNotificationService = emailNotificationService;

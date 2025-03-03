@@ -4,6 +4,7 @@ using BeautyGo.Application.Core.Abstractions.Integrations;
 using BeautyGo.BackgroundTasks.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
+using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories;
@@ -14,11 +15,10 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
 {
     #region Fields
 
+    private readonly IBaseRepository<Business> _businessRepository;
+
     private readonly IOpenStreetMapIntegrationService _openStreetMapIntegrationService;
     private readonly IUnitOfWork _unitOfWork;
-
-    private readonly IBaseRepository<Address> _addressRepository;
-    private readonly IBaseRepository<Domain.Entities.Businesses.Business> _businessRepository;
 
     #endregion
 
@@ -26,12 +26,10 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
 
     public CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEventHandler(
         IOpenStreetMapIntegrationService openStreetMapIntegrationService,
-        IBaseRepository<Address> addressRepository,
-        IBaseRepository<Domain.Entities.Businesses.Business> businessRepository,
+        IBaseRepository<Business> businessRepository,
         IUnitOfWork unitOfWork)
     {
         _openStreetMapIntegrationService = openStreetMapIntegrationService;
-        _addressRepository = addressRepository;
         _businessRepository = businessRepository;
         _unitOfWork = unitOfWork;
     }
@@ -41,7 +39,7 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
     public async Task Handle(BusinessCreatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
         var business = await _businessRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<Domain.Entities.Businesses.Business>(notification.BusinessId).AddInclude(
+            new EntityByIdSpecification<Business>(notification.BusinessId).AddInclude(
                 p => p.Address), true, cancellationToken);
 
         if (business is null)

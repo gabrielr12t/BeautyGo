@@ -42,7 +42,7 @@ internal class EventNotificationProducerBackgroundService : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            await logger.InformationAsync($"{nameof(EventNotificationProducerBackgroundService)} background task is doing background work.");
+            //await logger.InformationAsync($"{nameof(EventNotificationProducerBackgroundService)} background task is doing background work.");
 
             await ProduceEventNotificationsAsync(stoppingToken);
 
@@ -51,7 +51,7 @@ internal class EventNotificationProducerBackgroundService : BackgroundService
             await Task.Delay(_backgroundTaskSettings.SleepTimeInMilliseconds, stoppingToken);
         }
 
-        //await logger.InformationAsync($"{nameof(EventNotificationProducerBackgroundService)} background task is stopping.");
+        await logger.InformationAsync($"{nameof(EventNotificationProducerBackgroundService)} background task is stopping.");
 
         await Task.CompletedTask;
     }

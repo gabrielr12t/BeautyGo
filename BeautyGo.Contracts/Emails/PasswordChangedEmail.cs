@@ -2,4 +2,4 @@
 
 public record PasswordChangedEmail(
     string EmailTo,
-    string Name); 
+    string Name) : IEmailNotification; 
