@@ -51,5 +51,7 @@ public class ValidateDocumentOnBusinessAccountConfirmedEventHandler : IEventHand
             throw new DomainException(DomainErrors.Business.CnpjNameInvalid(business.Cnpj));
 
         business.ConfirmDocument();
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

@@ -57,6 +57,8 @@ public sealed class Event : BaseEntity, IAuditableEntity, ISoftDeletableEntity
         Executed = DateTime.Now;
         Status = EventStatus.Success;
 
+        EventErrors.Clear();
+
         return Result.Success();
     }
 
