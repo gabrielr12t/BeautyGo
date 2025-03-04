@@ -2,7 +2,7 @@
 using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.DomainEvents.Businesses;
 
-namespace BeautyGo.Application.Businesses.Commands.BusinessDocumentValidated;
+namespace BeautyGo.Application.Businesses.Commands.DocumentValidated;
 
 internal class EnqueueIntegrationEventOnBusinessDocumentValidatedEventHandler : IDomainEventHandler<BusinessDocumentValidatedDomainEvent>
 {

@@ -14,16 +14,14 @@ using System.Text;
 namespace BeautyGo.BackgroundTasks.Tasks;
 
 internal sealed class BusEventConsumerBackgroundService : IHostedService, IDisposable
-{  
+{
     private readonly IServiceProvider _serviceProvider;
     private readonly IModel _channel;
-    private readonly IConnection _connection; 
+    private readonly IConnection _connection;
     private readonly MessageBrokerSettings _settings;
 
-    public BusEventConsumerBackgroundService(
-        AppSettings appSettings, 
-        IServiceProvider serviceProvider)
-    { 
+    public BusEventConsumerBackgroundService(AppSettings appSettings, IServiceProvider serviceProvider)
+    {
         _serviceProvider = serviceProvider;
         _settings = appSettings.Get<MessageBrokerSettings>();
 
@@ -39,8 +37,8 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
-        _channel.QueueDeclare(_settings.QueueName, false, false, false);
-        _channel.QueueDeclare(_settings.DLQName, durable: true, exclusive: false, autoDelete: false); 
+        _channel.QueueDeclare(_settings.QueueName, durable: true, exclusive: false, autoDelete: false);
+        _channel.QueueDeclare(_settings.DLQName, durable: true, exclusive: false, autoDelete: false);
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -60,8 +58,15 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
 
     public void Dispose()
     {
-        _channel?.Close();
-        _connection?.Close();
+        if (_channel?.IsOpen == true)
+        {
+            _channel.Close();
+        }
+
+        if (_connection?.IsOpen == true)
+        {
+            _connection.Close();
+        }
     }
 
     private async Task OnIntegrationEventReceived(object sender, BasicDeliverEventArgs eventArgs)
@@ -85,6 +90,8 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
 
             await ProcessIntegrationEventAsync(scope.ServiceProvider, @event);
 
+            await unitOfWork.SaveChangesAsync(); // Salvar antes de dar BasicAck
+
             _channel.BasicAck(eventArgs.DeliveryTag, false);
 
             await logger.InformationAsync($"MESSAGE: {@event?.GetType()} - Processed - {@event}");
@@ -93,12 +100,12 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
         {
             await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex);
 
+            var properties = _channel.CreateBasicProperties();
+            properties.Persistent = true;
+            properties.Headers = eventArgs.BasicProperties.Headers; // Manter headers
+
             _channel.BasicNack(eventArgs.DeliveryTag, false, false);
-            _channel.BasicPublish("", _settings.DLQName, null, eventArgs.Body.ToArray());
-        }
-        finally
-        {
-            await unitOfWork.SaveChangesAsync();
+            _channel.BasicPublish("", _settings.DLQName, properties, eventArgs.Body.ToArray());
         }
     }
 
@@ -106,9 +113,9 @@ internal sealed class BusEventConsumerBackgroundService : IHostedService, IDispo
     {
         var eventConsumer = serviceProvider.GetRequiredService<IBusEventConsumer>();
 
-        using var scope = _serviceProvider.CreateScope();
-        var retryPolicy = scope.ServiceProvider.GetRequiredService<IRabbitMqRetryPolicy>();
+        var retryPolicy = serviceProvider.GetRequiredService<IRabbitMqRetryPolicy>();
         await retryPolicy.ExecuteAsync(() => eventConsumer.ConsumeAsync(integrationEvent));
     }
 }
+
 

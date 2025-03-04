@@ -1,5 +1,4 @@
 ﻿using BeautyGo.Application.Businesses.Commands.AccountConfirmed;
-using BeautyGo.Application.Businesses.Commands.BusinessCreated;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.BackgroundTasks.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Errors;
@@ -11,15 +10,15 @@ using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.Businesses.ConfirmedAccount;
 
-internal class CreateEventValidateDocumentOnBusinessConfirmedEmailIntegrationEventHandler : IIntegrationEventHandler<BusinessAccountConfirmedIntegrationEvent>
+internal class CreateAccountConfirmedEventOnBusinessConfirmedAccountIntegrationEventHandler : IIntegrationEventHandler<BusinessAccountConfirmedIntegrationEvent>
 {
-    private DateTime _triggerTimeToValidateDocument => DateTime.Now.AddMinutes(1);
+    private DateTime _triggerToEvent => DateTime.Now.AddMinutes(1);
 
     private readonly IBaseRepository<Event> _eventRepository;
     private readonly IBaseRepository<Business> _businessRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateEventValidateDocumentOnBusinessConfirmedEmailIntegrationEventHandler(
+    public CreateAccountConfirmedEventOnBusinessConfirmedAccountIntegrationEventHandler(
         IBaseRepository<Event> eventRepository,
         IBaseRepository<Business> businessRepository,
         IUnitOfWork unitOfWork)
@@ -36,12 +35,12 @@ internal class CreateEventValidateDocumentOnBusinessConfirmedEmailIntegrationEve
         if (business == null)
             throw new DomainException(DomainErrors.Business.BusinessNotFound(notification.BusinessId));
 
-        var newBusinessEvent = Event.Create(
+        var businessAccountConfirmedEvent = Event.Create(
             business.CreatedId,
             new BusinessAccountConfirmedEvent(business.Id),
-            _triggerTimeToValidateDocument);
+            _triggerToEvent);
 
-        await _eventRepository.InsertAsync(newBusinessEvent, cancellationToken);
+        await _eventRepository.InsertAsync(businessAccountConfirmedEvent, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

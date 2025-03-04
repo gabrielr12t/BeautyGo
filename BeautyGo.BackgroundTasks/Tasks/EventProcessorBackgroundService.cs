@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace BeautyGo.BackgroundTasks.Tasks;
 
-internal class EventNotificationProducerBackgroundService : BackgroundService
+internal class EventProcessorBackgroundService : BackgroundService
 {
     #region Fields
 
@@ -19,7 +19,7 @@ internal class EventNotificationProducerBackgroundService : BackgroundService
 
     #region Ctor
 
-    public EventNotificationProducerBackgroundService(
+    public EventProcessorBackgroundService(
        IOptions<BackgroundTaskSettings> backgroundTaskSettingsOptions,
        IServiceProvider serviceProvider)
     {
@@ -36,9 +36,9 @@ internal class EventNotificationProducerBackgroundService : BackgroundService
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        await logger.InformationAsync($"{nameof(EventNotificationProducerBackgroundService)} is starting.");
+        await logger.InformationAsync($"{nameof(EventProcessorBackgroundService)} is starting.");
 
-        stoppingToken.Register(() => logger.InformationAsync($"{nameof(EventNotificationProducerBackgroundService)} background task is stopping."));
+        stoppingToken.Register(() => logger.InformationAsync($"{nameof(EventProcessorBackgroundService)} background task is stopping."));
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -51,7 +51,7 @@ internal class EventNotificationProducerBackgroundService : BackgroundService
             await Task.Delay(_backgroundTaskSettings.SleepTimeInMilliseconds, stoppingToken);
         }
 
-        await logger.InformationAsync($"{nameof(EventNotificationProducerBackgroundService)} background task is stopping.");
+        await logger.InformationAsync($"{nameof(EventProcessorBackgroundService)} background task is stopping.");
 
         await Task.CompletedTask;
     }
@@ -63,7 +63,7 @@ internal class EventNotificationProducerBackgroundService : BackgroundService
 
         try
         {
-            var personalEventNotificationsProducer = scope.ServiceProvider.GetRequiredService<IEventNotificationProducer>();
+            var personalEventNotificationsProducer = scope.ServiceProvider.GetRequiredService<IEventProcessor>();
 
             await personalEventNotificationsProducer.ProduceAsync(_backgroundTaskSettings.NotificationsBatchSize, stoppingToken);
         }

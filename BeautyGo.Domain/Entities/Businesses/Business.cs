@@ -86,14 +86,13 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     public void ConfirmAccount()
     {
         EmailConfirmed = true;
-        IsActive = true;
         AddDomainEvent(new BusinessAccountConfirmedDomainEvent(this));
     }
 
     public void ConfirmDocument()
     {
-        EmailConfirmed = true;
-
+        DocumentValidated = true;
+        IsActive = true;
         AddDomainEvent(new DocumentConfirmedDomainEvent(this));
     }
 

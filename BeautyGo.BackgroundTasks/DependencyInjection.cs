@@ -20,12 +20,12 @@ public static class DependencyInjection
 
         services.AddHostedService<EmailNotificationConsumerBackgroundService>();
         services.AddHostedService<BusEventConsumerBackgroundService>();
-        services.AddHostedService<EventNotificationProducerBackgroundService>();
+        services.AddHostedService<EventProcessorBackgroundService>();
         services.AddHostedService<ProcessOutboxMessagesProducerBackgroundService>();
 
         services.AddScoped<IEmailNotificationsConsumer, EmailNotificationsConsumer>();
         services.AddScoped<IBusEventConsumer, BusEventConsumer>();
-        services.AddScoped<IEventNotificationProducer, EventNotificationProducer>();
+        services.AddScoped<IEventProcessor, EventProcessor>();
         services.AddScoped<IProcessOutboxMessagesProducer, ProcessOutboxMessagesProducer>();
 
         services.AddScoped<IRabbitMqRetryPolicy, RabbitMqRetryPolicy>();

@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace BeautyGo.BackgroundTasks.Services.Events;
 
-public class EventNotificationProducer : IEventNotificationProducer
+public class EventProcessor : IEventProcessor
 {
     #region Fields
 
@@ -25,7 +25,7 @@ public class EventNotificationProducer : IEventNotificationProducer
 
     #region Ctor
 
-    public EventNotificationProducer(
+    public EventProcessor(
         IMediator mediator,
         ILogger logger,
         IUnitOfWork unitOfWork,
@@ -36,6 +36,29 @@ public class EventNotificationProducer : IEventNotificationProducer
         _unitOfWork = unitOfWork;
         _eventRepository = eventRepository;
     }
+
+    #endregion
+
+    #region Utilities
+
+    private DateTime GetRetryExecutionTime(int attemptCount)
+    {
+        var retryDelays = new[]
+        {
+            TimeSpan.FromSeconds(20),  // 1ª tentativa → 20s
+            TimeSpan.FromMinutes(2),   // 2ª tentativa → 2min
+            TimeSpan.FromMinutes(10),  // 3ª tentativa → 10min
+            TimeSpan.FromHours(1),     // 4ª tentativa → 1h
+            TimeSpan.FromDays(1),      // 5ª tentativa → 1 dia
+            TimeSpan.FromDays(3)       // 6ª tentativa → 3 dias
+        };
+
+        if (attemptCount <= retryDelays.Length)
+            return DateTime.UtcNow.Add(retryDelays[attemptCount - 1]); // Pegamos o tempo baseado na tentativa
+        else
+            return DateTime.UtcNow.AddDays(7); // Se passar do limite, espera 7 dias (ou outro tempo que preferir)
+    }
+
 
     #endregion
 
@@ -67,6 +90,7 @@ public class EventNotificationProducer : IEventNotificationProducer
                 pendingEvent.Attempts++;
 
                 pendingEvent.Status = EventStatus.Error;
+                pendingEvent.Schedule = GetRetryExecutionTime(pendingEvent.Attempts);
 
                 pendingEvent.EventErrors.Add(EventError.Create(ex.Message, pendingEvent.Id));
 

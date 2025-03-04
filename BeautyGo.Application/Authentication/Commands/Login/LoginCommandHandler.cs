@@ -1,10 +1,8 @@
-﻿using BeautyGo.Application.Businesses.Commands.BusinessCreated;
-using BeautyGo.Application.Core.Abstractions.Authentication;
+﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Core.Errors;
-using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Events;
 using BeautyGo.Domain.Entities.Users;
@@ -12,8 +10,6 @@ using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications.UserEmailValidationTokens;
 using BeautyGo.Domain.Patterns.Specifications.Users;
 using BeautyGo.Domain.Repositories;
-using MediatR;
-using Newtonsoft.Json;
 
 namespace BeautyGo.Application.Authentication.Commands.Login;
 
@@ -84,19 +80,6 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
         var user = await _userRepository.GetFirstOrDefaultAsync(userByEmailSpec);
         if (user == null)
             return Result.Failure<TokenModel>(DomainErrors.User.UserNotFound);
-
-        #region TEST EVENT
-
-        var eventTest = new BusinessCreatedEvent(Guid.NewGuid());
-
-        var newBusinessEvent = Event.Create(
-          user.Id,
-          eventTest,
-          DateTime.Now);
-
-        await _eventRepository.InsertAsync(newBusinessEvent, cancellationToken); 
-
-        #endregion
 
         if (!PasswordsMatch(user.GetCurrentPassword(), request.Password))
             return Result.Failure<TokenModel>(DomainErrors.Authentication.InvalidEmailOrPassword);

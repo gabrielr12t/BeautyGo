@@ -1,4 +1,5 @@
-﻿using BeautyGo.Application.Core.Abstractions.Integrations;
+﻿using BeautyGo.Application.Core.Abstractions.Data;
+using BeautyGo.Application.Core.Abstractions.Integrations;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.Core.Exceptions;
@@ -9,21 +10,23 @@ using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.Application.Businesses.Commands.AccountConfirmed;
 
-public class ValidateDocumentOnBusinessBusinessAccountConfirmedEventHandler : IEventHandler<BusinessAccountConfirmedEvent>
+public class ValidateDocumentOnBusinessAccountConfirmedEventHandler : IEventHandler<BusinessAccountConfirmedEvent>
 {
     #region Fields
 
     private readonly IBaseRepository<Business> _businessRepository;
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
+    private readonly IUnitOfWork _unitOfWork;
 
     #endregion
 
     #region Ctor
 
-    public ValidateDocumentOnBusinessBusinessAccountConfirmedEventHandler(IReceitaFederalIntegrationService receitaFederalIntegration, IBaseRepository<Business> businessRepository)
+    public ValidateDocumentOnBusinessAccountConfirmedEventHandler(IReceitaFederalIntegrationService receitaFederalIntegration, IBaseRepository<Business> businessRepository, IUnitOfWork unitOfWork)
     {
         _receitaFederalIntegration = receitaFederalIntegration;
         _businessRepository = businessRepository;
+        _unitOfWork = unitOfWork;
     }
 
     #endregion
@@ -47,6 +50,6 @@ public class ValidateDocumentOnBusinessBusinessAccountConfirmedEventHandler : IE
         if (!VerifyCompanyNameSimilarity)
             throw new DomainException(DomainErrors.Business.CnpjNameInvalid(business.Cnpj));
 
-        business.ConfirmAccount();
+        business.ConfirmDocument();
     }
 }

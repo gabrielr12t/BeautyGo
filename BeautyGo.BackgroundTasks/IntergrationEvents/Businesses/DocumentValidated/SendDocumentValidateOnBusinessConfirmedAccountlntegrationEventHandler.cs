@@ -1,4 +1,4 @@
-﻿using BeautyGo.Application.Businesses.Commands.BusinessDocumentValidated;
+﻿using BeautyGo.Application.Businesses.Commands.DocumentValidated;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.Application.Core.Abstractions.Notifications;
