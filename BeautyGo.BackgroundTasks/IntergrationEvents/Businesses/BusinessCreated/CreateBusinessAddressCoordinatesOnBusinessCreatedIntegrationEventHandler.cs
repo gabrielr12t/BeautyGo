@@ -16,7 +16,7 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
 
     private readonly IBaseRepository<Business> _businessRepository;
 
-    private readonly IOpenStreetMapIntegrationService _openStreetMapIntegrationService;
+    private readonly ILocationIQIntegrationService _openStreetMapIntegrationService;
     private readonly IUnitOfWork _unitOfWork;
 
     #endregion
@@ -24,7 +24,7 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
     #region Ctor
 
     public CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEventHandler(
-        IOpenStreetMapIntegrationService openStreetMapIntegrationService,
+        ILocationIQIntegrationService openStreetMapIntegrationService,
         IBaseRepository<Business> businessRepository,
         IUnitOfWork unitOfWork)
     {

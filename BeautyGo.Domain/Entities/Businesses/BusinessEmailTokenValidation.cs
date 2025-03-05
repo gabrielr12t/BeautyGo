@@ -1,5 +1,4 @@
 ﻿using BeautyGo.Domain.DomainEvents.EmailValidationToken;
-using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Visitor.EmailTokenValidation;
 
 namespace BeautyGo.Domain.Entities.Businesses;

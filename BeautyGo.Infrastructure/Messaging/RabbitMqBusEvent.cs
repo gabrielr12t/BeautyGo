@@ -1,5 +1,4 @@
-﻿using BeautyGo.Application.Core.Abstractions.Data;
-using BeautyGo.Application.Core.Abstractions.Logging;
+﻿using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Settings;
@@ -34,8 +33,67 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
         _connection = connectionFactory.CreateConnection();
         _channel = _connection.CreateModel();
 
-        // Garantir que a fila exista antes de publicar
-        _channel.QueueDeclare(_messageBrokerSettings.QueueName, durable: true, exclusive: false, autoDelete: false);
+        // Garantir que as filas existam
+        _channel.QueueDeclare(
+            queue: _messageBrokerSettings.QueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false
+        );
+
+        // Configurar fila de Retry com TTL
+        var retryQueueArguments = new Dictionary<string, object>
+        {
+            { "x-message-ttl", 60000 } // 1 minuto de TTL para retry
+        };
+
+        _channel.QueueDeclare(
+            queue: _messageBrokerSettings.RetryQueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: retryQueueArguments
+        );
+
+        // Configurar fila de DLQ com TTL
+        var dlqArguments = new Dictionary<string, object>
+        {
+            { "x-message-ttl", 60000 } // 1 minuto de TTL para DLQ
+        };
+
+        _channel.QueueDeclare(
+            queue: _messageBrokerSettings.DLQName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: dlqArguments
+        );
+
+        // Configurar Exchange
+        _channel.ExchangeDeclare(
+            exchange: _messageBrokerSettings.ExchangeName,
+            type: "direct", // Pode ser "direct", "fanout", etc.
+            durable: true
+        );
+
+        // Associar filas ao Exchange
+        _channel.QueueBind(
+            queue: _messageBrokerSettings.QueueName,
+            exchange: _messageBrokerSettings.ExchangeName,
+            routingKey: _messageBrokerSettings.QueueName
+        );
+
+        _channel.QueueBind(
+            queue: _messageBrokerSettings.RetryQueueName,
+            exchange: _messageBrokerSettings.ExchangeName,
+            routingKey: _messageBrokerSettings.RetryQueueName
+        );
+
+        _channel.QueueBind(
+            queue: _messageBrokerSettings.DLQName,
+            exchange: _messageBrokerSettings.ExchangeName,
+            routingKey: _messageBrokerSettings.DLQName
+        );
     }
 
     public async Task PublishAsync(IBusEvent @event, CancellationToken cancellationToken = default)
@@ -57,8 +115,8 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
             await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Preparing to publish - {@event}");
 
             _channel.BasicPublish(
-                exchange: string.Empty,
-                routingKey: _messageBrokerSettings.QueueName,
+                exchange: _messageBrokerSettings.ExchangeName,
+                routingKey: _messageBrokerSettings.QueueName, // Usando a fila principal
                 basicProperties: properties,
                 body: body
             );
@@ -87,3 +145,4 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
         }
     }
 }
+

@@ -44,6 +44,8 @@ using BeautyGo.Infrastructure.Services.Business;
 using BeautyGo.Infrastructure.Services.Authentication.Events;
 using BeautyGo.Application.Core.Abstractions.OutboxMessages;
 using BeautyGo.Infrastructure.Services.OutboxMessages;
+using System.Buffers.Text;
+using System.Web;
 
 namespace BeautyGo.Infrastructure;
 
@@ -88,7 +90,7 @@ public static class DependencyInjection
 
         services.AddScoped<IReceitaFederalIntegrationService, ReceitaFederalIntegrationService>();
         services.AddScoped<IViaCepIntegrationService, ViaCepIntegration>();
-        services.AddScoped<IOpenStreetMapIntegrationService, OpenStreetMapIntegrationService>();
+        services.AddScoped<ILocationIQIntegrationService, LocationIQIntegrationServiceIntegrationService>();
 
         services.AddTransient<IEmailNotificationService, EmailNotificationService>();
         services.AddTransient<IUserEmailNotificationPublisher, UserEmailNotificationService>();
@@ -120,7 +122,7 @@ public static class DependencyInjection
             TimeSpan.FromMinutes(5)
         );
 
-        services.AddConfiguredHttpClient<IOpenStreetMapIntegrationService, OpenStreetMapIntegrationService, OpenStreetMapSettings>(
+        services.AddConfiguredHttpClient<ILocationIQIntegrationService, LocationIQIntegrationServiceIntegrationService, LocationIQSettings>(
             settings => settings.Address,
             TimeSpan.FromSeconds(5000),
             TimeSpan.FromMinutes(5),
@@ -130,12 +132,11 @@ public static class DependencyInjection
             }
         );
 
-        services.AddTransient<loggerDelegatingHandler>();
+        services.AddTransient<LoggerDelegatingHandler>();
         services.AddTransient<RetryDelegatingHandler>();
 
         return services;
     }
-
 
     public static void AddConfiguredHttpClient<TInterface, TImplementation, TSettings>(
         this IServiceCollection services,
@@ -151,12 +152,14 @@ public static class DependencyInjection
             .AddHttpClient<TInterface, TImplementation>((serviceProvider, client) =>
             {
                 var settings = Singleton<AppSettings>.Instance.Get<TSettings>();
-                client.BaseAddress = new Uri(getAddress(settings));
+                var baseAddress = getAddress(settings);
+
+                client.BaseAddress = new Uri(baseAddress);
                 client.Timeout = timeout;
 
                 addHeaders?.Invoke(client.DefaultRequestHeaders);
             })
-            .AddHttpMessageHandler<loggerDelegatingHandler>()
+            .AddHttpMessageHandler<LoggerDelegatingHandler>()
             .AddHttpMessageHandler<RetryDelegatingHandler>()
             .SetHandlerLifetime(handlerLifetime);
     }

@@ -39,8 +39,67 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
-        _channel.QueueDeclare(_settings.QueueName, durable: true, exclusive: false, autoDelete: false);
-        _channel.QueueDeclare(_settings.DLQName, durable: true, exclusive: false, autoDelete: false);
+        // Garantir que as filas existam
+        _channel.QueueDeclare(
+            queue: _settings.QueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false
+        );
+
+        // Configurar fila de Retry com TTL
+        var retryQueueArguments = new Dictionary<string, object>
+        {
+            { "x-message-ttl", 60000 } // 1 minuto de TTL para retry
+        };
+
+        _channel.QueueDeclare(
+            queue: _settings.RetryQueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: retryQueueArguments
+        );
+
+        // Configurar fila de DLQ com TTL
+        var dlqArguments = new Dictionary<string, object>
+        {
+            { "x-message-ttl", 60000 } // 1 minuto de TTL para DLQ
+        };
+
+        _channel.QueueDeclare(
+            queue: _settings.DLQName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: dlqArguments
+        );
+
+        // Configurar Exchange
+        _channel.ExchangeDeclare(
+            exchange: _settings.ExchangeName,
+            type: "direct", // Pode ser "direct", "fanout", etc.
+            durable: true
+        );
+
+        // Associar filas ao Exchange
+        _channel.QueueBind(
+            queue: _settings.QueueName,
+            exchange: _settings.ExchangeName,
+            routingKey: _settings.QueueName
+        );
+
+        _channel.QueueBind(
+            queue: _settings.RetryQueueName,
+            exchange: _settings.ExchangeName,
+            routingKey: _settings.RetryQueueName
+        );
+
+        _channel.QueueBind(
+            queue: _settings.DLQName,
+            exchange: _settings.ExchangeName,
+            routingKey: _settings.DLQName
+        );
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -88,6 +147,7 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         {
             await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex);
 
+            // Redireciona para DLQ ou fila de retry
             HandleFailedMessage(eventArgs);
         }
     }
@@ -98,6 +158,7 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         properties.Persistent = true;
         properties.Headers = eventArgs.BasicProperties.Headers;
 
+        // Publica na fila de DLQ
         _channel.BasicPublish(exchange: "", routingKey: _settings.DLQName, basicProperties: properties, body: eventArgs.Body.ToArray());
 
         _channel.BasicAck(eventArgs.DeliveryTag, false);
@@ -113,6 +174,7 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         base.Dispose();
     }
 }
+
 
 
 

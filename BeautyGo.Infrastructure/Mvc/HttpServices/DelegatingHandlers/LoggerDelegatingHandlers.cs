@@ -4,13 +4,13 @@ using BeautyGo.Application.Core.Abstractions.Logging;
 
 namespace BeautyGo.Infrastructure.Mvc.HttpServices.DelegatingHandlers;
 
-public class loggerDelegatingHandler : DelegatingHandler
+public class LoggerDelegatingHandler : DelegatingHandler
 {
     private readonly ILogger _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;
 
-    public loggerDelegatingHandler(
+    public LoggerDelegatingHandler(
         ILogger logger,
         IUnitOfWork unitOfWork,
         IAuthService authService)
