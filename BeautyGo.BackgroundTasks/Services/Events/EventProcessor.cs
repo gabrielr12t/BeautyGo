@@ -70,8 +70,6 @@ public class EventProcessor : IEventProcessor
         var pendingEventsSpec = new PendingEventSpecification(eventSettings.MaxAttempsFailed);
         var pendingEvents = await _eventRepository.GetAsync(pendingEventsSpec);
 
-        var tasks = new List<Task>();
-
         foreach (var pendingEvent in pendingEvents)
         {
             try
@@ -81,7 +79,7 @@ public class EventProcessor : IEventProcessor
                     TypeNameHandling = TypeNameHandling.All
                 });
 
-                tasks.Add(_mediator.Publish(@event, cancellationToken));
+                await _mediator.Publish(@event, cancellationToken);
 
                 pendingEvent.MarkAsExecuted();
             }
@@ -103,7 +101,5 @@ public class EventProcessor : IEventProcessor
                 await _unitOfWork.SaveChangesAsync();
             }
         }
-
-        await Task.WhenAll(tasks);
     }
 }

@@ -93,7 +93,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     {
         DocumentValidated = true;
         IsActive = true;
-        AddDomainEvent(new DocumentConfirmedDomainEvent(this));
+        AddDomainEvent(new BusinessDocumentValidatedDomainEvent(this));
     }
 
     public void AddWorkingHours(IEnumerable<BusinessWorkingHours> workingHours)

@@ -46,11 +46,13 @@ public class ValidateDocumentOnBusinessAccountConfirmedEventHandler : IEventHand
         if (!_receitaFederalIntegration.IsValidCnpjStatus(cnpjReceitaFederalResponse.Value.Status, cnpjReceitaFederalResponse.Value.Situacao))
             throw new DomainException(DomainErrors.Business.CnpjRestricted(business.Cnpj));
 
-        var VerifyCompanyNameSimilarity = CommonHelper.CheckProximityWithThreshold(cnpjReceitaFederalResponse.Value.Nome.ToUpper(), business.Name.ToUpper(), 0.8);
+        var VerifyCompanyNameSimilarity = CommonHelper.CheckProximityWithThreshold(cnpjReceitaFederalResponse.Value.Nome.ToUpper(), business.Name.ToUpper(), 0.7);
         if (!VerifyCompanyNameSimilarity)
             throw new DomainException(DomainErrors.Business.CnpjNameInvalid(business.Cnpj));
 
         business.ConfirmDocument();
+
+        _businessRepository.Update(business);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
