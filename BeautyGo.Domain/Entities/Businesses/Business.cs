@@ -89,7 +89,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
         AddDomainEvent(new BusinessAccountConfirmedDomainEvent(this));
     }
 
-    public void ConfirmDocument()
+    public void ValidateDocument()
     {
         DocumentValidated = true;
         IsActive = true;
