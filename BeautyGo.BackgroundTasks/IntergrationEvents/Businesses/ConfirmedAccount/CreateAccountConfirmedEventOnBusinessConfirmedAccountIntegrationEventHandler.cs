@@ -36,7 +36,7 @@ internal class CreateAccountConfirmedEventOnBusinessConfirmedAccountIntegrationE
             throw new DomainException(DomainErrors.Business.BusinessNotFound(notification.BusinessId));
 
         var businessAccountConfirmedEvent = Event.Create(
-            business.CreatedId,
+            business.OwnerId,
             new BusinessAccountConfirmedEvent(business.Id),
             _triggerToEvent);
 

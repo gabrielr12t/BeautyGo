@@ -1,7 +1,7 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Patterns.Specifications;
-using LinqToDB.SqlQuery;
+using Microsoft.Data.SqlClient;
 
 namespace BeautyGo.Domain.Repositories;
 
@@ -10,6 +10,8 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     IQueryable<TEntity> Query(bool asTracking = false);
 
     Task<int> ExecuteSqlAsync(string sql, IEnumerable<SqlParameter> parameters, CancellationToken cancellationToken = default);
+
+    Task<IList<TEntity>> FromSqlAsync(string sql, CancellationToken cancellationToken = default, params IEnumerable<SqlParameter> parameters);
 
     Task<IList<TEntity>> GetByIdAsync(IReadOnlyList<Guid> ids);
 

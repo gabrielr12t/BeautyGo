@@ -10,5 +10,5 @@ public interface IAuthService
 
     Task<Result<RefreshTokenModel>> RefreshTokenAsync(Guid userId, string refreshToken);
 
-    Task<User> GetCurrentUserAsync();
+    Task<User> GetCurrentUserAsync(CancellationToken cancellationToken = default);
 }

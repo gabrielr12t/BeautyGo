@@ -10,7 +10,7 @@ public class ProfessionalAvailabilityConfiguration : BaseEntityConfiguration<Pro
     {
         builder.ToTable("ProfessionalAvailabilities", "AvailableHours");
 
-        builder.Property(pa => pa.Date)
+        builder.Property(pa => pa.DayOfWeek)
             .IsRequired();
 
         builder.Property(pa => pa.StartTime)

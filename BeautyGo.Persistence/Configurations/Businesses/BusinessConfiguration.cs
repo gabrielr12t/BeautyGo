@@ -68,9 +68,9 @@ internal class BusinessConfiguration : BaseEntityConfiguration<Business>
 
         builder.Property(s => s.Deleted);
 
-        builder.HasOne(s => s.Created)
+        builder.HasOne(s => s.Owner)
             .WithMany()
-            .HasForeignKey(s => s.CreatedId)
+            .HasForeignKey(s => s.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(s => s.Address)

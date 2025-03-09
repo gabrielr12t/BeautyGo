@@ -1,7 +1,7 @@
 ﻿using BeautyGo.Domain.Helpers;
 using System.Linq.Expressions;
 
-namespace BeautyGo.Domain.Patterns.Specifications.Business;
+namespace BeautyGo.Domain.Patterns.Specifications.Businesses;
 
 public class BusinessByCnpjSpecification : Specification<Entities.Businesses.Business>
 {

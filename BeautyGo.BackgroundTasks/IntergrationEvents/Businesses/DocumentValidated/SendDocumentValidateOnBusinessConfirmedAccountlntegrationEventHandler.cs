@@ -27,14 +27,14 @@ internal class SendDocumentValidateOnBusinessConfirmedAccountlntegrationEventHan
     public async Task Handle(BusinessDocumentValidatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
         var businessByIdSpecification = new EntityByIdSpecification<Business>(notification.BusinessId)
-            .AddInclude(p => p.Created);
+            .AddInclude(p => p.Owner);
 
         var business = await _businessRepository.GetFirstOrDefaultAsync(businessByIdSpecification);
 
         if (business == null)
             throw new DomainException(DomainErrors.Business.BusinessNotFound(notification.BusinessId));
 
-        var message = new DocumentValidatedEmail(business.Created.Email, business.Name, "LINK TESTE");
+        var message = new DocumentValidatedEmail(business.Owner.Email, business.Name, "LINK TESTE");
 
         await _businessEmailNotificationPublisher.PublishAsync(message, cancellationToken); 
     }

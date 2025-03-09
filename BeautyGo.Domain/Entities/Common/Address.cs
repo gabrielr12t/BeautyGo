@@ -24,11 +24,11 @@ public partial class Address : BaseEntity
 
     public string PhoneNumber { get; set; }
 
-    public string Latitude { get; set; }
+    public double Latitude { get; set; }
 
-    public string Longitude { get; set; }
+    public double Longitude { get; set; }
 
-    public void ChangeCoordinates(string latitude, string longitude)
+    public void ChangeCoordinates(double latitude, double longitude)
     {
         Latitude = latitude;
         Longitude = longitude;

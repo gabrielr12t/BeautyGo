@@ -40,6 +40,16 @@ internal static class ValidationErrors
         internal static Error InvalidPhoneFormat => new Error("CreateBusiness.InvalidPhoneFormat", "O telefone deve estar no formato (XX) XXXXX-XXXX.");
     }
 
+    internal static class CreateWorkingHours
+    {
+        internal static Error IsEmptyList => new Error("CreateWorkingHours.IsEmptyList", "A lista está vazia.");
+        internal static Error ProvideForUpToSevenDays => new Error("CreateWorkingHours.ProvideForUpToSevenDays", "A lista está vazia.");
+        internal static Error InvalidDayOfWeek => new Error("CreateWorkingHours.InvalidDayOfWeek", "Dia da semana é obrigatório.");
+        internal static Error InvalidOpeningTime => new Error("CreateWorkingHours.InvalidOpeningTime", "Horário de abertura inválido.");
+        internal static Error InvalidClosingTime => new Error("CreateWorkingHours.InvalidClosingTime", "Horário de fechamento inválido.");
+        internal static Error ClosingTimeNotMustBeAfterOpeningTime => new Error("CreateWorkingHours.ClosingTimeNotMustBeAfterOpeningTime", "Horário de fechamento não pode ser menor que horário de abertura.");
+    }
+
     /// <summary>
     /// Contains the create user errors.
     /// </summary>

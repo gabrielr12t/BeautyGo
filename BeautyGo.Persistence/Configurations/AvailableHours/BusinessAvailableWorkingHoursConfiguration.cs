@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BeautyGo.Persistence.Configurations.AvailableHours;
 
-public class BeautyBusinessAvailableWorkingHoursConfiguration : BaseEntityConfiguration<BusinessWorkingHours>
+public class BusinessAvailableWorkingHoursConfiguration : BaseEntityConfiguration<BusinessWorkingHours>
 {
     public override void Configure(EntityTypeBuilder<BusinessWorkingHours> builder)
     {
@@ -13,15 +13,15 @@ public class BeautyBusinessAvailableWorkingHoursConfiguration : BaseEntityConfig
         builder.Property(bwh => bwh.Day)
             .IsRequired();
 
-        builder.Property(bwh => bwh.OpenTime)
+        builder.Property(bwh => bwh.OpeningTime)
             .IsRequired();
 
-        builder.Property(bwh => bwh.CloseTime)
+        builder.Property(bwh => bwh.ClosingTime)
             .IsRequired();
 
-        builder.HasOne(bwh => bwh.BeautyBusiness)
-            .WithMany(bb => bb.BusinessWorkingHours)
-            .HasForeignKey(bwh => bwh.BeautyBusinessId)
+        builder.HasOne(bwh => bwh.Business)
+            .WithMany(bb => bb.WorkingHours)
+            .HasForeignKey(bwh => bwh.BusinessId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
     }

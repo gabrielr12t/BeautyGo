@@ -84,7 +84,7 @@ internal class UpdateBeautyBusinessImageCommandHandler : ICommandHandler<UpdateB
             return Result.Failure(DomainErrors.General.NotFound);
 
         //PASSAR PARA UM SPECIFICATION
-        var isOwnedByUser = business.CreatedId == currentUser.Id;
+        var isOwnedByUser = business.OwnerId == currentUser.Id;
         if (!isOwnedByUser)
             return Result.Failure(DomainErrors.General.ForbidenUser);
 

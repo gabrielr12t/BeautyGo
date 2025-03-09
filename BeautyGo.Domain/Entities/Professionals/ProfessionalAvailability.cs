@@ -5,7 +5,7 @@ public class ProfessionalAvailability : BaseEntity
     public Guid ProfessionalId { get; set; }
     public Professional Professional { get; set; }
 
-    public DateTime Date { get; set; }
+    public DayOfWeek DayOfWeek { get; set; }
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
 

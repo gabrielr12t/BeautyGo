@@ -5,7 +5,7 @@ using BeautyGo.Domain.Extensions;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories;
 using BeautyGo.Persistence.Extensions;
-using LinqToDB.SqlQuery;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeautyGo.Persistence.Repositories;
@@ -15,8 +15,8 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 {
     #region Fields
 
-    private readonly BeautyGoContext _context;
-    private readonly DbSet<TEntity> _dbSet;
+    protected readonly BeautyGoContext _context;
+    protected readonly DbSet<TEntity> _dbSet;
 
     #endregion
 
@@ -89,11 +89,14 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     #endregion
 
-    #region Raw
+    #region SQL
 
     public virtual async Task<int> ExecuteSqlAsync(string sql,
         IEnumerable<SqlParameter> parameters, CancellationToken cancellationToken = default) =>
         await _context.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
+
+    public virtual async Task<IList<TEntity>> FromSqlAsync(string sql, CancellationToken cancellationToken = default, params IEnumerable<SqlParameter> parameters) =>
+        await _context.Set<TEntity>().FromSqlRaw(sql, parameters).ToListAsync(cancellationToken);
 
     #endregion
 

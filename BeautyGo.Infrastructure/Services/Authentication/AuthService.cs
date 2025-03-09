@@ -161,7 +161,7 @@ public class AuthService : IAuthService
     }
 
     //AJUSTAR PARA RETORNAR RESULT
-    public async Task<User> GetCurrentUserAsync()
+    public async Task<User> GetCurrentUserAsync(CancellationToken cancellationToken = default)
     {
         if (_cachedUser != null)
             return _cachedUser;
@@ -178,7 +178,7 @@ public class AuthService : IAuthService
 
         var user = await _userRepository.GetFirstOrDefaultAsync(
             new EntityByIdSpecification<User>(userId).And(
-                new UserWithRolesSpecification()));
+                new UserWithRolesSpecification()), cancellationToken: cancellationToken);
 
         if (user is null)
             return default;

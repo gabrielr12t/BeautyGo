@@ -18,5 +18,13 @@ internal class AddressConfiguration : BaseEntityConfiguration<Address>
         builder.Property(p => p.FirstName).IsRequired().HasMaxLength(30);
         builder.Property(p => p.LastName).IsRequired().HasMaxLength(30);
         builder.Property(p => p.PhoneNumber).IsRequired().HasMaxLength(15);
+
+        builder
+            .HasIndex(p => p.Latitude)
+            .HasDatabaseName("IX_LATITUDE");
+
+        builder
+            .HasIndex(p => p.Longitude)
+            .HasDatabaseName("IX_LONGITUDE");
     }
 }

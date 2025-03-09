@@ -4,16 +4,14 @@ public class BusinessWorkingHours : BaseEntity
 {
     public DayOfWeek Day { get; set; }
 
-    public TimeSpan OpenTime { get; set; }
-    public TimeSpan CloseTime { get; set; }
+    public TimeSpan OpeningTime { get; set; }
+    public TimeSpan ClosingTime { get; set; }
 
-    public Guid BeautyBusinessId { get; set; }
-    public Business BeautyBusiness { get; set; }
+    public Guid BusinessId { get; set; }
+    public Business Business { get; set; }
 
-    public static BusinessWorkingHours Create(DayOfWeek day, TimeSpan openTime, TimeSpan endTime)
+    public static BusinessWorkingHours Create(DayOfWeek day, TimeSpan openingTime, TimeSpan closingTime)
     {
-        var workingHour = new BusinessWorkingHours { Day = day, OpenTime = openTime, CloseTime = endTime };
-
-        return workingHour;
+        return new BusinessWorkingHours { Day = day, OpeningTime = openingTime, ClosingTime = closingTime };
     }
 }

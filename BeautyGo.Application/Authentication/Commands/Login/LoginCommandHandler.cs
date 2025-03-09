@@ -4,7 +4,6 @@ using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
-using BeautyGo.Domain.Entities.Events;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications.UserEmailValidationTokens;
@@ -17,30 +16,25 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 {
     #region Fields
 
-    private readonly IBaseRepository<UserRole> _roleRepository;
     private readonly IBaseRepository<User> _userRepository;
     private readonly IBaseRepository<UserEmailTokenValidation> _userEmailValidationTokenRepository;
-    private readonly IBaseRepository<Event> _eventRepository;
     private readonly IAuthService _authService;
-    private readonly IUnitOfWork _unitOfWork; 
+    private readonly IUnitOfWork _unitOfWork;
 
     #endregion
 
     #region Ctor
 
-    public LoginCommandHandler(IBaseRepository<UserRole> roleRepository,
+    public LoginCommandHandler(
         IBaseRepository<User> userRepository,
         IBaseRepository<UserEmailTokenValidation> userEmailValidationTokenRepository,
-        IBaseRepository<Event> eventRepository,
         IAuthService authService,
         IUnitOfWork unitOfWork)
     {
-        _roleRepository = roleRepository;
         _userRepository = userRepository;
         _userEmailValidationTokenRepository = userEmailValidationTokenRepository;
         _authService = authService;
         _unitOfWork = unitOfWork;
-        _eventRepository = eventRepository; 
     }
 
     #endregion

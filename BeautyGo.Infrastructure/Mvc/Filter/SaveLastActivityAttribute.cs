@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BeautyGo.Application.Core.Abstractions.Authentication;
+using BeautyGo.Application.Core.Abstractions.Data;
+using BeautyGo.Application.Core.Abstractions.Web;
+using BeautyGo.Domain.Entities.Users;
+using BeautyGo.Domain.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace BeautyGo.Infrastructure.Mvc.Filter;
@@ -17,13 +22,21 @@ public class SaveLastActivityAttribute : TypeFilterAttribute
     {
         #region Fields
 
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHelper _webHelper;
+        private readonly IAuthService _authService;
+        private readonly IBaseRepository<User> _userRepository;
 
         #endregion
 
         #region Ctor
 
-        public SaveLastActivityFilter()
+        public SaveLastActivityFilter(IAuthService authService, IBaseRepository<User> userRepository, IUnitOfWork unitOfWork, IWebHelper webHelper)
         {
+            _authService = authService;
+            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
+            _webHelper = webHelper;
         }
 
         #endregion
@@ -32,19 +45,22 @@ public class SaveLastActivityAttribute : TypeFilterAttribute
 
         public async Task SaveLastActivityAsync(ActionExecutingContext context)
         {
-            //if (context == null)
-            //    throw new ArgumentNullException(nameof(context));
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
 
-            //if (context.HttpContext.Request == null)
-            //    return;
+            if (context.HttpContext.Request == null)
+                return;
 
-            //var user = await _workContext.GetCurrentUserAsync();
-            //if (user != null)
-            //{
-            //    user.LastActivityDateUtc = DateTime.UtcNow;
+            var user = await _authService.GetCurrentUserAsync();
+            if (user != null)
+            {
+                user.LastActivityDate = DateTime.Now;
+                user.LastIpAddress = await _webHelper.GetCurrentIpAddressAsync();
 
-            //    await _userRepository.UpdateAsync(user);
-            //}
+                //_userRepository.Update(user);
+
+                await _unitOfWork.SaveChangesAsync();
+            }
         }
 
         #endregion

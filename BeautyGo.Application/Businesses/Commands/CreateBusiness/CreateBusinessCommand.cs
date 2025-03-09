@@ -14,8 +14,5 @@ public record CreateBusinessCommand(
     string AddressLastName,
     string AddressCep,
     string AddressNumber,
-    string AddressPhoneNumber,
-    ICollection<WorkingHoursDto> WorkingHours) : ICommand<Result>;
-
-public record WorkingHoursDto(DayOfWeek Day, TimeSpan StartTime, TimeSpan EndTime);
+    string AddressPhoneNumber) : ICommand<Result>;
 

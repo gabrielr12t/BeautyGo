@@ -4,6 +4,7 @@ using BeautyGo.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeautyGo.Persistence.Migrations
 {
     [DbContext(typeof(BeautyGoContext))]
-    partial class BeautyGoContextModelSnapshot : ModelSnapshot
+    [Migration("20250309022554_AddBusinessClosedDayTable")]
+    partial class AddBusinessClosedDayTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,6 +244,9 @@ namespace BeautyGo.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("NEXT VALUE FOR CodeSequence");
 
+                    b.Property<Guid>("CreatedId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -280,9 +286,6 @@ namespace BeautyGo.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -303,11 +306,11 @@ namespace BeautyGo.Persistence.Migrations
                     b.HasIndex("Code")
                         .HasDatabaseName("IX_CODE");
 
+                    b.HasIndex("CreatedId");
+
                     b.HasIndex("Name")
                         .IsUnique()
                         .HasDatabaseName("IX_NAME");
-
-                    b.HasIndex("OwnerId");
 
                     b.HasIndex("Phone")
                         .IsUnique()
@@ -1202,15 +1205,15 @@ namespace BeautyGo.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BeautyGo.Domain.Entities.Users.User", "Owner")
+                    b.HasOne("BeautyGo.Domain.Entities.Users.User", "Created")
                         .WithMany()
-                        .HasForeignKey("OwnerId")
+                        .HasForeignKey("CreatedId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Address");
 
-                    b.Navigation("Owner");
+                    b.Navigation("Created");
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessClosedDay", b =>

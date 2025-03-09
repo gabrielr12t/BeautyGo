@@ -43,7 +43,9 @@ public static class DependencyInjection
         services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionSettings.Value));
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
         services.AddScoped<ILogRepository, LogRepository>();
+        services.AddScoped<IAddressRepository, AddressRepository>();
         services.AddScoped<IOutboxMessageRepository, OutboxMessagerepository>();
 
         return services;

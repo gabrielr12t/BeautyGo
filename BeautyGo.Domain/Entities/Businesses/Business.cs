@@ -14,7 +14,8 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     {
         Pictures = new List<BusinessPicture>();
         Professionals = new List<Professional>();
-        BusinessWorkingHours = new List<BusinessWorkingHours>();
+        WorkingHours = new List<BusinessWorkingHours>(7);
+        ClosedDays = new List<BusinessClosedDay>();
         ValidationTokens = new List<BusinessEmailTokenValidation>();
     }
 
@@ -48,8 +49,8 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
 
     public bool EmailConfirmed { get; set; }
 
-    public Guid CreatedId { get; set; }
-    public User Created { get; set; }
+    public Guid OwnerId { get; set; }
+    public User Owner { get; set; }
 
     public Guid AddressId { get; set; }
     public Address Address { get; set; }
@@ -57,7 +58,8 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     public ICollection<BusinessPicture> Pictures { get; set; }
     public ICollection<Professional> Professionals { get; set; }
     public ICollection<Service> Services { get; set; }
-    public ICollection<BusinessWorkingHours> BusinessWorkingHours { get; set; }
+    public ICollection<BusinessWorkingHours> WorkingHours { get; set; }
+    public ICollection<BusinessClosedDay> ClosedDays { get; set; }
     public ICollection<BusinessEmailTokenValidation> ValidationTokens { get; set; }
 
     #endregion
@@ -73,7 +75,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
             HomePageTitle = homePageTitle,
             HomePageDescription = homePageDescription,
             Cnpj = CommonHelper.EnsureNumericOnly(cnpj),
-            CreatedId = ownerId,
+            OwnerId = ownerId,
             IsActive = false,
             EmailConfirmed = false,
             AddressId = addressId,
@@ -96,6 +98,11 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
         AddDomainEvent(new BusinessDocumentValidatedDomainEvent(this));
     }
 
+    public void ClearWorkingHours()
+    {
+        WorkingHours.Clear();
+    }
+
     public void AddWorkingHours(IEnumerable<BusinessWorkingHours> workingHours)
     {
         foreach (var workingHour in workingHours)
@@ -106,7 +113,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
 
     public void AddWorkingHours(BusinessWorkingHours workingHours)
     {
-        BusinessWorkingHours.Add(workingHours);
+        WorkingHours.Add(workingHours);
     }
 
     public void AddPicture(Picture picture) =>

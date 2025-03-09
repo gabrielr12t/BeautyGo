@@ -170,6 +170,10 @@ public static class DomainErrors
         public static Error BusinessNotFound(Guid businessId) => new(
             "Business.BusinessNotFound",
             $"Loja '{businessId}' não encontrada.");
+
+        public static Error BusinessNotFoundToUser(Guid businessId, string user) => new(
+            "Business.BusinessNotFoundToUser",
+            $"Loja '{businessId}' não encontrada para o usuário '{user}'.");
     }
 
     public static class Address

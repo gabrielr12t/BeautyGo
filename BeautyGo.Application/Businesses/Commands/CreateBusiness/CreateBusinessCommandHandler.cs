@@ -6,41 +6,42 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Common;
-using BeautyGo.Domain.Entities.Events;
 using BeautyGo.Domain.Helpers;
-using BeautyGo.Domain.Patterns.Specifications.Business;
+using BeautyGo.Domain.Patterns.Specifications.Businesses;
 using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.Application.Businesses.Commands.CreateBusiness;
 
 internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessCommand, Result>
-{ 
-    private readonly IBaseRepository<Business> _storeRepository;
-    private readonly IBaseRepository<Address> _addressRepository;
-    private readonly IBaseRepository<Event> _eventRepository;
+{
+    #region Fields
 
-    private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
+    private readonly IBaseRepository<Business> _businessRepository;
+    private readonly IBaseRepository<Address> _addressRepository;
+
     private readonly IViaCepIntegrationService _viaCepIntegration;
     private readonly IAuthService _authService;
-    private readonly IUnitOfWork _unitOfWork; 
+    private readonly IUnitOfWork _unitOfWork;
+
+    #endregion
+
+    #region Ctor
 
     public CreateBusinessCommandHandler(
-        IBaseRepository<Business> storeRepository,
+        IBaseRepository<Business> businessRepository,
         IBaseRepository<Address> addressRepository,
         IAuthService authService,
         IUnitOfWork unitOfWork,
-        IReceitaFederalIntegrationService receitaFederalIntegration,
-        IViaCepIntegrationService viaCepIntegration,
-        IBaseRepository<Event> eventRepository)
+        IViaCepIntegrationService viaCepIntegration)
     {
-        _receitaFederalIntegration = receitaFederalIntegration;
-        _storeRepository = storeRepository;
+        _businessRepository = businessRepository;
         _addressRepository = addressRepository;
         _authService = authService;
         _unitOfWork = unitOfWork;
         _viaCepIntegration = viaCepIntegration;
-        _eventRepository = eventRepository;
     }
+
+    #endregion
 
     #region Utilities
 
@@ -50,24 +51,15 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
             return Result.Failure(DomainErrors.Business.InvalidCnpj(request.Cnpj));
 
         var businessByCnpjSpec = new BusinessByCnpjSpecification(request.Cnpj);
-        if (await _storeRepository.ExistAsync(businessByCnpjSpec, cancellationToken))
+        if (await _businessRepository.ExistAsync(businessByCnpjSpec, cancellationToken))
             return Result.Failure(DomainErrors.Business.CnpjAlreadyExists);
-
-        ////var cnpjReceitaFederalResponse = await _receitaFederalIntegration.GetCnpjDataAsync(request.Cnpj, cancellationToken);
-        ////if (!cnpjReceitaFederalResponse.HasValue)
-        ////    return Result.Failure(DomainErrors.Business.InvalidCnpj);
-
-        ////if (!_receitaFederalIntegration.IsValidCnpjStatus(cnpjReceitaFederalResponse.Value.Status, cnpjReceitaFederalResponse.Value.Situacao))
-        ////    return Result.Failure(DomainErrors.Business.CnpjRestricted);
-
-        ////var VerifyCompanyNameSimilarity = CommonHelper.CheckProximityWithThreshold(cnpjReceitaFederalResponse.Value.Nome.ToUpper(), request.Name.ToUpper(), 0.8);
-        ////if (!VerifyCompanyNameSimilarity)
-        ////    return Result.Failure(DomainErrors.Business.CnpjNameInvalid);
 
         return Result.Success();
     }
 
     #endregion
+
+    #region Handle
 
     public async Task<Result> Handle(CreateBusinessCommand request, CancellationToken cancellationToken)
     {
@@ -96,17 +88,12 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
 
         newBusiness.AddValidationToken();
 
-        var hasWorkingHours = request.WorkingHours is not null && request.WorkingHours.Any();
-        if (hasWorkingHours)
-        {
-            var workingHours = request.WorkingHours.Select(p => BusinessWorkingHours.Create(p.Day, p.EndTime, p.EndTime));
-            newBusiness.AddWorkingHours(workingHours);
-        }
+        await _businessRepository.InsertAsync(newBusiness, cancellationToken);
 
-        await _storeRepository.InsertAsync(newBusiness, cancellationToken); 
-        
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
+
+    #endregion 
 }

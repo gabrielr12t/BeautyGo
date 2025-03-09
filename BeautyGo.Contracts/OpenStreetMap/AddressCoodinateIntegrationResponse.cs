@@ -5,8 +5,8 @@ namespace BeautyGo.Contracts.OpenStreetMap;
 public class AddressCoodinateIntegrationResponse
 {
     [JsonProperty("lon")]
-    public string Longitude { get; set; }
+    public double Longitude { get; set; }
 
     [JsonProperty("lat")]
-    public string Latitude { get; set; }
+    public double Latitude { get; set; }
 }
