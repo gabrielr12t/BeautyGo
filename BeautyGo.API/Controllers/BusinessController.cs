@@ -30,9 +30,9 @@ public class BusinessController : BasePublicController
     [HttpPost("working-hours")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RegisterWorkingHours([FromBody] CreateWorkingHoursCommand command) =>
+    public async Task<IActionResult> RegisterWorkingHours([FromBody] CreateWorkingHoursCommand command, CancellationToken cancellationToken) =>
         await Result.Create(command, DomainErrors.General.UnProcessableRequest)
-            .Bind(command => mediator.Send(command))
+            .Bind(command => mediator.Send(command, cancellationToken))
             .Match(Ok, BadRequest);
 
     [AllowAnonymous]

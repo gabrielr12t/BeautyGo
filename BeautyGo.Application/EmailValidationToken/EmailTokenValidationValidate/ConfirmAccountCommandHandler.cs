@@ -26,15 +26,13 @@ internal class ConfirmAccountCommandHandler : ICommandHandler<ConfirmAccountComm
         var validTokenSpec = new EmailTokenValidationByTokenSpecification(request.Token)
             .And(new EmailValidationTokenValidSpecification(DateTime.Now));
 
-        var emailValidationToken = await _businessEmailTokenValidationRepository.GetFirstOrDefaultAsync(validTokenSpec);
+        var emailValidationToken = await _businessEmailTokenValidationRepository.GetFirstOrDefaultAsync(validTokenSpec, true, cancellationToken);
 
         if (emailValidationToken is null)
             return Result.Failure(DomainErrors.UserEmailValidationToken.ExpiredToken);
 
         emailValidationToken.MarkTokenAsUsed();
         emailValidationToken.Validate();
-
-        _businessEmailTokenValidationRepository.Update(emailValidationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

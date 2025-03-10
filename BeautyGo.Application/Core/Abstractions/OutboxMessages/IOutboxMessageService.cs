@@ -4,5 +4,5 @@ namespace BeautyGo.Application.Core.Abstractions.OutboxMessages;
 
 public interface IOutboxMessageService
 {
-    Task PublishAsync(IBusEvent @event, CancellationToken cancellationToken = default);
+    Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default);
 }

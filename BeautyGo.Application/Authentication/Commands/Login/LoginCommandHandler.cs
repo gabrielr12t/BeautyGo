@@ -71,7 +71,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
     {
         var userByEmailSpec = new UserByEmailSpecification(request.Email).AddInclude(p => p.Passwords);
 
-        var user = await _userRepository.GetFirstOrDefaultAsync(userByEmailSpec);
+        var user = await _userRepository.GetFirstOrDefaultAsync(userByEmailSpec, true, cancellationToken);
         if (user == null)
             return Result.Failure<TokenModel>(DomainErrors.User.UserNotFound);
 
@@ -90,8 +90,6 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
         user.LastLoginDate = DateTime.Now;
 
         var token = await _authService.AuthenticateAsync(user);
-
-        _userRepository.Update(user);
 
         await _unitOfWork.SaveChangesAsync();
 

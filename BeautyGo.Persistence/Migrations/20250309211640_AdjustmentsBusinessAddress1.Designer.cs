@@ -4,6 +4,7 @@ using BeautyGo.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeautyGo.Persistence.Migrations
 {
     [DbContext(typeof(BeautyGoContext))]
-    partial class BeautyGoContextModelSnapshot : ModelSnapshot
+    [Migration("20250309211640_AdjustmentsBusinessAddress1")]
+    partial class AdjustmentsBusinessAddress1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -942,16 +945,17 @@ namespace BeautyGo.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Cpf")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Cpf] IS NOT NULL");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
                     b.HasIndex("LastLoginDate");
 
-                    b.ToTable((string)null);
+                    b.ToTable("Users", "User");
 
-                    b.UseTpcMappingStrategy();
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserAddressMapping", b =>
@@ -1414,12 +1418,27 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Customers.Customer", b =>
+                {
+                    b.HasOne("BeautyGo.Domain.Entities.Users.User", null)
+                        .WithOne()
+                        .HasForeignKey("BeautyGo.Domain.Entities.Customers.Customer", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BeautyGo.Domain.Entities.Professionals.Professional", b =>
                 {
                     b.HasOne("BeautyGo.Domain.Entities.Businesses.Business", "Business")
                         .WithMany("Professionals")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BeautyGo.Domain.Entities.Users.User", null)
+                        .WithOne()
+                        .HasForeignKey("BeautyGo.Domain.Entities.Professionals.Professional", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Business");

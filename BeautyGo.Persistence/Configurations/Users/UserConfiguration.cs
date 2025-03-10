@@ -10,7 +10,7 @@ internal class UserConfiguration : BaseEntityConfiguration<User>
     {
         base.Configure(builder);
 
-        builder.ToTable("Users", "User");
+        builder.UseTpcMappingStrategy();
 
         builder.Property(u => u.FirstName)
             .HasMaxLength(100)

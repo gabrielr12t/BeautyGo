@@ -49,7 +49,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
             await _logger.InformationAsync($"Publishin outbox message on event bus: {message.Id}");
 
             var deserializedMessage = JsonConvert
-                .DeserializeObject<IBusEvent>(
+                .DeserializeObject<IIntegrationEvent>(
                     message.Content,
                     new JsonSerializerSettings
                     {

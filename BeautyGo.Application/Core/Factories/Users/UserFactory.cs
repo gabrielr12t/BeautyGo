@@ -12,8 +12,8 @@ internal class UserFactory : IUserFactory
     {
         return command.UserType switch
         {
-            UserTypeEnum.Customer => new Customer(command.FirstName, command.LastName, command.Email, command.Phone, command.CPF),
-            UserTypeEnum.Professional => new Professional(command.FirstName, command.LastName, command.Email, command.Phone, command.CPF),
+            UserTypeEnum.Customer => Customer.Create(command.FirstName, command.LastName, command.Email, command.Phone, command.CPF),
+            UserTypeEnum.Professional => Professional.Create(command.FirstName, command.LastName, command.Email, command.Phone, command.CPF),
             _ => throw new ArgumentOutOfRangeException(nameof(command), $"Not expected user type value: {command.UserType}")
         };
     }

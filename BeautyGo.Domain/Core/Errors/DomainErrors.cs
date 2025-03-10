@@ -14,6 +14,8 @@ public static class DomainErrors
 
         public static Error ServiceNotRegistered => new Error("General.ServiceNotRegistered", "O serviço não foi registrado");
 
+        public static Error ServiceManyRequests => new Error("General.ServiceManyRequests", "O serviço recebeu muitas requisições.");
+
         public static Error ConstructorNotFound => new Error("General.ConstructorNotFound", "Construtor não encontrado");
 
         public static Error UnauthorizedUser => new Error("General.UnauthorizedUser", "Usuário não autorizado.");
@@ -174,6 +176,17 @@ public static class DomainErrors
         public static Error BusinessNotFoundToUser(Guid businessId, string user) => new(
             "Business.BusinessNotFoundToUser",
             $"Loja '{businessId}' não encontrada para o usuário '{user}'.");
+    }
+
+    public static class WorkingHours 
+    {
+        public static Error DuplicateDayOfWeek => new(
+             "WorkingHours.DuplicateDayOfWeek",
+             "Não é permitido ter dias da semana duplicados.");
+
+        public static Error InvalidTimeRange => new(
+             "WorkingHours.InvalidTimeRange",
+             "O horário de abertura não pode ser maior ou igual ao horário de fechamento.");
     }
 
     public static class Address

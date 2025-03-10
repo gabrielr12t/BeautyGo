@@ -2,5 +2,5 @@
 
 public interface IPublisherBusEvent
 {
-    Task PublishAsync(IBusEvent @event, CancellationToken cancellationToken = default);  
+    Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default);  
 }

@@ -1,4 +1,5 @@
 using BeautyGo.Application;
+using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Infrastructure;
 using BeautyGo.Infrastructure.Core;
 using BeautyGo.Infrastructure.Extensions;
@@ -34,7 +35,6 @@ builder.Services
 
 var app = builder.Build();
 
-
 EngineContext.Current.ConfigureRequestPipeline(app);
 
 app.UseBeautyGoStaticFiles();
@@ -43,8 +43,6 @@ app.UseSession();
 
 app.UseHttpsRedirection();
 
-app.UseRateLimiter();
-
 app.BeautyGoUseMiddleware();
 
 app.UseRouting();
@@ -52,19 +50,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseRateLimiter();
+
 app.MapControllers();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllerRoute(
-         name: "Store",
-         pattern: "{storeHost}",
-         defaults: new { controller = "Store", action = "Details" });
-
-    endpoints.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
-});
-
 
 app.Run();

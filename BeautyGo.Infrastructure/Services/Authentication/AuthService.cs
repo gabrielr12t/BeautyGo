@@ -176,17 +176,17 @@ public class AuthService : IAuthService
 
         var userId = new Guid(authenticateResult.Principal.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value);
 
-        var user = await _userRepository.GetFirstOrDefaultAsync(
+        _cachedUser = await _userRepository.GetFirstOrDefaultAsync(
             new EntityByIdSpecification<User>(userId).And(
                 new UserWithRolesSpecification()), cancellationToken: cancellationToken);
 
-        if (user is null)
+        if (_cachedUser is null)
             return default;
 
-        if (!user.IsActive)
-            throw new InvalidOperationException($"Usuário '{user.Id}' não está ativo.");
+        if (!_cachedUser.IsActive)
+            throw new InvalidOperationException($"Usuário '{_cachedUser.Id}' não está ativo.");
 
-        return user;
+        return _cachedUser;
     }
 
     #endregion 

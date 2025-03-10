@@ -33,7 +33,7 @@ internal class CreateUserRoleOnBusinessCreatedDomainEventHandler : IDomainEventH
     {
         var user = await _userRepository.GetFirstOrDefaultAsync(
             new EntityByIdSpecification<User>(notification.Entity.OwnerId).And(
-                new UserWithRolesSpecification()));
+                new UserWithRolesSpecification()), true, cancellationToken);
 
         if (user == null)
             throw new DomainException(DomainErrors.User.UserNotFound);

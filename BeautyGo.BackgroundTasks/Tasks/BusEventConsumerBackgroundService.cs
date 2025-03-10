@@ -120,12 +120,12 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         var eventConsumer = scope.ServiceProvider.GetRequiredService<IBusEventConsumer>();
         var retryPolicy = scope.ServiceProvider.GetRequiredService<IRabbitMqRetryPolicy>();
 
-        IBusEvent? @event = null;
+        IIntegrationEvent? @event = null;
 
         try
         {
             var body = Encoding.UTF8.GetString(eventArgs.Body.Span);
-            @event = JsonConvert.DeserializeObject<IBusEvent>(body, new JsonSerializerSettings
+            @event = JsonConvert.DeserializeObject<IIntegrationEvent>(body, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All
             });

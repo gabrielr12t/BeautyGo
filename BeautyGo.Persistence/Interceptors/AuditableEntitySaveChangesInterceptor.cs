@@ -55,7 +55,7 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
             EntityId = (Guid)entityEntry.Property("Id").CurrentValue,
             ActionTimestamp = timestamp,
             UserId = _userIdentifierProvider?.UserId,
-            Action = GetAction(entityEntry.State)
+            Action = nameof(entityEntry.State)
         };
 
         switch (entityEntry.State)
@@ -75,14 +75,6 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 
         return auditEntry;
     }
-
-    private string GetAction(EntityState state) => state switch
-    {
-        EntityState.Modified => "Modified",
-        EntityState.Added => "Added",
-        EntityState.Deleted => "Deleted",
-        _ => "Unknown"
-    };
 
     private string SerializeValues(PropertyValues values)
     {

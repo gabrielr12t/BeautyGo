@@ -19,10 +19,10 @@ public class BusinessAvailableWorkingHoursConfiguration : BaseEntityConfiguratio
         builder.Property(bwh => bwh.ClosingTime)
             .IsRequired();
 
-        builder.HasOne(bwh => bwh.Business)
-            .WithMany(bb => bb.WorkingHours)
-            .HasForeignKey(bwh => bwh.BusinessId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
+        //builder.HasOne(bwh => bwh.Business)
+        //    .WithMany(bb => bb.WorkingHours)
+        //    .HasForeignKey(bwh => bwh.BusinessId)
+        //    .OnDelete(DeleteBehavior.ClientCascade)
+        //    .IsRequired();
     }
 }

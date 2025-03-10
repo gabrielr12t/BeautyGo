@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace BeautyGo.Application.Users.Commands.AccountConfirmed;
 
-public class UserConfirmedAccountIntegrationEvent : IBusEvent
+public class UserConfirmedAccountIntegrationEvent : IIntegrationEvent
 {
     internal UserConfirmedAccountIntegrationEvent(User user) => UserId = user.Id;
 

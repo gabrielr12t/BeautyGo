@@ -8,21 +8,22 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace BeautyGo.Infrastructure.Mvc.Filter;
 
-public class SaveLastActivityAttribute : TypeFilterAttribute
+public class SaveLastIpAddressAttribute : TypeFilterAttribute
 {
     #region Ctor
 
-    public SaveLastActivityAttribute() : base(typeof(SaveLastActivityFilter)) { }
+    public SaveLastIpAddressAttribute() : base(typeof(SaveLastIpAddressFilter)) { }
 
     #endregion
 
     #region Nested Filter
 
-    private class SaveLastActivityFilter : IAsyncActionFilter
+    private class SaveLastIpAddressFilter : IAsyncActionFilter
     {
         #region Fields
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHelper _webHelper;
         private readonly IAuthService _authService;
         private readonly IBaseRepository<User> _userRepository;
 
@@ -30,18 +31,19 @@ public class SaveLastActivityAttribute : TypeFilterAttribute
 
         #region Ctor
 
-        public SaveLastActivityFilter(IAuthService authService, IBaseRepository<User> userRepository, IUnitOfWork unitOfWork)
+        public SaveLastIpAddressFilter(IAuthService authService, IBaseRepository<User> userRepository, IUnitOfWork unitOfWork, IWebHelper webHelper)
         {
             _authService = authService;
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
+            _webHelper = webHelper;
         }
 
         #endregion
 
         #region Utilities
 
-        public async Task SaveLastActivityAsync(ActionExecutingContext context)
+        public async Task SaveLastIpAddressAsync(ActionExecutingContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -54,7 +56,7 @@ public class SaveLastActivityAttribute : TypeFilterAttribute
             var user = await _authService.GetCurrentUserAsync(cancellationToken);
             if (user != null)
             {
-                user.LastActivityDate = DateTime.Now;
+                user.ChangeIpAddress(await _webHelper.GetCurrentIpAddressAsync());
 
                 _userRepository.Update(user);
 
@@ -68,7 +70,7 @@ public class SaveLastActivityAttribute : TypeFilterAttribute
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            await SaveLastActivityAsync(context);
+            await SaveLastIpAddressAsync(context);
 
             if (context.Result == null)
                 await next();

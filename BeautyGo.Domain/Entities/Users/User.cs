@@ -14,8 +14,6 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         Passwords = new List<UserPassword>();
         Addresses = new List<UserAddressMapping>();
         ValidationTokens = new List<UserEmailTokenValidation>();
-
-        AddDomainEvent(new UserCreatedDomainEvent(this));
     }
 
     public User(string firstName, string lastName, string email, string phoneNumber, string cpf) : this()
@@ -43,7 +41,7 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
 
     public DateTime? CannotLoginUntilDate { get; set; }
 
-    public string LastIpAddress { get; set; }
+    public string LastIpAddress { get; private set; }
 
     public DateTime LastLoginDate { get; set; }
 
@@ -64,9 +62,7 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     public Guid? ShippingAddressId { get; set; }
 
     public ICollection<UserRoleMapping> UserRoles { get; set; }
-
     public ICollection<UserAddressMapping> Addresses { get; set; }
-
     public ICollection<UserPassword> Passwords { get; set; }
     public ICollection<UserEmailTokenValidation> ValidationTokens { get; set; }
 
@@ -79,6 +75,14 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     public void ActivateUser()
     {
         IsActive = true;
+    }
+
+    public void ChangeIpAddress(string ipAddress)
+    {
+        if (ipAddress != LastIpAddress)
+            AddDomainEvent(new UserIpAddressChangedDomainEvent(this));
+
+        LastIpAddress = ipAddress;
     }
 
     public void ChangeName(string firstName, string lastName)

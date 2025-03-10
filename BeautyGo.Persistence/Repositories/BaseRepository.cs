@@ -54,7 +54,9 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     public virtual void Update(TEntity entity)
     {
-        _dbSet.Update(entity);
+        _dbSet.Attach(entity);
+
+        _context.Entry(entity).State = EntityState.Modified;
 
         entity.AddDomainEvent(new EntityUpdatedEvent<TEntity>(entity));
     }

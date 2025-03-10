@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace BeautyGo.Application.Businesses.Commands.BusinessCreated;
 
-public class BusinessCreatedIntegrationEvent : IBusEvent
+public class BusinessCreatedIntegrationEvent : IIntegrationEvent
 {
     internal BusinessCreatedIntegrationEvent(Business businessCreatedDomainEvent) =>
         BusinessId = businessCreatedDomainEvent.Id;

@@ -33,11 +33,8 @@ public static class ApplicationBuilderExtensions
     public static IApplicationBuilder BeautyGoUseMiddleware(this IApplicationBuilder app)
     {
         app.UseMiddleware<ExceptionHandlerMiddleware>();
+        app.UseMiddleware<TransactionMiddleware>();
         app.UseMiddleware<InstallationMiddleware>();
-        //app.UseMiddleware<RefreshTokenMiddleware>();
-        app.UseMiddleware<LoggingMiddleware>();
-        //app.UseMiddleware<StoreSessionMiddleware>();
-        //app.UseMiddleware<StandardizedResultMiddleware>();
 
         return app;
     }

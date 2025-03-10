@@ -1,4 +1,6 @@
-﻿using BeautyGo.Domain.Entities.Appointments;
+﻿using BeautyGo.Domain.DomainEvents.Users;
+using BeautyGo.Domain.Entities.Appointments;
+using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Visitor.Users;
 
@@ -15,7 +17,7 @@ public class Professional : User
     }
 
     public Guid BusinessId { get; set; }
-    public Businesses.Business Business { get; set; }
+    public Business Business { get; set; }
 
     public ICollection<ProfessionalService> Services { get; set; }
     public ICollection<Appointment> Appointments { get; set; }
@@ -24,5 +26,14 @@ public class Professional : User
     public override async Task HandleUserRoleAccept(IUserRoleHandlerVisitor visitor)
     {
         await visitor.AssignRoleAsync(this);
+    }
+
+    public static Professional Create(string firstName, string lastName, string email, string phoneNumber, string cpf)
+    {
+        var professional = new Professional(firstName, lastName, email, phoneNumber, cpf);
+
+        professional.AddDomainEvent(new UserCreatedDomainEvent(professional));
+
+        return professional;
     }
 }

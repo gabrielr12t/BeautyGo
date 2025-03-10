@@ -33,12 +33,36 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
 
     #endregion
 
+    #region Utilities
+
+    private bool HasDuplicateDayOfWeek(IEnumerable<WorkingHoursDto> workingHours)
+    {
+        var daysOfWeek = workingHours.Select(workingHours => workingHours.DayOfWeek).ToList();
+        return daysOfWeek.Distinct().Count() != daysOfWeek.Count;
+    }
+
+    private bool OpeningIsMoreThanClosing(WorkingHoursDto workingHours) =>
+        workingHours.OpeningTime >= workingHours.ClosingTime;
+
+    private bool HasInvalidTimeRange(IEnumerable<WorkingHoursDto> workingHours) =>
+        workingHours.Any(OpeningIsMoreThanClosing);
+
+    #endregion
+
+    #region Handle
+
     public async Task<Result> Handle(CreateWorkingHoursCommand request, CancellationToken cancellationToken)
     {
+        if (HasDuplicateDayOfWeek(request.WorkingHours))
+            return Result.Failure(DomainErrors.WorkingHours.DuplicateDayOfWeek);
+
+        if (HasInvalidTimeRange(request.WorkingHours))
+            return Result.Failure(DomainErrors.WorkingHours.InvalidTimeRange);
+
         var currentUser = await _authService.GetCurrentUserAsync(cancellationToken);
 
-        var businessOwnerSpecification = new BusinessOwnerSpecification(currentUser.Id);
-        var business = await _businessRepository.GetFirstOrDefaultAsync(businessOwnerSpecification);
+        var businessOwnerSpecification = new BusinessOwnerSpecification(currentUser.Id).AddInclude(p => p.WorkingHours);
+        var business = await _businessRepository.GetFirstOrDefaultAsync(businessOwnerSpecification, true, cancellationToken);
 
         if (business is null)
             return Result.Failure(DomainErrors.Business.BusinessNotFoundToUser(request.BusinessId, currentUser.Email));
@@ -52,10 +76,10 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
             business.AddWorkingHours(workingHours);
         }
 
-        _businessRepository.Update(business);
-
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
+
+    #endregion
 }

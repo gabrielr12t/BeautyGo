@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace BeautyGo.Application.EmailValidationToken.EntityEmailValidationTokenCreated;
 
-public class EmailValidationTokenCreatedIntegrationEvent : IBusEvent
+public class EmailValidationTokenCreatedIntegrationEvent : IIntegrationEvent
 {
     internal EmailValidationTokenCreatedIntegrationEvent(EmailTokenValidation BeautyGoEmailToken) =>
         BeautyGoEmailTokenId = BeautyGoEmailToken.Id;

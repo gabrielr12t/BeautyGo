@@ -14,11 +14,11 @@ public static class DependencyInjection
 
         services.AddSingleton<IUserFactory, UserFactory>();
 
-        services.AddMediatR(cfg => 
+        services.AddMediatR(cfg =>
             cfg
                 .RegisterServicesFromAssembly(Assembly.GetExecutingAssembly())
-                .AddOpenBehavior(typeof(ValidationBehaviour<,>))
-                .AddOpenBehavior(typeof(TransactionBehaviour<,>)));
+                .AddOpenBehavior(typeof(ValidationBehaviour<,>)));
+                //.AddOpenBehavior(typeof(TransactionBehaviour<,>)));
 
         return services;
     }

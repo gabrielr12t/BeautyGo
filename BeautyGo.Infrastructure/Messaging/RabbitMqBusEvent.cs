@@ -96,14 +96,14 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
         );
     }
 
-    public async Task PublishAsync(IBusEvent @event, CancellationToken cancellationToken = default)
+    public async Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceProvider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
 
         try
         {
-            var payload = JsonConvert.SerializeObject(@event, typeof(IBusEvent), new JsonSerializerSettings
+            var payload = JsonConvert.SerializeObject(@event, typeof(IIntegrationEvent), new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
             });

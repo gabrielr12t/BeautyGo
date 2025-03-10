@@ -6,6 +6,8 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Common;
+using BeautyGo.Domain.Entities.Professionals;
+using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications.Businesses;
 using BeautyGo.Domain.Repositories;
@@ -18,6 +20,7 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
 
     private readonly IBaseRepository<Business> _businessRepository;
     private readonly IBaseRepository<Address> _addressRepository;
+    private readonly IBaseRepository<User> _userRepository;
 
     private readonly IViaCepIntegrationService _viaCepIntegration;
     private readonly IAuthService _authService;
@@ -32,13 +35,15 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
         IBaseRepository<Address> addressRepository,
         IAuthService authService,
         IUnitOfWork unitOfWork,
-        IViaCepIntegrationService viaCepIntegration)
+        IViaCepIntegrationService viaCepIntegration,
+        IBaseRepository<User> userRepository)
     {
         _businessRepository = businessRepository;
         _addressRepository = addressRepository;
         _authService = authService;
         _unitOfWork = unitOfWork;
         _viaCepIntegration = viaCepIntegration;
+        _userRepository = userRepository;
     }
 
     #endregion
@@ -57,13 +62,16 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
         return Result.Success();
     }
 
+    private bool UserIsAlreadyProfessional(User user) =>
+        user is Professional;
+
     #endregion
 
     #region Handle
 
     public async Task<Result> Handle(CreateBusinessCommand request, CancellationToken cancellationToken)
     {
-        var currentUser = await _authService.GetCurrentUserAsync();
+        var currentUser = await _authService.GetCurrentUserAsync(cancellationToken);
 
         var bussinessValidate = await BussinessValidationAsync(request, cancellationToken).ConfigureAwait(false);
 
@@ -87,6 +95,11 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
             currentUser.Id, newAddress.Id);
 
         newBusiness.AddValidationToken();
+
+        if (!UserIsAlreadyProfessional(currentUser))
+        {
+            currentUser = currentUser as Professional;
+        }
 
         await _businessRepository.InsertAsync(newBusiness, cancellationToken);
 

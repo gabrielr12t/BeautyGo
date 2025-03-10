@@ -105,10 +105,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
 
     public void AddWorkingHours(IEnumerable<BusinessWorkingHours> workingHours)
     {
-        foreach (var workingHour in workingHours)
-        {
-            AddWorkingHours(workingHour);
-        }
+        workingHours.ToList().ForEach(AddWorkingHours);
     }
 
     public void AddWorkingHours(BusinessWorkingHours workingHours)

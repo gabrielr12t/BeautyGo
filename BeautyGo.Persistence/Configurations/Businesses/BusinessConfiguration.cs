@@ -78,6 +78,11 @@ internal class BusinessConfiguration : BaseEntityConfiguration<Business>
             .HasForeignKey(s => s.AddressId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasMany(b => b.WorkingHours)
+            .WithOne(bwh => bwh.Business)
+            .HasForeignKey(bwh => bwh.BusinessId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         //builder.HasMany(s => s.Products)
         //    .WithOne()
         //    .HasForeignKey(p => p.StoreId)
