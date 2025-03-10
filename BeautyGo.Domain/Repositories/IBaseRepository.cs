@@ -25,6 +25,8 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 
     void Remove(IReadOnlyCollection<TEntity> entities);
 
+    void Detach(TEntity entity);
+
     void Truncate();
 
     Task<IPagedList<TEntity>> GetAllPagedAsync(

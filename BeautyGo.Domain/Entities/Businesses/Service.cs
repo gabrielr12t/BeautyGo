@@ -9,8 +9,8 @@ public class Service : BaseEntity
     public decimal Price { get; set; }
     public TimeSpan Duration { get; set; }
 
-    public Guid BeautyBusinessId { get; set; }
-    public Business BeautyBusiness { get; set; }
+    public Guid BusinessId { get; set; }
+    public Business Business { get; set; }
 
     public ICollection<ServicePicture> Pictures { get; set; }
     public ICollection<ProfessionalService> Profissionals { get; set; }

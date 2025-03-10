@@ -6,6 +6,7 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Common;
+using BeautyGo.Domain.Entities.Customers;
 using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
@@ -62,8 +63,56 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
         return Result.Success();
     }
 
-    private bool UserIsAlreadyProfessional(User user) =>
-        user is Professional;
+    private async Task<Result> ValidateBusinessAsync(CreateBusinessCommand request, CancellationToken cancellationToken) =>
+        await BussinessValidationAsync(request, cancellationToken).ConfigureAwait(false);
+
+    private async Task<Result<Address>> CreateAndStoreAddressAsync(CreateBusinessCommand request, CancellationToken cancellationToken)
+    {
+        var addressResponse = await _viaCepIntegration.GetAddressByCepAsync(request.AddressCep, cancellationToken);
+        if (addressResponse.HasNoValue)
+            return Result.Failure<Address>(DomainErrors.Address.CepNotFound);
+
+        var newAddress = Address.Create(
+            request.AddressFirstName,
+            request.AddressLastName,
+            addressResponse.Value.City,
+            addressResponse.Value.State,
+            addressResponse.Value.StateAbbreviation,
+            addressResponse.Value.Neighborhood,
+            request.AddressNumber,
+            addressResponse.Value.Street,
+            request.AddressCep,
+            request.AddressPhoneNumber);
+
+        await _addressRepository.InsertAsync(newAddress, cancellationToken);
+        return Result.Success(newAddress);
+    }
+
+    private Business CreateBusiness(CreateBusinessCommand request, Guid ownerId, Guid addressId)
+    {
+        return Business.Create(
+            request.Name,
+            request.HomePageTitle,
+            request.HomePageDescription,
+            request.Cnpj,
+            ownerId,
+            addressId);
+    }
+
+    private async Task<Guid> PromoteUserIfNecessaryAsync(User currentUser, CancellationToken cancellationToken)
+    {
+        if (currentUser is Customer customer)
+        {
+            var professional = customer.PromoteToProfessional();
+
+            _userRepository.Remove(currentUser);
+            await _userRepository.InsertAsync(professional);
+
+            return professional.Id;
+        }
+
+        return currentUser.Id;
+    }
 
     #endregion
 
@@ -73,36 +122,20 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
     {
         var currentUser = await _authService.GetCurrentUserAsync(cancellationToken);
 
-        var bussinessValidate = await BussinessValidationAsync(request, cancellationToken).ConfigureAwait(false);
+        var validationResult = await ValidateBusinessAsync(request, cancellationToken);
+        if (!validationResult.IsSuccess)
+            return Result.Failure(validationResult.Error);
 
-        if (!bussinessValidate.IsSuccess)
-            return Result.Failure(bussinessValidate.Error);
+        var address = await CreateAndStoreAddressAsync(request, cancellationToken);
+        if (address.IsFailure)
+            return Result.Failure(address.Error);
 
-        var addressResponse = await _viaCepIntegration.GetAddressByCepAsync(request.AddressCep, cancellationToken);
-        if (addressResponse.HasNoValue)
-            return Result.Failure(DomainErrors.Address.CepNotFound);
+        var ownerId = await PromoteUserIfNecessaryAsync(currentUser, cancellationToken);
 
-        var newAddress = Address.Create(request.AddressFirstName, request.AddressLastName, addressResponse.Value.City,
-            addressResponse.Value.State, addressResponse.Value.StateAbbreviation, addressResponse.Value.Neighborhood, request.AddressNumber,
-            addressResponse.Value.Street, request.AddressCep, request.AddressPhoneNumber);
+        var business = CreateBusiness(request, ownerId, address.Value.Id);
+        business.AddValidationToken();
 
-        await _addressRepository.InsertAsync(newAddress, cancellationToken);
-
-        var newBusiness = Business.Create(request.Name,
-            request.HomePageTitle,
-            request.HomePageDescription,
-            request.Cnpj,
-            currentUser.Id, newAddress.Id);
-
-        newBusiness.AddValidationToken();
-
-        if (!UserIsAlreadyProfessional(currentUser))
-        {
-            currentUser = currentUser as Professional;
-        }
-
-        await _businessRepository.InsertAsync(newBusiness, cancellationToken);
-
+        await _businessRepository.InsertAsync(business, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

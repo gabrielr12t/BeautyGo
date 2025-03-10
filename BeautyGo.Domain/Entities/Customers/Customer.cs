@@ -1,5 +1,6 @@
 ﻿using BeautyGo.Domain.DomainEvents.Users;
 using BeautyGo.Domain.Entities.Appointments;
+using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Visitor.Users;
 
@@ -29,5 +30,27 @@ public class Customer : User
         customer.AddDomainEvent(new UserCreatedDomainEvent(customer));
 
         return customer;
+    }
+
+    public Professional PromoteToProfessional()
+    {
+        var professional = new Professional(FirstName, LastName, Email, PhoneNumber, Cpf);
+        
+        professional.EmailConfirmed = EmailConfirmed;
+        professional.EmailToRevalidate = EmailToRevalidate;
+        professional.CannotLoginUntilDate = CannotLoginUntilDate;
+        professional.IsActive = IsActive;
+        professional.Id = Id;
+        professional.LastActivityDate = LastActivityDate;
+        professional.ChangeIpAddress(LastIpAddress);
+        professional.LastLoginDate = LastLoginDate;
+        professional.MustChangePassword = MustChangePassword;
+        professional.Passwords = Passwords;
+        professional.Addresses = Addresses;
+        professional.UserRoles = UserRoles;
+        professional.Appointments = Appointments;
+        professional.ValidationTokens = ValidationTokens;
+
+        return professional;
     }
 }

@@ -8,7 +8,7 @@ public class ProfessionalConfiguration : BaseEntityConfiguration<Professional>
 {
     public override void Configure(EntityTypeBuilder<Professional> builder)
     {
-        builder.ToTable("Professionals", "Professionals");
+        //builder.ToTable("Professionals", "Users");
 
         builder.HasOne(p => p.Business)
             .WithMany(bb => bb.Professionals)

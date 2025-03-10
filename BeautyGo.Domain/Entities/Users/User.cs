@@ -57,10 +57,6 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
 
     public bool MustChangePassword { get; set; }
 
-    public Guid? BillingAddressId { get; set; }
-
-    public Guid? ShippingAddressId { get; set; }
-
     public ICollection<UserRoleMapping> UserRoles { get; set; }
     public ICollection<UserAddressMapping> Addresses { get; set; }
     public ICollection<UserPassword> Passwords { get; set; }

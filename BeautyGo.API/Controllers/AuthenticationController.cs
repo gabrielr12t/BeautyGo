@@ -17,8 +17,8 @@ public class AuthenticationController : BaseController
     {
     } 
 
-    [HttpPost("auth")]
     [AllowAnonymous]
+    [HttpPost("auth")]
     [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Auth([FromBody] LoginCommand request) =>

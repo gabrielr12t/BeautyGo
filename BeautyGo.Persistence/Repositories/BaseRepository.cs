@@ -54,9 +54,11 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     public virtual void Update(TEntity entity)
     {
-        _dbSet.Attach(entity);
+        //_dbSet.Attach(entity);
 
-        _context.Entry(entity).State = EntityState.Modified;
+        //_context.Entry(entity).State = EntityState.Modified;
+
+        _dbSet.Update(entity);
 
         entity.AddDomainEvent(new EntityUpdatedEvent<TEntity>(entity));
     }
@@ -67,6 +69,8 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     public virtual void Remove(TEntity entity)
     {
+        //_context.Entry(entity).State = EntityState.Deleted;
+
         _dbSet.Remove(entity);
 
         entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
@@ -78,6 +82,11 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
         foreach (var entity in entities)
             entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
+    }
+
+    public void Detach(TEntity entity)
+    {
+        _dbSet.Entry(entity).State = EntityState.Detached;
     }
 
     public virtual void Truncate()

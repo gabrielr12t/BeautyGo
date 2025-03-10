@@ -4,6 +4,7 @@ using BeautyGo.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeautyGo.Persistence.Migrations
 {
     [DbContext(typeof(BeautyGoContext))]
-    partial class BeautyGoContextModelSnapshot : ModelSnapshot
+    [Migration("20250310050659_ChangeUserTph")]
+    partial class ChangeUserTph
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -933,6 +936,11 @@ namespace BeautyGo.Persistence.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Cpf")
@@ -944,9 +952,11 @@ namespace BeautyGo.Persistence.Migrations
 
                     b.HasIndex("LastLoginDate");
 
-                    b.ToTable("User");
+                    b.ToTable("User", "Users");
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator<string>("UserType").HasValue("User");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserAddressMapping", b =>
@@ -1083,7 +1093,7 @@ namespace BeautyGo.Persistence.Migrations
                 {
                     b.HasBaseType("BeautyGo.Domain.Entities.Users.User");
 
-                    b.ToTable("Customers", "Users");
+                    b.HasDiscriminator().HasValue("Customer");
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Professionals.Professional", b =>
@@ -1095,7 +1105,7 @@ namespace BeautyGo.Persistence.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("Professionals", "Users");
+                    b.HasDiscriminator().HasValue("Professional");
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Appointments.Appointment", b =>
@@ -1409,27 +1419,12 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Customers.Customer", b =>
-                {
-                    b.HasOne("BeautyGo.Domain.Entities.Users.User", null)
-                        .WithOne()
-                        .HasForeignKey("BeautyGo.Domain.Entities.Customers.Customer", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BeautyGo.Domain.Entities.Professionals.Professional", b =>
                 {
                     b.HasOne("BeautyGo.Domain.Entities.Businesses.Business", "Business")
                         .WithMany("Professionals")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BeautyGo.Domain.Entities.Users.User", null)
-                        .WithOne()
-                        .HasForeignKey("BeautyGo.Domain.Entities.Professionals.Professional", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Business");

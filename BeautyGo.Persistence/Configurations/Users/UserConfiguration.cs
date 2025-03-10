@@ -1,4 +1,6 @@
-﻿using BeautyGo.Domain.Entities.Users;
+﻿using BeautyGo.Domain.Entities.Customers;
+using BeautyGo.Domain.Entities.Professionals;
+using BeautyGo.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,7 +12,13 @@ internal class UserConfiguration : BaseEntityConfiguration<User>
     {
         base.Configure(builder);
 
-        builder.UseTpcMappingStrategy();
+        //builder.UseTptMappingStrategy();
+
+        builder.UseTphMappingStrategy()
+            .ToTable("User", "Users")
+            .HasDiscriminator<string>("UserType")
+            .HasValue<Customer>(nameof(Customer))
+            .HasValue<Professional>(nameof(Professional));
 
         builder.Property(u => u.FirstName)
             .HasMaxLength(100)
@@ -22,7 +30,7 @@ internal class UserConfiguration : BaseEntityConfiguration<User>
 
         builder.Property(u => u.Email)
             .HasMaxLength(250)
-            .IsRequired(); 
+            .IsRequired();
 
         builder.Property(u => u.DateOfBirth)
             .IsRequired(false);
@@ -49,7 +57,7 @@ internal class UserConfiguration : BaseEntityConfiguration<User>
             .IsRequired();
 
         builder.Property(u => u.MustChangePassword)
-            .IsRequired(); 
+            .IsRequired();
 
         //builder.HasMany(u => u.ShoppingCartItems)
         //    .WithOne()
@@ -77,11 +85,11 @@ internal class UserConfiguration : BaseEntityConfiguration<User>
         //    .OnDelete(DeleteBehavior.Cascade);   
 
         builder.HasIndex(u => u.Email)
-            .IsUnique();  
+            .IsUnique();
 
         builder.HasIndex(u => u.Cpf)
-            .IsUnique();   
+            .IsUnique();
 
-        builder.HasIndex(u => u.LastLoginDate);  
+        builder.HasIndex(u => u.LastLoginDate);
     }
 }

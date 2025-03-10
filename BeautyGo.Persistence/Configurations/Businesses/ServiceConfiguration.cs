@@ -24,9 +24,9 @@ public class ServiceConfiguration : BaseEntityConfiguration<Service>
         builder.Property(s => s.Duration)
             .IsRequired();
 
-        builder.HasOne(s => s.BeautyBusiness)
+        builder.HasOne(s => s.Business)
             .WithMany(bb => bb.Services)
-            .HasForeignKey(s => s.BeautyBusinessId)
+            .HasForeignKey(s => s.BusinessId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
