@@ -29,33 +29,31 @@ internal class CreateUserRoleOnBusinessCreatedDomainEventHandler : IDomainEventH
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(EntityInsertedEvent<Business> notification, CancellationToken cancellationToken)
+    public   Task Handle(EntityInsertedEvent<Business> notification, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<User>(notification.Entity.OwnerId).And(
-                new UserWithRolesSpecification()), true, cancellationToken);
+        //var user = await _userRepository.GetFirstOrDefaultAsync(
+        //    new EntityByIdSpecification<User>(notification.Entity.OwnerId).And(
+        //        new UserWithRolesSpecification()), true, cancellationToken);
 
-        if (user == null)
-            throw new DomainException(DomainErrors.User.UserNotFound);
+        //if (user == null)
+        //    throw new DomainException(DomainErrors.User.UserNotFound);
 
-        var ownerRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.OWNER);
-        var professionalRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.PROFESSIONAL);
+        //var ownerRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.OWNER);
+        //var professionalRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.PROFESSIONAL);
 
-        var ownerRole = await _userRoleRepository.GetFirstOrDefaultAsync(ownerRoleSpecification, cancellationToken: cancellationToken);
-        var professionalRole = await _userRoleRepository.GetFirstOrDefaultAsync(professionalRoleSpecification, cancellationToken: cancellationToken);
+        //var ownerRole = await _userRoleRepository.GetFirstOrDefaultAsync(ownerRoleSpecification, cancellationToken: cancellationToken);
+        //var professionalRole = await _userRoleRepository.GetFirstOrDefaultAsync(professionalRoleSpecification, cancellationToken: cancellationToken);
 
-        if (!user.HasRole(ownerRole))
-        {
-            user.AddUserRole(ownerRole);
-        }
+        //if (!user.HasRole(ownerRole))
+        //    user.AddUserRole(ownerRole);
 
-        if (!user.HasRole(professionalRole))
-        {
-            user.AddUserRole(professionalRole);
-        }
+        //if (!user.HasRole(professionalRole))
+        //    user.AddUserRole(professionalRole);
 
-        _userRepository.Update(user);
+        //_userRepository.Update(user);
 
-        await _unitOfWork.SaveChangesAsync();
+        //await _unitOfWork.SaveChangesAsync();
+
+        return Task.CompletedTask;
     }
 }
