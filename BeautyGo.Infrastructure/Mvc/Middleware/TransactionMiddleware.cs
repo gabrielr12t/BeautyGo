@@ -3,6 +3,7 @@ using BeautyGo.Application.Core.Abstractions.Messaging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading;
 
 namespace BeautyGo.Infrastructure.Mvc.Middleware;
 
@@ -35,7 +36,7 @@ public class TransactionMiddleware
         }
         catch (Exception)
         {
-            await transaction.RollbackAsync();
+            await transaction.RollbackAsync(context.RequestAborted);
             throw;
         }
     }

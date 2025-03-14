@@ -1,6 +1,6 @@
 ﻿using BeautyGo.Domain.DomainEvents.Users;
 using BeautyGo.Domain.Entities.Appointments;
-using BeautyGo.Domain.Entities.Professionals;
+using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Visitor.Users;
 
@@ -32,25 +32,28 @@ public class Customer : User
         return customer;
     }
 
-    public Professional PromoteToProfessional()
+    public BusinessOwner PromoteToOwner()
     {
-        var professional = new Professional(FirstName, LastName, Email, PhoneNumber, Cpf);
-        
-        professional.EmailConfirmed = EmailConfirmed;
-        professional.EmailToRevalidate = EmailToRevalidate;
-        professional.CannotLoginUntilDate = CannotLoginUntilDate;
-        professional.IsActive = IsActive;
-        professional.Id = Id;
-        professional.LastActivityDate = LastActivityDate;
-        professional.ChangeIpAddress(LastIpAddress);
-        professional.LastLoginDate = LastLoginDate;
-        professional.MustChangePassword = MustChangePassword;
-        professional.Passwords = Passwords;
-        professional.Addresses = Addresses;
-        professional.UserRoles = UserRoles;
-        professional.Appointments = Appointments;
-        professional.ValidationTokens = ValidationTokens;
+        var owner = new BusinessOwner(FirstName, LastName, Email, PhoneNumber, Cpf)
+        {
+            Id = Id,
+            EmailConfirmed = EmailConfirmed,
+            EmailToRevalidate = EmailToRevalidate,
+            CannotLoginUntilDate = CannotLoginUntilDate,
+            IsActive = IsActive,
+            LastActivityDate = LastActivityDate,
+            LastLoginDate = LastLoginDate,
+            MustChangePassword = MustChangePassword,
+            Passwords = Passwords,
+            Addresses = Addresses,
+            UserRoles = UserRoles,
+            ValidationTokens = ValidationTokens,
+            CreatedOn = CreatedOn,
+            DateOfBirth = DateOfBirth
+        };
 
-        return professional;
+        owner.ChangeIpAddress(LastIpAddress);
+
+        return owner;
     }
 }

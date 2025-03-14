@@ -1,4 +1,6 @@
-﻿namespace BeautyGo.Domain.Entities.Professionals;
+﻿using BeautyGo.Domain.Entities.Persons;
+
+namespace BeautyGo.Domain.Entities.Professionals;
 
 public class ProfessionalAvailability : BaseEntity
 {

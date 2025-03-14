@@ -1,10 +1,11 @@
 ﻿using BeautyGo.Domain.DomainEvents.Users;
 using BeautyGo.Domain.Entities.Appointments;
 using BeautyGo.Domain.Entities.Businesses;
+using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Visitor.Users;
 
-namespace BeautyGo.Domain.Entities.Professionals;
+namespace BeautyGo.Domain.Entities.Persons;
 
 public class Professional : User
 {

@@ -1,8 +1,8 @@
-﻿using BeautyGo.Domain.Entities.Professionals;
+﻿using BeautyGo.Domain.Entities.Persons;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BeautyGo.Persistence.Configurations.Professionals;
+namespace BeautyGo.Persistence.Configurations.Persons;
 
 public class ProfessionalConfiguration : BaseEntityConfiguration<Professional>
 {

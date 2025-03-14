@@ -2,6 +2,7 @@
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Integrations;
 using BeautyGo.Application.Core.Abstractions.Messaging;
+using BeautyGo.Application.Core.Abstractions.Users;
 using BeautyGo.Domain.Common.Defaults;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
@@ -14,6 +15,7 @@ using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.Businesses;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
 using BeautyGo.Domain.Repositories;
+using System.Diagnostics;
 
 namespace BeautyGo.Application.Businesses.Commands.CreateBusiness;
 
@@ -26,6 +28,7 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
     private readonly IBaseRepository<User> _userRepository;
     private readonly IBaseRepository<UserRole> _userRoleRepository;
 
+    private readonly IUserService _userService;
     private readonly IViaCepIntegrationService _viaCepIntegration;
     private readonly IAuthService _authService;
     private readonly IUnitOfWork _unitOfWork;
@@ -41,7 +44,8 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
         IBaseRepository<UserRole> userRoleRepository,
         IViaCepIntegrationService viaCepIntegration,
         IAuthService authService,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IUserService userService)
     {
         _businessRepository = businessRepository;
         _addressRepository = addressRepository;
@@ -50,6 +54,7 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
         _viaCepIntegration = viaCepIntegration;
         _authService = authService;
         _unitOfWork = unitOfWork;
+        _userService = userService;
     }
 
     #endregion
@@ -102,35 +107,21 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
             request.Cnpj,
             ownerId,
             addressId);
-    }
+    } 
 
-    private async Task PromoteUserToProfessionalAsync(CancellationToken cancellationToken)
-    {
-        var currentUser = await _authService.GetCurrentUserAsync();
-
-        if (currentUser is Customer customer)
-        {
-            // Promove o usuário de Customer para Professional
-            var professional = customer.PromoteToProfessional();
-
-            // Remover o Customer do repositório e adicionar o Professional
-            _userRepository.Remove(currentUser);
-            await _userRepository.InsertAsync(professional, cancellationToken);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
-    }
-
-    private async Task CreateUserRoleAsync(User user, CancellationToken cancellationToken)
+    private async Task AddOwnerRoleToUserAsync(User user, CancellationToken cancellationToken)
     {
         var ownerRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.OWNER);
-        var professionalRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.PROFESSIONAL);
-
         var ownerRole = await _userRoleRepository.GetFirstOrDefaultAsync(ownerRoleSpecification, cancellationToken: cancellationToken);
-        var professionalRole = await _userRoleRepository.GetFirstOrDefaultAsync(professionalRoleSpecification, cancellationToken: cancellationToken);
 
         if (!user.HasRole(ownerRole))
             user.AddUserRole(ownerRole);
+    }
+
+    private async Task AddProfessionalRoleToUserAsync(User user, CancellationToken cancellationToken)
+    {
+        var professionalRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.PROFESSIONAL);
+        var professionalRole = await _userRoleRepository.GetFirstOrDefaultAsync(professionalRoleSpecification, cancellationToken: cancellationToken);
 
         if (!user.HasRole(professionalRole))
             user.AddUserRole(professionalRole);
@@ -152,12 +143,13 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
         if (address.IsFailure)
             return Result.Failure(address.Error);
 
-        // Promove o usuário antes de criar o negócio
-        await PromoteUserToProfessionalAsync(cancellationToken);
+        if (currentUser is Customer customer)
+            await _userService.PromoteCustomerUserToOwnerlAsync(customer, cancellationToken);
 
         var professionalUser = await _userRepository.GetFirstOrDefaultAsync(new EntityByIdSpecification<User>(currentUser.Id), true, cancellationToken);
 
-        await CreateUserRoleAsync(professionalUser, cancellationToken);
+        await AddOwnerRoleToUserAsync(professionalUser, cancellationToken);
+        await AddProfessionalRoleToUserAsync(professionalUser, cancellationToken);
 
         var business = CreateBusiness(request, professionalUser.Id, address.Value.Id);
         business.AddValidationToken();

@@ -7,7 +7,7 @@ using BeautyGo.Domain.Common.Defaults;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Customers;
-using BeautyGo.Domain.Entities.Professionals;
+using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
@@ -87,9 +87,7 @@ internal class CreateUserCommandHandler :
         var customerRole = await userRoleRepository.GetFirstOrDefaultAsync(customerRoleSpecification, cancellationToken: cancellationToken);
 
         if (customerRole != null)
-        {
             customer.AddUserRole(customerRole);
-        }
     }
 
     public async Task AssignRoleAsync(Professional professional, CancellationToken cancellationToken)
@@ -98,9 +96,16 @@ internal class CreateUserCommandHandler :
         var professionalRole = await userRoleRepository.GetFirstOrDefaultAsync(professionalRoleSpecification, cancellationToken: cancellationToken);
 
         if (professionalRole != null)
-        {
             professional.AddUserRole(professionalRole);
-        }
+    }
+
+    public async Task AssignRoleAsync(BusinessOwner owner, CancellationToken cancellationToken = default)
+    {
+        var ownerRoleSpecification = new UserRoleByDescriptionSpecification(BeautyGoUserRoleDefaults.PROFESSIONAL);
+        var ownerRole = await userRoleRepository.GetFirstOrDefaultAsync(ownerRoleSpecification, cancellationToken: cancellationToken);
+
+        if (ownerRole != null)
+            owner.AddUserRole(ownerRole);
     }
 
     #endregion

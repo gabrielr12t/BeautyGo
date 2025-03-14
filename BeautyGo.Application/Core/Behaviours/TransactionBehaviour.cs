@@ -24,7 +24,7 @@ internal sealed class TransactionBehaviour<TRequest, TResponse> : IPipelineBehav
 
         try
         {
-            TResponse response = await next();
+            TResponse response = await next(); 
 
             await transaction.CommitAsync(cancellationToken);
 

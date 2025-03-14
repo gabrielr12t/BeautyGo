@@ -2,7 +2,7 @@
 using BeautyGo.Domain.DomainEvents.Businesses;
 using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Entities.Media;
-using BeautyGo.Domain.Entities.Professionals;
+using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
 
@@ -50,7 +50,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     public bool EmailConfirmed { get; set; }
 
     public Guid OwnerId { get; set; }
-    public User Owner { get; set; }
+    public BusinessOwner Owner { get; set; }
 
     public Guid AddressId { get; set; }
     public Address Address { get; set; }

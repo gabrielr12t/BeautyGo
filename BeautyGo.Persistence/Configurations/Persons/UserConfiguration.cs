@@ -1,10 +1,10 @@
 ﻿using BeautyGo.Domain.Entities.Customers;
-using BeautyGo.Domain.Entities.Professionals;
+using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BeautyGo.Persistence.Configurations.Users;
+namespace BeautyGo.Persistence.Configurations.Persons;
 
 internal class UserConfiguration : BaseEntityConfiguration<User>
 {
@@ -18,7 +18,8 @@ internal class UserConfiguration : BaseEntityConfiguration<User>
             .ToTable("User", "Users")
             .HasDiscriminator<string>("UserType")
             .HasValue<Customer>(nameof(Customer))
-            .HasValue<Professional>(nameof(Professional));
+            .HasValue<Professional>(nameof(Professional))
+            .HasValue<BusinessOwner>(nameof(BusinessOwner));
 
         builder.Property(u => u.FirstName)
             .HasMaxLength(100)

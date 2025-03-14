@@ -31,7 +31,6 @@
   <ItemGroup>
     <Folder Include="Entities\Media\" />
     <Folder Include="Entities\Logging\" />
-    <Folder Include="Entities\Users\" />
     <Folder Include="Interfaces\" />
   </ItemGroup>
 
