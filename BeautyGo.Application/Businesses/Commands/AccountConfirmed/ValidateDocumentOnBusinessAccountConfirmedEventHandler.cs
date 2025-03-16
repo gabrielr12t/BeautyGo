@@ -50,7 +50,7 @@ public class ValidateDocumentOnBusinessAccountConfirmedEventHandler : IEventHand
         if (!VerifyCompanyNameSimilarity)
             throw new DomainException(DomainErrors.Business.CnpjNameInvalid(business.Cnpj));
 
-        business.ValidateDocument();
+        business.ValidatedDocument();
 
         _businessRepository.Update(business);
 

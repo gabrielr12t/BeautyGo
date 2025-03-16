@@ -8,14 +8,13 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Common;
-using BeautyGo.Domain.Entities.Customers;
+using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.Businesses;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
 using BeautyGo.Domain.Repositories;
-using System.Diagnostics;
 
 namespace BeautyGo.Application.Businesses.Commands.CreateBusiness;
 
@@ -72,9 +71,6 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
 
         return Result.Success();
     }
-
-    private async Task<Result> ValidateBusinessAsync(CreateBusinessCommand request, CancellationToken cancellationToken) =>
-        await BussinessValidationAsync(request, cancellationToken).ConfigureAwait(false);
 
     private async Task<Result<Address>> CreateAndStoreAddressAsync(CreateBusinessCommand request, CancellationToken cancellationToken)
     {
@@ -135,7 +131,7 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
     {
         var currentUser = await _authService.GetCurrentUserAsync(cancellationToken);
 
-        var validationResult = await ValidateBusinessAsync(request, cancellationToken);
+        var validationResult = await BussinessValidationAsync(request, cancellationToken);
         if (!validationResult.IsSuccess)
             return Result.Failure(validationResult.Error);
 
@@ -144,7 +140,7 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
             return Result.Failure(address.Error);
 
         if (currentUser is Customer customer)
-            await _userService.PromoteCustomerUserToOwnerlAsync(customer, cancellationToken);
+            await _userService.PromoteCustomerToOwnerAsync(customer, cancellationToken);
 
         var professionalUser = await _userRepository.GetFirstOrDefaultAsync(new EntityByIdSpecification<User>(currentUser.Id), true, cancellationToken);
 

@@ -7,8 +7,15 @@ using BeautyGo.Domain.Patterns.Visitor.Users;
 
 namespace BeautyGo.Domain.Entities.Persons;
 
-public class Professional : User
+public class Professional : User, IUserPromotable
 {
+    public Professional()
+    {
+        Services = new List<ProfessionalService>();
+        Appointments = new List<Appointment>();
+        ProfessionalAvailabilities = new List<ProfessionalAvailability>();
+    }
+
     public Professional(string firstName, string lastName, string email, string phoneNumber, string cpf)
         : base(firstName, lastName, email, phoneNumber, cpf)
     {
@@ -36,5 +43,15 @@ public class Professional : User
         professional.AddDomainEvent(new UserCreatedDomainEvent(professional));
 
         return professional;
+    }
+
+    public void PromoteSpecificProperties(Guid? businessId = null)
+    {
+        if (businessId.HasValue)
+        {
+            BusinessId = businessId.Value;
+        }
+
+        ChangeIpAddress(LastIpAddress);
     }
 }

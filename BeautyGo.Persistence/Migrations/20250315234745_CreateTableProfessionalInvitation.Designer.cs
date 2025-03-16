@@ -4,6 +4,7 @@ using BeautyGo.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeautyGo.Persistence.Migrations
 {
     [DbContext(typeof(BeautyGoContext))]
-    partial class BeautyGoContextModelSnapshot : ModelSnapshot
+    [Migration("20250315234745_CreateTableProfessionalInvitation")]
+    partial class CreateTableProfessionalInvitation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -6,7 +6,6 @@ using BeautyGo.Contracts.Users;
 using BeautyGo.Domain.Common.Defaults;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
-using BeautyGo.Domain.Entities.Customers;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;

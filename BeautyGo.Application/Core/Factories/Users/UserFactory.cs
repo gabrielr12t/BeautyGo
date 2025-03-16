@@ -1,6 +1,5 @@
 ﻿using BeautyGo.Application.Users.Commands.CreateUser;
 using BeautyGo.Contracts.Users;
-using BeautyGo.Domain.Entities.Customers;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 

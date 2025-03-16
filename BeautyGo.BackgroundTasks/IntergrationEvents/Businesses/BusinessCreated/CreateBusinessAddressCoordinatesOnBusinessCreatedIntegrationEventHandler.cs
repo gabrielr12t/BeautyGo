@@ -38,8 +38,9 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
     public async Task Handle(BusinessCreatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
         var business = await _businessRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<Business>(notification.BusinessId).AddInclude(
-                p => p.Address), true, cancellationToken);
+            new EntityByIdSpecification<Business>(notification.BusinessId).AddInclude(p => p.Address),
+            asTracking: true,
+            cancellationToken);
 
         if (business is null)
             throw new DomainException(DomainErrors.General.NotFound);

@@ -18,7 +18,7 @@ internal class OutboxMessagerepository : BaseRepository<OutboxMessage>, IOutboxM
         _connetion = connetion;
     }
 
-    public override async Task<OutboxMessage> GetByIdAsync(Guid id)
+    public override async Task<OutboxMessage> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         const string query = "SELECT Id, ProcessedOn, OccurredOn, Content, Type, Error FROM OutboxMessage WHERE Id = @Id";
         return await _connetion.QueryFirstOrDefaultAsync<OutboxMessage>(query, new { Id = id });

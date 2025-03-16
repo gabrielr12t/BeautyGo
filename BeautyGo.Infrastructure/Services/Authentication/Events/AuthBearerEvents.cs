@@ -55,7 +55,6 @@ public class AuthBearerEvents : JwtBearerEvents
     {
         await _logger.WarningAsync($"Authentication Challenge: {context.Error}");
 
-        await _unitOfWork.SaveChangesAsync();
         context.HandleResponse();
 
         context.Response.StatusCode = 401;

@@ -1,5 +1,7 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.DomainEvents.Users;
+using BeautyGo.Domain.Entities.Persons;
+using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Patterns.Visitor.Users;
 
 namespace BeautyGo.Domain.Entities.Users;
@@ -14,6 +16,7 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         Passwords = new List<UserPassword>();
         Addresses = new List<UserAddressMapping>();
         ValidationTokens = new List<UserEmailTokenValidation>();
+        ProfessionalInvitations = new List<ProfessionalRequest>();
     }
 
     public User(string firstName, string lastName, string email, string phoneNumber, string cpf) : this()
@@ -61,10 +64,51 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     public ICollection<UserAddressMapping> Addresses { get; set; }
     public ICollection<UserPassword> Passwords { get; set; }
     public ICollection<UserEmailTokenValidation> ValidationTokens { get; set; }
+    public ICollection<ProfessionalRequest> ProfessionalInvitations { get; set; }
 
     #endregion
 
     #region Methods
+
+    #region Promote User
+
+    private T PromoteTo<T>(Guid? businessId = null) where T : User, IUserPromotable, new()
+    {
+        var user = new T
+        {
+            FirstName = FirstName,
+            LastName = LastName,
+            Email = Email,
+            PhoneNumber = PhoneNumber,
+            Cpf = Cpf,
+            Id = Id,
+            EmailConfirmed = EmailConfirmed,
+            EmailToRevalidate = EmailToRevalidate,
+            CannotLoginUntilDate = CannotLoginUntilDate,
+            IsActive = IsActive,
+            LastActivityDate = LastActivityDate,
+            LastLoginDate = LastLoginDate,
+            MustChangePassword = MustChangePassword,
+            Passwords = Passwords,
+            Addresses = Addresses,
+            UserRoles = UserRoles,
+            ValidationTokens = ValidationTokens,
+            CreatedOn = CreatedOn,
+            DateOfBirth = DateOfBirth
+        };
+
+        user.PromoteSpecificProperties(businessId);
+
+        return user;
+    }
+
+    public BusinessOwner PromoteToOwner() =>
+        PromoteTo<BusinessOwner>();
+
+    public Professional PromoteToProfessional(Guid businessId) =>
+        PromoteTo<Professional>(businessId);
+
+    #endregion 
 
     public abstract Task HandleUserRoleAccept(IUserRoleHandlerVisitor visitor);
 

@@ -30,7 +30,7 @@ internal class LocationIQIntegrationServiceIntegrationService : BeautyGoIntegrat
         if (!response.IsSuccessStatusCode)
             return Maybe<AddressCoodinateIntegrationResponse>.None;
 
-        var responseContent = await response.Content.ReadAsStringAsync();
+        var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
         var addressResponse = JsonConvert.DeserializeObject<AddressCoodinateIntegrationResponse[]>(responseContent);
 

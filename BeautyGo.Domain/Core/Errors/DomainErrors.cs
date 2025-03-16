@@ -173,6 +173,10 @@ public static class DomainErrors
             "Business.BusinessNotFound",
             $"Loja '{businessId}' não encontrada.");
 
+        public static Error UserNotOwnerOfBusiness => new(
+            "Business.UserNotOwnerOfBusiness",
+            $"Usuário não é dono da loja");
+
         public static Error BusinessNotFoundToUser(Guid businessId, string user) => new(
             "Business.BusinessNotFoundToUser",
             $"Loja '{businessId}' não encontrada para o usuário '{user}'.");

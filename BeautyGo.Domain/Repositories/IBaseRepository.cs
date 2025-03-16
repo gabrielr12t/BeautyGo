@@ -13,7 +13,7 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 
     Task<IList<TEntity>> FromSqlAsync(string sql, CancellationToken cancellationToken = default, params IEnumerable<SqlParameter> parameters);
 
-    Task<IList<TEntity>> GetByIdAsync(IReadOnlyList<Guid> ids);
+    Task<IList<TEntity>> GetByIdAsync(IReadOnlyList<Guid> ids, CancellationToken cancellationToken = default);
 
     Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default);
 
@@ -31,18 +31,20 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 
     Task<IPagedList<TEntity>> GetAllPagedAsync(
         Specification<TEntity> specification,
-        int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false);
+        int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false,
+        CancellationToken cancellationToken = default);
 
     Task<IPagedList<TResult>> GetAllPagedAsync<TResult>(
         Specification<TEntity> specification,
         Func<TEntity, TResult> resultSelector = null,
-        int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false);
+        int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false,
+        CancellationToken cancellationToken = default);
 
-    Task<TEntity> GetByIdAsync(Guid id);
+    Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<bool> ExistAsync(Specification<TEntity> specification, CancellationToken cancellationToken = default);
 
-    Task<IList<TEntity>> GetAsync(Specification<TEntity> specification, bool asTracking = false);
+    Task<IList<TEntity>> GetAsync(Specification<TEntity> specification, bool asTracking = false, CancellationToken cancellationToken = default);
 
     Task<TEntity> GetFirstOrDefaultAsync(Specification<TEntity> specification, bool asTracking = false,
         CancellationToken cancellationToken = default);

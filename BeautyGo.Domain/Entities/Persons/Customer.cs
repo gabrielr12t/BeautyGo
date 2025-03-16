@@ -1,10 +1,9 @@
 ﻿using BeautyGo.Domain.DomainEvents.Users;
 using BeautyGo.Domain.Entities.Appointments;
-using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Visitor.Users;
 
-namespace BeautyGo.Domain.Entities.Customers;
+namespace BeautyGo.Domain.Entities.Persons;
 
 public class Customer : User
 {
@@ -30,30 +29,5 @@ public class Customer : User
         customer.AddDomainEvent(new UserCreatedDomainEvent(customer));
 
         return customer;
-    }
-
-    public BusinessOwner PromoteToOwner()
-    {
-        var owner = new BusinessOwner(FirstName, LastName, Email, PhoneNumber, Cpf)
-        {
-            Id = Id,
-            EmailConfirmed = EmailConfirmed,
-            EmailToRevalidate = EmailToRevalidate,
-            CannotLoginUntilDate = CannotLoginUntilDate,
-            IsActive = IsActive,
-            LastActivityDate = LastActivityDate,
-            LastLoginDate = LastLoginDate,
-            MustChangePassword = MustChangePassword,
-            Passwords = Passwords,
-            Addresses = Addresses,
-            UserRoles = UserRoles,
-            ValidationTokens = ValidationTokens,
-            CreatedOn = CreatedOn,
-            DateOfBirth = DateOfBirth
-        };
-
-        owner.ChangeIpAddress(LastIpAddress);
-
-        return owner;
-    }
+    } 
 }

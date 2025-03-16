@@ -3,6 +3,7 @@ using BeautyGo.Domain.DomainEvents.Businesses;
 using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Entities.Media;
 using BeautyGo.Domain.Entities.Persons;
+using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
 
@@ -10,6 +11,8 @@ namespace BeautyGo.Domain.Entities.Businesses;
 
 public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEmailValidationToken
 {
+    #region Ctor
+
     public Business()
     {
         Pictures = new List<BusinessPicture>();
@@ -17,7 +20,10 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
         WorkingHours = new List<BusinessWorkingHours>(7);
         ClosedDays = new List<BusinessClosedDay>();
         ValidationTokens = new List<BusinessEmailTokenValidation>();
+        ProfessionalRequests = new List<ProfessionalRequest>();
     }
+
+    #endregion
 
     #region Properties
 
@@ -61,6 +67,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     public ICollection<BusinessWorkingHours> WorkingHours { get; set; }
     public ICollection<BusinessClosedDay> ClosedDays { get; set; }
     public ICollection<BusinessEmailTokenValidation> ValidationTokens { get; set; }
+    public ICollection<ProfessionalRequest> ProfessionalRequests { get; set; }
 
     #endregion
 
@@ -85,13 +92,18 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
         return business;
     }
 
+    public void SendProfessionalRequest(User user)
+    {
+        ProfessionalRequests.Add(ProfessionalRequest.Create(this, user));
+    }
+
     public void ConfirmAccount()
     {
         EmailConfirmed = true;
         AddDomainEvent(new BusinessAccountConfirmedDomainEvent(this));
     }
 
-    public void ValidateDocument()
+    public void ValidatedDocument()
     {
         DocumentValidated = true;
         IsActive = true;
@@ -118,6 +130,11 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
 
     public void AddValidationToken() =>
         ValidationTokens.Add(BusinessEmailTokenValidation.Create(Id));
+
+    public bool IsUserOwner(User user) =>
+        user != null &&
+        user is BusinessOwner &&
+        OwnerId == user.Id;
 
     public EmailTokenValidation CreateEmailValidationToken()
     {
