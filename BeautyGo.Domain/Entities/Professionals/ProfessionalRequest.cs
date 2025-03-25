@@ -15,7 +15,8 @@ public class ProfessionalRequest : BaseEntity
     public InvitationStatus Status { get; set; }
 
     public DateTime SentDate { get; set; }
-    public DateTime? AcceptedDate { get; set; }
+    public DateTime? AcceptedAt { get; set; }
+    public DateTime ExpireAt { get; set; }
 
     public static ProfessionalRequest Create(Business business, User user)
     {
@@ -23,7 +24,8 @@ public class ProfessionalRequest : BaseEntity
         {
             Business = business,
             User = user,
-            AcceptedDate = null,
+            AcceptedAt = null,
+            ExpireAt = DateTime.Now.AddDays(5),
             SentDate = DateTime.Now,
             Status = InvitationStatus.Pending
         };
@@ -31,5 +33,10 @@ public class ProfessionalRequest : BaseEntity
         professionalInvitation.AddDomainEvent(new ProfessionalRequestSentDomainEvent(professionalInvitation));
 
         return professionalInvitation;
+    }
+
+    public bool IsExpired()
+    {
+        return ExpireAt < DateTime.Now;
     }
 }

@@ -165,6 +165,10 @@ public static class DomainErrors
             "Business.ImageExceedsMaximumAllowed",
             "Arquivo de imagem execeu o tamanha máximo permitido.");
 
+        public static Error BusinessAlreadyWorkingHoursRegistered => new(
+            "Business.BusinessAlreadyWorkingHoursRegistered",
+            "A loja já possui horas cadastradas e portanto não pode fazer um novo cadastro.");
+
         public static Error ImageNotValid => new(
             "Business.ImageNotValid",
             "Arquivo de imagem inválido.");
@@ -202,5 +206,12 @@ public static class DomainErrors
         public static Error CoordinatesNotFoundToBusiness(Guid businessId) => new(
                 "Address.CoordinatesNotFoundToBusiness",
                 $"Coordenadas não encontrada para a loja: '{businessId}'.");
+    }
+
+    public static class ProfessionalRequest 
+    {
+        public static Error ProfessionalRequestAlreadyExists => new(
+                "ProfessionalRequest.DuplicateProfessionalRequest",
+                "Já existe um convite para esse profissional.");
     }
 }

@@ -115,15 +115,14 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
         WorkingHours.Clear();
     }
 
-    public void AddWorkingHours(IEnumerable<BusinessWorkingHours> workingHours)
-    {
+    public void AddWorkingHours(IEnumerable<BusinessWorkingHours> workingHours) =>
         workingHours.ToList().ForEach(AddWorkingHours);
-    }
 
-    public void AddWorkingHours(BusinessWorkingHours workingHours)
-    {
-        WorkingHours.Add(workingHours);
-    }
+    public void AddWorkingHours(BusinessWorkingHours workingHours) =>
+         WorkingHours.Add(workingHours);
+
+    public bool HasWorkingHours() =>
+        WorkingHours.Any();
 
     public void AddPicture(Picture picture) =>
         Pictures.Add(new BusinessPicture { BeautyBusinessId = Id, PictureId = Id });
@@ -131,7 +130,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     public void AddValidationToken() =>
         ValidationTokens.Add(BusinessEmailTokenValidation.Create(Id));
 
-    public bool IsUserOwner(User user) =>
+    public bool IsOwner(User user) =>
         user != null &&
         user is BusinessOwner &&
         OwnerId == user.Id;

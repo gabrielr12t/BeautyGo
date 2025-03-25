@@ -52,7 +52,7 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
     #region Handle
 
     public async Task<Result> Handle(CreateWorkingHoursCommand request, CancellationToken cancellationToken)
-    {
+    { 
         if (HasDuplicateDayOfWeek(request.WorkingHours))
             return Result.Failure(DomainErrors.WorkingHours.DuplicateDayOfWeek);
 
@@ -67,7 +67,8 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
         if (business is null)
             return Result.Failure(DomainErrors.Business.BusinessNotFoundToUser(request.BusinessId, currentUser.Email));
 
-        business.ClearWorkingHours();
+        if (business.HasWorkingHours())
+            return Result.Failure(DomainErrors.Business.BusinessAlreadyWorkingHoursRegistered);
 
         var hasWorkingHours = request.WorkingHours is not null && request.WorkingHours.Any();
         if (hasWorkingHours)

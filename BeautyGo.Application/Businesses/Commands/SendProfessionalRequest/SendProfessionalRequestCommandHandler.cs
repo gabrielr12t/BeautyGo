@@ -6,8 +6,10 @@ using BeautyGo.Domain.Common.Defaults;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Businesses;
+using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
+using BeautyGo.Domain.Patterns.Specifications.ProfessionalRequests;
 using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.Application.Businesses.Commands.SendProfessionalRequest;
@@ -21,6 +23,7 @@ internal class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfe
     private readonly IUnitOfWork _unitOfWork;
     private readonly IBaseRepository<User> _userRepository;
     private readonly IBaseRepository<Business> _businessRepository;
+    private readonly IBaseRepository<ProfessionalRequest> _professionalRequestRepository;
 
     #endregion
 
@@ -31,13 +34,15 @@ internal class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfe
         IAuthService authService,
         IUnitOfWork unitOfWork,
         IBaseRepository<User> userRepository,
-        IBaseRepository<Business> businessRepository)
+        IBaseRepository<Business> businessRepository,
+        IBaseRepository<ProfessionalRequest> professionalRequestRepository)
     {
         _userService = userService;
         _authService = authService;
         _unitOfWork = unitOfWork;
         _userRepository = userRepository;
         _businessRepository = businessRepository;
+        _professionalRequestRepository = professionalRequestRepository;
     }
 
     #endregion
@@ -59,8 +64,19 @@ internal class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfe
         if (business is null)
             return Result.Failure(DomainErrors.Business.BusinessNotFound(request.BusinessId));
 
-        if (!business.IsUserOwner(await _authService.GetCurrentUserAsync(cancellationToken)))
+        if (!business.IsOwner(await _authService.GetCurrentUserAsync(cancellationToken)))
             return Result.Failure(DomainErrors.Business.UserNotOwnerOfBusiness);
+
+        var professionalRequestByUserIdSpec = new ProfessionalRequestByUserIdSpecification(request.UserId);
+        var professionalRequestByBusinessIdSpec = new ProfessionalRequestByBusinessIdSpecification(request.BusinessId);
+
+        var existingProfessionalRequest = await _professionalRequestRepository.GetFirstOrDefaultAsync(
+                professionalRequestByUserIdSpec.And(professionalRequestByBusinessIdSpec));
+
+        var alreadyExistProfessionalRequest = existingProfessionalRequest != null;
+
+        if (alreadyExistProfessionalRequest && !existingProfessionalRequest.IsExpired())
+            return Result.Failure(DomainErrors.ProfessionalRequest.ProfessionalRequestAlreadyExists);
 
         return Result.Success();
     }
@@ -80,14 +96,14 @@ internal class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfe
             true,
             cancellationToken: cancellationToken);
 
-        var business = await _businessRepository.GetFirstOrDefaultAsync(
+        var businessTarget = await _businessRepository.GetFirstOrDefaultAsync(
             new EntityByIdSpecification<Business>(request.BusinessId),
             true,
             cancellationToken: cancellationToken);
 
-        business.SendProfessionalRequest(userTarget);
+        businessTarget.SendProfessionalRequest(userTarget);
 
-        _businessRepository.Update(business);
+        _businessRepository.Update(businessTarget);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
