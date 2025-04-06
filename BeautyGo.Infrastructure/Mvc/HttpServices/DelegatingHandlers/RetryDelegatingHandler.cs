@@ -32,10 +32,10 @@ public class RetryDelegatingHandler : DelegatingHandler
             .WaitAndRetryAsync(
                 retryCount: 3,
                 sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetryAsync: OnRetry);
+                onRetryAsync: RetryAsync);
     }
 
-    private async Task OnRetry(DelegateResult<HttpResponseMessage> outcome, TimeSpan timespan, int retryCount, Context context)
+    private async Task RetryAsync(DelegateResult<HttpResponseMessage> outcome, TimeSpan timespan, int retryCount, Context context)
     {
         var requestId = outcome.Result.RequestMessage.Headers.GetValues("X-Request-ID").FirstOrDefault();
 
@@ -68,7 +68,7 @@ public class RetryDelegatingHandler : DelegatingHandler
             var content = await result.Content?.ReadAsStringAsync(cancellationToken);
 
             await _logger.WarningAsync($"{requestId} | Resposta com falha. URL: {request.RequestUri}, " +
-                               $"StatusCode: {result.StatusCode}, Conteúdo: {content}", user: await _authService.GetCurrentUserAsync());
+                               $"StatusCode: {result.StatusCode}, Conteúdo: {content}", user: await _authService.GetCurrentUserAsync(cancellationToken));
         }
 
         return result;
@@ -87,7 +87,7 @@ public class RetryDelegatingHandler : DelegatingHandler
         }
         finally
         {
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

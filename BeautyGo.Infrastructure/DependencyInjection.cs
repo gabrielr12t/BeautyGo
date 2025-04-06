@@ -65,15 +65,11 @@ public static class DependencyInjection
 
         services.AddSettings(webHostEnvironment, configuration);
 
-        services.AddBearerAuthentication(configuration);
-        //services.AddDistributedCache();
+        services.AddBearerAuthentication(configuration); 
         services.AddRateLimiterIp();
         services.AddHttpContextAccessor();
 
-        services.AddSingleton<IPublisherBusEvent, RabbitMqBusEvent>();
         services.AddScoped<IUserIdentifierProvider, UserIdentifierProvider>();
-        services.AddTransient<IPasswordHasher, PasswordHasher>();
-        services.AddTransient<IPasswordHashChecker, PasswordHasher>();
         services.AddScoped<IPictureService, PictureService>();
         services.AddScoped<IBeautyGoFileProvider, BeautyGoFileProvider>();
         services.AddScoped<IWebHelper, WebHelper>();
@@ -86,12 +82,16 @@ public static class DependencyInjection
         services.AddScoped<IInstallationService, InstallationService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFakeDataService, FakeDataService>();
-        services.AddScoped<IOutboxMessageService, OutboxMessageService>();
-
+        services.AddScoped<IOutboxMessageService, OutboxMessageService>(); 
         services.AddScoped<IReceitaFederalIntegrationService, ReceitaFederalIntegrationService>();
         services.AddScoped<IViaCepIntegrationService, ViaCepIntegration>();
         services.AddScoped<ILocationIQIntegrationService, LocationIQIntegrationServiceIntegrationService>();
 
+        services.AddSingleton<IPushNotificationService, PushNotificationService>();
+        services.AddSingleton<IPublisherBusEvent, RabbitMqBusEvent>();
+
+        services.AddTransient<IPasswordHasher, PasswordHasher>();
+        services.AddTransient<IPasswordHashChecker, PasswordHasher>();
         services.AddTransient<IEmailNotificationService, EmailNotificationService>();
         services.AddTransient<IUserEmailNotificationPublisher, UserEmailNotificationService>();
         services.AddTransient<IBusinessEmailNotificationPublisher, BusinessEmailNotificationService>();

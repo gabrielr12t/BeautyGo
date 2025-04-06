@@ -69,7 +69,8 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 
     public async Task<Result<TokenModel>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var userByEmailSpec = new UserByEmailSpecification(request.Email).AddInclude(p => p.Passwords);
+        var userByEmailSpec = new UserByEmailSpecification(request.Email)
+            .AddInclude(p => p.Passwords);
 
         var user = await _userRepository.GetFirstOrDefaultAsync(userByEmailSpec, true, cancellationToken);
         if (user == null)
