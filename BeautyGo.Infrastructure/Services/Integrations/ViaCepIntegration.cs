@@ -26,7 +26,7 @@ internal class ViaCepIntegration : BeautyGoIntegrationService, IViaCepIntegratio
 
         if (addressResponse.HasError)
             return Maybe<AddressIntegrationResponse>.None;
-
+         
         return Maybe<AddressIntegrationResponse>.From(addressResponse);
     }
 }
