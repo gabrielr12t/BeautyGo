@@ -15,7 +15,7 @@ internal class ViaCepIntegration : BeautyGoIntegrationService, IViaCepIntegratio
         if (string.IsNullOrWhiteSpace(cep))
             return Maybe<AddressIntegrationResponse>.None;
 
-        var response = await GetAsync($"{CommonHelper.EnsureNumericOnly(cep)}/json", cancellationToken);
+        var response = await GetAsync($"{CommonHelper.EnsureNumericOnly(cep)}/json", cancellationToken) ;
 
         if (!response.IsSuccessStatusCode)
             return Maybe<AddressIntegrationResponse>.None; 
