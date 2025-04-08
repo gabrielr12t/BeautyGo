@@ -8,9 +8,7 @@ namespace BeautyGo.Infrastructure.Services.Integrations;
 
 internal class ViaCepIntegration : BeautyGoIntegrationService, IViaCepIntegrationService
 {
-    public ViaCepIntegration(HttpClient client) : base(client)
-    {
-    }
+    public ViaCepIntegration(HttpClient client) : base(client) { }
 
     public async Task<Maybe<AddressIntegrationResponse>> GetAddressByCepAsync(string cep, CancellationToken cancellationToken = default)
     {
