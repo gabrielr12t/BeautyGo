@@ -13,7 +13,7 @@ internal class ViaCepIntegration : BeautyGoIntegrationService, IViaCepIntegratio
     public async Task<Maybe<AddressIntegrationResponse>> GetAddressByCepAsync(string cep, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(cep))
-            return Maybe<AddressIntegrationResponse>.None ;
+            return Maybe<AddressIntegrationResponse>.None;
 
         var response = await GetAsync($"{CommonHelper.EnsureNumericOnly(cep)}/json", cancellationToken);
 
