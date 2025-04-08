@@ -18,7 +18,7 @@ internal class ViaCepIntegration : BeautyGoIntegrationService, IViaCepIntegratio
         var response = await GetAsync($"{CommonHelper.EnsureNumericOnly(cep)}/json", cancellationToken);
 
         if (!response.IsSuccessStatusCode)
-            return Maybe<AddressIntegrationResponse>.None;
+            return Maybe<AddressIntegrationResponse>.None; 
 
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
