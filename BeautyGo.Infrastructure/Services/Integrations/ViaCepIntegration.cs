@@ -22,7 +22,7 @@ internal class ViaCepIntegration : BeautyGoIntegrationService, IViaCepIntegratio
 
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        var addressResponse = JsonConvert.DeserializeObject<AddressIntegrationResponse>(responseContent);
+        var addressResponse = JsonConvert.DeserializeObject<AddressIntegrationResponse>(responseContent) ;
 
         if (addressResponse.HasError)
             return Maybe<AddressIntegrationResponse>.None;
