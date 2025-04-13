@@ -2,4 +2,4 @@
 
 namespace BeautyGo.Application.ProfessionalInvitations.ProfessionalInvitationRequestSent;
 
-public record ProfessionalInvitationRequestSentIntegrationEvent(Guid ProfessionalInvitationId) : IIntegrationEvent;
+public record ProfessionalRequestSentIntegrationEvent(Guid ProfessionalInvitationId) : IIntegrationEvent;

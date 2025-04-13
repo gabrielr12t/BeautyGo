@@ -25,12 +25,12 @@ public class ProfessionalRequest : BaseEntity
             Business = business,
             User = user,
             AcceptedAt = null,
-            ExpireAt = DateTime.Now.AddDays(5),
+            ExpireAt = DateTime.Now.AddDays(10),
             SentDate = DateTime.Now,
             Status = InvitationStatus.Pending
         };
 
-        professionalInvitation.AddDomainEvent(new ProfessionalRequestSentDomainEvent(professionalInvitation));
+        //professionalInvitation.AddDomainEvent(new ProfessionalRequestSentDomainEvent(professionalInvitation));
 
         return professionalInvitation;
     }

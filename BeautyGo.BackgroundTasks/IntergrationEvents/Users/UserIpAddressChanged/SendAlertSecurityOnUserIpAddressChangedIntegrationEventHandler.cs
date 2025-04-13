@@ -7,9 +7,8 @@ internal class SendAlertSecurityOnUserIpAddressChangedIntegrationEventHandler : 
 {
     public Task Handle(UserIpAddressChangedIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        //IMPLEMENTAR
+        // IMPLEMENTAR
         // NOTIFICAR USUÁRIO AO FAZER ALGUMA ATIVIDADE DE UM IP DIFERENTE DO DELE
-
 
         return Task.CompletedTask;
     }

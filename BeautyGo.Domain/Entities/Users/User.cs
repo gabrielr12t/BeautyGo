@@ -151,10 +151,10 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         UserRoles.Any(p => p.UserRole == role);
 
     public void AddUserRole(UserRole userRole) =>
-        UserRoles.Add(new UserRoleMapping { UserRoleId = userRole.Id, User = this });
+        UserRoles.Add(UserRoleMapping.Create(userRole, this));
 
     public void AddUserPassword(string password, string salt) =>
-        Passwords.Add(new UserPassword { User = this, Password = password, Salt = salt });
+        Passwords.Add(UserPassword.Create(password, salt));
 
     public void AddValidationToken() =>
         ValidationTokens.Add(UserEmailTokenValidation.Create(Id));

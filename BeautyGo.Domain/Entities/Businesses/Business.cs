@@ -1,5 +1,6 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.DomainEvents.Businesses;
+using BeautyGo.Domain.DomainEvents.Professionals;
 using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Entities.Media;
 using BeautyGo.Domain.Entities.Persons;
@@ -94,7 +95,11 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
 
     public void SendProfessionalRequest(User user)
     {
-        ProfessionalRequests.Add(ProfessionalRequest.Create(this, user));
+        var professionalRequest = ProfessionalRequest.Create(this, user);
+
+        ProfessionalRequests.Add(professionalRequest);
+
+        AddDomainEvent(new ProfessionalRequestSentDomainEvent(professionalRequest));
     }
 
     public void ConfirmAccount()

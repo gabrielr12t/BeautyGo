@@ -54,11 +54,10 @@ public class EventProcessor : IEventProcessor
         };
 
         if (attemptCount <= retryDelays.Length)
-            return DateTime.UtcNow.Add(retryDelays[attemptCount - 1]); // Pegamos o tempo baseado na tentativa
+            return DateTime.Now.Add(retryDelays[attemptCount - 1]); // Pegamos o tempo baseado na tentativa
         else
-            return DateTime.UtcNow.AddDays(7); // Se passar do limite, espera 7 dias (ou outro tempo que preferir)
+            return DateTime.Now.AddDays(7); // Se passar do limite, espera 7 dias (ou outro tempo que preferir)
     }
-
 
     #endregion
 
@@ -68,13 +67,13 @@ public class EventProcessor : IEventProcessor
         var eventSettings = appSettings.Get<EventSettings>();
 
         var pendingEventsSpec = new PendingEventSpecification(eventSettings.MaxAttempsFailed);
-        var pendingEvents = await _eventRepository.GetAsync(pendingEventsSpec);
+        var pendingEvents = await _eventRepository.GetAsync(pendingEventsSpec, cancellationToken: cancellationToken);
 
         foreach (var pendingEvent in pendingEvents)
         {
             try
             {
-                var @event = JsonConvert.DeserializeObject<IEvent>(pendingEvent.EventSource, new JsonSerializerSettings
+                IEvent @event = JsonConvert.DeserializeObject<IEvent>(pendingEvent.EventSource, new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.All
                 });
@@ -98,7 +97,7 @@ public class EventProcessor : IEventProcessor
             {
                 _eventRepository.Update(pendingEvent);
 
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
         }
     }

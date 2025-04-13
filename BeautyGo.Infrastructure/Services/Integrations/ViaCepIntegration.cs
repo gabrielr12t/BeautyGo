@@ -18,15 +18,15 @@ internal class ViaCepIntegration : BeautyGoIntegrationService, IViaCepIntegratio
         var response = await GetAsync($"{CommonHelper.EnsureNumericOnly(cep)}/json", cancellationToken);
 
         if (!response.IsSuccessStatusCode)
-            return Maybe<AddressIntegrationResponse>.None; 
+            return Maybe<AddressIntegrationResponse>.None;
 
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        var addressResponse = JsonConvert.DeserializeObject<AddressIntegrationResponse>(responseContent) ;
+        var addressResponse = JsonConvert.DeserializeObject<AddressIntegrationResponse>(responseContent);
 
         if (addressResponse.HasError)
             return Maybe<AddressIntegrationResponse>.None;
-         
-        return Maybe<AddressIntegrationResponse>.From(addressResponse) ;
+
+        return Maybe<AddressIntegrationResponse>.From(addressResponse);
     }
 }

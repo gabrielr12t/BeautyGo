@@ -75,10 +75,11 @@ internal class UpdateBeautyBusinessImageCommandHandler : ICommandHandler<UpdateB
         if (request.StoreId == Guid.Empty)
             return Result.Failure(DomainErrors.General.NotFound);
 
-        var currentUser = await _authService.GetCurrentUserAsync();
+        var currentUser = await _authService.GetCurrentUserAsync(cancellationToken);
 
         var business = await _businessRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<Domain.Entities.Businesses.Business>(request.StoreId));
+            new EntityByIdSpecification<Domain.Entities.Businesses.Business>(request.StoreId),
+            cancellationToken: cancellationToken);
 
         if (business == null || currentUser == null)
             return Result.Failure(DomainErrors.General.NotFound);

@@ -70,8 +70,8 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
         if (business.HasWorkingHours())
             return Result.Failure(DomainErrors.Business.BusinessAlreadyWorkingHoursRegistered);
 
-        var hasWorkingHours = request.WorkingHours is not null && request.WorkingHours.Any();
-        if (hasWorkingHours)
+        var requestHasWorkingHours = request.WorkingHours is not null && request.WorkingHours.Any();
+        if (requestHasWorkingHours)
         {
             var workingHours = request.WorkingHours.Select(p => BusinessWorkingHours.Create(p.DayOfWeek, p.OpeningTime, p.ClosingTime));
             business.AddWorkingHours(workingHours);

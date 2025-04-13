@@ -107,7 +107,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         {
             foreach (var updatedMessage in updateQueue)
             {
-                var message = await _outboxRepository.GetByIdAsync(updatedMessage.Id);
+                var message = await _outboxRepository.GetByIdAsync(updatedMessage.Id, cancellationToken);
                 if (message != null)
                 {
                     message.ProcessedOn = updatedMessage.ProcessedOn;

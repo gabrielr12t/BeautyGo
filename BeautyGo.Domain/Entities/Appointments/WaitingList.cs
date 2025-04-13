@@ -6,7 +6,7 @@ public class WaitingList : BaseEntity
 {
     public WaitingListStatus Status { get; set; }
 
-    public DateTime RequestedDate { get; set; }
+    public DateTime RequestedDate { get; set; } // Data e hora quando foi colocado em espera (parametro para ordem)
 
     public DateTime? NotifiedAt { get; set; }  // Data e hora que o cliente foi notificado
 

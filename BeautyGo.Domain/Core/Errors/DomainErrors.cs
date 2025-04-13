@@ -23,6 +23,10 @@ public static class DomainErrors
         public static Error ForbidenUser => new Error("General.ForbidenUser", "Usuário não permitido executar a ação.");
 
         public static Error NotFound => new Error("General.NotFound", "Não encontrado.");
+
+        public static Error EntityNotFound(Guid entityId) => new(
+            "General.EntityNotFound",
+            $"Entidade '{entityId}' não encontrada.");
     }
 
     public static class Event
@@ -180,6 +184,14 @@ public static class DomainErrors
         public static Error UserNotOwnerOfBusiness => new(
             "Business.UserNotOwnerOfBusiness",
             $"Usuário não é dono da loja");
+
+        public static Error Inactive => new(
+            "Business.Inactive",
+            $"Loja inativa.");
+
+        public static Error Deleted(DateTime date) => new(
+            "Business.Deleted",
+            $"Loja deletada em '{date.ToShortDateString()}'.");
 
         public static Error BusinessNotFoundToUser(Guid businessId, string user) => new(
             "Business.BusinessNotFoundToUser",

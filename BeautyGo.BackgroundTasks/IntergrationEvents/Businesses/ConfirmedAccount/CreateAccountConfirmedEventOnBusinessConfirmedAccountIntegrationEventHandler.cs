@@ -30,13 +30,14 @@ internal class CreateAccountConfirmedEventOnBusinessConfirmedAccountIntegrationE
 
     public async Task Handle(BusinessAccountConfirmedIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        var business = await _businessRepository.GetFirstOrDefaultAsync(new EntityByIdSpecification<Business>(notification.BusinessId));
+        var business = await _businessRepository.GetFirstOrDefaultAsync(new EntityByIdSpecification<Business>(
+                notification.BusinessId),
+                cancellationToken: cancellationToken);
 
         if (business == null)
             throw new DomainException(DomainErrors.Business.BusinessNotFound(notification.BusinessId));
 
         var businessAccountConfirmedEvent = Event.Create(
-            business.OwnerId,
             new BusinessAccountConfirmedEvent(business.Id),
             _triggerToEvent);
 

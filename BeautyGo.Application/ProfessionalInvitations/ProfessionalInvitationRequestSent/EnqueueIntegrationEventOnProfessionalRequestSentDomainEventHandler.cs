@@ -15,6 +15,6 @@ public class EnqueueIntegrationEventOnProfessionalRequestSentDomainEventHandler 
 
     public async Task Handle(ProfessionalRequestSentDomainEvent notification, CancellationToken cancellationToken)
     {
-        await _outboxMessageService.PublishAsync(new ProfessionalInvitationRequestSentIntegrationEvent(notification.ProfessionalRequest.Id), cancellationToken);
+        await _outboxMessageService.PublishAsync(new ProfessionalRequestSentIntegrationEvent(notification.ProfessionalRequest.Id), cancellationToken);
     }
 }

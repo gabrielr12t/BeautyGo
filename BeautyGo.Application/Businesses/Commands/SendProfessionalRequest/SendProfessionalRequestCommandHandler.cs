@@ -67,6 +67,12 @@ internal class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfe
         if (!business.IsOwner(await _authService.GetCurrentUserAsync(cancellationToken)))
             return Result.Failure(DomainErrors.Business.UserNotOwnerOfBusiness);
 
+        if (!business.IsActive)
+            return Result.Failure(DomainErrors.Business.Inactive);
+
+        if (business.Deleted.HasValue)
+            return Result.Failure(DomainErrors.Business.Deleted(business.Deleted.Value));
+
         var professionalRequestByUserIdSpec = new ProfessionalRequestByUserIdSpecification(request.UserId);
         var professionalRequestByBusinessIdSpec = new ProfessionalRequestByBusinessIdSpecification(request.BusinessId);
 

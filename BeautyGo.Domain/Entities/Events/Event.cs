@@ -15,8 +15,6 @@ public sealed class Event : BaseEntity, IAuditableEntity, ISoftDeletableEntity
         EventErrors = new List<EventError>();
     }
 
-    public Guid UserId { get; private set; }
-
     public int Attempts { get; set; }
 
     public DateTime Schedule { get; set; }
@@ -31,7 +29,9 @@ public sealed class Event : BaseEntity, IAuditableEntity, ISoftDeletableEntity
 
     public string EventSource { get; set; }
 
-    public static Event Create(Guid userId, IEvent @event, DateTime schuleAt)
+    public ICollection<EventError> EventErrors { get; set; }
+
+    public static Event Create(IEvent @event, DateTime schuleAt)
     {
         var eventPayload = JsonConvert.SerializeObject(@event, typeof(IEvent), new JsonSerializerSettings
         {
@@ -41,16 +41,13 @@ public sealed class Event : BaseEntity, IAuditableEntity, ISoftDeletableEntity
         return new Event
         {
             EventSource = eventPayload,
-            UserId = userId,
             CreatedOn = DateTime.Now,
             Schedule = schuleAt,
             Status = EventStatus.Pendind,
             Executed = null,
             Attempts = 0,
         };
-    }
-
-    public ICollection<EventError> EventErrors { get; set; }
+    } 
 
     public Result MarkAsExecuted()
     {
@@ -72,5 +69,5 @@ public sealed class Event : BaseEntity, IAuditableEntity, ISoftDeletableEntity
         }
 
         return Result.Success();
-    } 
+    }
 }
