@@ -14,7 +14,7 @@ using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.Application.Businesses.Commands.SendProfessionalRequest;
 
-internal class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfessionalRequestCommand, Result>
+public class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfessionalRequestCommand, Result>
 {
     #region Fields
 
@@ -49,7 +49,7 @@ internal class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfe
 
     #region Utilities
 
-    private async Task<Result> BussinessValidationAsync(SendProfessionalRequestCommand request, CancellationToken cancellationToken)
+    private async Task<Result> BusinessValidationAsync(SendProfessionalRequestCommand request, CancellationToken cancellationToken)
     {
         if (!await _userService.AuthorizeAsync(BeautyGoUserRoleDefaults.OWNER, cancellationToken))
             return Result.Failure(DomainErrors.General.UnauthorizedUser);
@@ -93,7 +93,7 @@ internal class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfe
 
     public async Task<Result> Handle(SendProfessionalRequestCommand request, CancellationToken cancellationToken)
     {
-        var validationResult = await BussinessValidationAsync(request, cancellationToken);
+        var validationResult = await BusinessValidationAsync(request, cancellationToken);
         if (!validationResult.IsSuccess)
             return validationResult;
 

@@ -25,6 +25,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautyGo.Services.Notificat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautyGo.API", "BeautyGo.API\BeautyGo.API.csproj", "{022CF56D-C1B1-4F5C-98B7-390BE15AB6B0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{42C6F31A-98EA-4015-AA8D-5097A8E3D499}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautyGo.Application.Tests", "BeautyGo.Application.Tests\BeautyGo.Application.Tests.csproj", "{C9D745B2-3892-466F-96D8-3C327CA6BC39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +67,10 @@ Global
 		{022CF56D-C1B1-4F5C-98B7-390BE15AB6B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{022CF56D-C1B1-4F5C-98B7-390BE15AB6B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{022CF56D-C1B1-4F5C-98B7-390BE15AB6B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9D745B2-3892-466F-96D8-3C327CA6BC39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9D745B2-3892-466F-96D8-3C327CA6BC39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9D745B2-3892-466F-96D8-3C327CA6BC39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9D745B2-3892-466F-96D8-3C327CA6BC39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,5 +84,6 @@ Global
 		{A71E7B7C-FEDE-4B01-B903-5197114146D9} = {619581E4-905E-41FF-A5C6-FBA1AB66226A}
 		{BE3E57D7-7E9D-4462-A869-F12225B019D9} = {619581E4-905E-41FF-A5C6-FBA1AB66226A}
 		{022CF56D-C1B1-4F5C-98B7-390BE15AB6B0} = {2969278A-9DEB-4ECF-B282-0A9B108233D6}
+		{C9D745B2-3892-466F-96D8-3C327CA6BC39} = {42C6F31A-98EA-4015-AA8D-5097A8E3D499}
 	EndGlobalSection
 EndGlobal
