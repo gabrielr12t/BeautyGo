@@ -11,10 +11,16 @@ namespace BeautyGo.Infrastructure.Messaging;
 
 internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
 {
+    #region Fields
+
     private readonly IServiceProvider _serviceProvider;
     private readonly MessageBrokerSettings _messageBrokerSettings;
     private readonly IConnection _connection;
     private readonly IModel _channel;
+
+    #endregion
+
+    #region Ctor
 
     public RabbitMqBusEvent(AppSettings appSettings, IServiceProvider serviceProvider)
     {
@@ -33,7 +39,17 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
         _connection = connectionFactory.CreateConnection();
         _channel = _connection.CreateModel();
 
-        // Garantir que as filas existam
+        DeclareQueues();
+        ConfigureExchange();
+        BindQueues();
+    }
+
+    #endregion
+
+    #region Utilities
+
+    private void DeclareQueues()
+    {
         _channel.QueueDeclare(
             queue: _messageBrokerSettings.QueueName,
             durable: true,
@@ -68,20 +84,24 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
             autoDelete: false,
             arguments: dlqArguments
         );
+    }
 
-        // Configurar Exchange
+    private void ConfigureExchange()
+    {
         _channel.ExchangeDeclare(
             exchange: _messageBrokerSettings.ExchangeName,
-            type: "direct", // Pode ser "direct", "fanout", etc.
+            type: "direct",  
             durable: true
         );
+    }
 
-        // Associar filas ao Exchange
+    private void BindQueues()
+    {
         _channel.QueueBind(
-            queue: _messageBrokerSettings.QueueName,
-            exchange: _messageBrokerSettings.ExchangeName,
-            routingKey: _messageBrokerSettings.QueueName
-        );
+           queue: _messageBrokerSettings.QueueName,
+           exchange: _messageBrokerSettings.ExchangeName,
+           routingKey: _messageBrokerSettings.QueueName
+       );
 
         _channel.QueueBind(
             queue: _messageBrokerSettings.RetryQueueName,
@@ -95,6 +115,10 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
             routingKey: _messageBrokerSettings.DLQName
         );
     }
+
+    #endregion
+
+    #region Publish
 
     public async Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default)
     {
@@ -130,6 +154,10 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
         }
     }
 
+    #endregion
+
+    #region Dispose
+
     public void Dispose()
     {
         if (_channel?.IsOpen == true)
@@ -144,5 +172,7 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
             _connection.Dispose();
         }
     }
+
+    #endregion
 }
 

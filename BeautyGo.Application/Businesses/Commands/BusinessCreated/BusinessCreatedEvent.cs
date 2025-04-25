@@ -2,13 +2,5 @@
 
 namespace BeautyGo.Application.Businesses.Commands.BusinessCreated;
 
-public class BusinessCreatedEvent : IEvent 
-{
-    public BusinessCreatedEvent(Guid beautyBusinessId)
-    {
-        BeautyBusinessId = beautyBusinessId;
-    }
-
-    public Guid BeautyBusinessId{ get; set; }
-}
+public record BusinessCreatedEvent(Guid BeautyBusinessId) : IEvent;
 

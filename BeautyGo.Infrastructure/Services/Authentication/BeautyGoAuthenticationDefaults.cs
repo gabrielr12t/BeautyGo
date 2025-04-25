@@ -4,7 +4,7 @@ public static partial class BeautyGoAuthenticationDefaults
 {
     public static string AuthenticationScheme => "Bearer";
 
-    public static string ClaimsIssuer => "fh-auth";
+    public static string ClaimsIssuer => "bg-auth";
 
     public static string SaltDefault => "=kL5rAAEneWO7";
 

@@ -24,9 +24,9 @@ public class BusinessController : BasePublicController
     [HttpPost("register")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RegisterCustomer([FromBody] CreateBusinessCommand command) =>
+    public async Task<IActionResult> RegisterCustomer([FromBody] CreateBusinessCommand command, CancellationToken cancellationToken) =>
         await Result.Create(command, DomainErrors.General.UnProcessableRequest)
-            .Bind(command => mediator.Send(command))
+            .Bind(command => mediator.Send(command, cancellationToken))
             .Match(Ok, BadRequest);
 
     [HttpPost("working-hours")]
@@ -41,9 +41,9 @@ public class BusinessController : BasePublicController
     [HttpGet("register/confirm")]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ConfirmAccount([FromQuery] string token) =>
+    public async Task<IActionResult> ConfirmAccount([FromQuery] string token, CancellationToken cancellationToken) =>
        await Result.Create(token, DomainErrors.General.UnProcessableRequest)
-       .Bind(command => mediator.Send(new ConfirmAccountCommand(token)))
+       .Bind(command => mediator.Send(new ConfirmAccountCommand(token), cancellationToken))
        .Match(Ok, BadRequest);
 
     [AuthorizeOwner]
@@ -53,15 +53,5 @@ public class BusinessController : BasePublicController
     public async Task<IActionResult> ProfessionalInvitationRequest([FromBody] SendProfessionalRequestCommand command, CancellationToken cancellationToken) =>
         await Result.Create(command, DomainErrors.General.UnProcessableRequest)
             .Bind(command => mediator.Send(command, cancellationToken))
-            .Match(Ok, BadRequest);
-
-    //CONTINUAR ............................................................
-
-    //[HttpPost("professional/invitation/{userId:guid}/accept")]
-    //[ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
-    //[ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    //public async Task<IActionResult> ProfessionalInvitationRequestAccept(CancellationToken cancellationToken) =>
-    //    await Result.Create(new { }, DomainErrors.General.UnProcessableRequest)
-    //        .Bind(command => mediator.Send(command, cancellationToken))
-    //        .Match(Ok, BadRequest);
+            .Match(Ok, BadRequest); 
 }

@@ -93,8 +93,9 @@ public static class DependencyInjection
         services.AddTransient<IPasswordHasher, PasswordHasher>();
         services.AddTransient<IPasswordHashChecker, PasswordHasher>();
         services.AddTransient<IEmailNotificationService, EmailNotificationService>();
-        services.AddTransient<IUserEmailNotificationPublisher, UserEmailNotificationService>();
-        services.AddTransient<IBusinessEmailNotificationPublisher, BusinessEmailNotificationService>();
+        services.AddTransient<IUserEmailNotificationPublisher, UserEmailNotificationPublisher>();
+        services.AddTransient<IBusinessEmailNotificationPublisher, BusinessEmailNotificationPublisher>();
+        services.AddTransient<IProfessionalEmailNotificationPublisher, ProfessionalEmailNotificationPublisher>();
         services.AddTransient<EmailService>();
         services.AddTransient<IEmailService>(serviceProvicer =>
         {

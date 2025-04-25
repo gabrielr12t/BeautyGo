@@ -1,10 +1,16 @@
 ﻿using BeautyGo.Domain.Core.Primitives;
-using BeautyGo.Domain.Helpers;
 
 namespace BeautyGo.Application.Core.Errors;
 
 internal static class ValidationErrors
 {
+    internal static class AcceptProfessionalRequest 
+    {
+        internal static Error ProfessionalRequestIdIsRequired => new Error(
+            "AcceptProfessionalRequest.ProfessionalRequestIdIsRequired",
+            "O identificador do convite é obrigatório.");
+    }
+
     /// <summary>
     /// Contains the login errors.
     /// </summary>

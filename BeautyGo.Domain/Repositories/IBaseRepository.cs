@@ -15,6 +15,8 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 
     Task<IList<TEntity>> GetByIdAsync(IReadOnlyList<Guid> ids, CancellationToken cancellationToken = default);
 
+    Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
     Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default);
 
     Task InsertRangeAsync(IReadOnlyCollection<TEntity> entities);
@@ -38,9 +40,7 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
         Specification<TEntity> specification,
         Func<TEntity, TResult> resultSelector = null,
         int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false,
-        CancellationToken cancellationToken = default);
-
-    Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default); 
 
     Task<bool> ExistAsync(Specification<TEntity> specification, CancellationToken cancellationToken = default);
 

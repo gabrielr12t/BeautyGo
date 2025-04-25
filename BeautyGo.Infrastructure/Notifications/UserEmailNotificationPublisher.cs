@@ -6,12 +6,12 @@ using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.Infrastructure.Notifications;
 
-internal class UserEmailNotificationService : IUserEmailNotificationPublisher
+internal class UserEmailNotificationPublisher : IUserEmailNotificationPublisher
 {
     private readonly IBaseRepository<EmailNotification> _emailRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UserEmailNotificationService(
+    public UserEmailNotificationPublisher(
         IBaseRepository<EmailNotification> emailRepository,
         IUnitOfWork unitOfWork)
     {

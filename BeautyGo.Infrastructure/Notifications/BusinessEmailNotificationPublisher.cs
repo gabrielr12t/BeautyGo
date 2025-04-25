@@ -6,12 +6,12 @@ using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.Infrastructure.Notifications;
 
-internal class BusinessEmailNotificationService : IBusinessEmailNotificationPublisher
+internal class BusinessEmailNotificationPublisher : IBusinessEmailNotificationPublisher
 {
     private readonly IBaseRepository<EmailNotification> _emailRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public BusinessEmailNotificationService(
+    public BusinessEmailNotificationPublisher(
         IBaseRepository<EmailNotification> emailRepository,
         IUnitOfWork unitOfWork)
     {
@@ -54,6 +54,24 @@ internal class BusinessEmailNotificationService : IBusinessEmailNotificationPubl
             DateTime.Now);
 
         await _emailRepository.InsertAsync(mailRequest, cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task PublishAsync(BusinessProfessionalAddedEmail message, CancellationToken cancellationToken = default)
+    {
+        var body = $"Sua loja tem um novo profissional," +
+            Environment.NewLine +
+            Environment.NewLine +
+            $"Agora {message.Professional} faz parte da sua equipe.";
+
+        var notification = EmailNotification.Create(
+            message.EmailTo,
+            $"Novo Profissional adicionado! 🎉",
+            body,
+            DateTime.Now);
+
+        await _emailRepository.InsertAsync(notification, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

@@ -24,7 +24,7 @@ internal class OutboxMessagerepository : BaseRepository<OutboxMessage>, IOutboxM
         return await _connetion.QueryFirstOrDefaultAsync<OutboxMessage>(query, new { Id = id });
     }
 
-    public async Task<ICollection<OutboxMessage>> GetRecentUnprocessedOutboxMessages(int size)
+    public async Task<ICollection<OutboxMessage>> GetRecentUnprocessedOutboxMessages(int size, CancellationToken cancellation = default)
     {
         var unProcessedOutboxMessagesSpec = new UnprocessedOutboxMessagesSpecification(5);
 
@@ -34,7 +34,7 @@ internal class OutboxMessagerepository : BaseRepository<OutboxMessage>, IOutboxM
 
         query = query.OrderByDescending(p => p.CreatedOn);
 
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellation);
     }
 
     public async Task UpdateAsync(OutboxMessage message)

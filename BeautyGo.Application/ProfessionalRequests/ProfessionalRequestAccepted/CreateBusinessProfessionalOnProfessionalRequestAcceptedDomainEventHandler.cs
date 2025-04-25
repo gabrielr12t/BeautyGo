@@ -1,0 +1,55 @@
+﻿using BeautyGo.Application.Core.Abstractions.Authentication;
+using BeautyGo.Application.Core.Abstractions.Data;
+using BeautyGo.Domain.Core.Events;
+using BeautyGo.Domain.DomainEvents.Professionals;
+using BeautyGo.Domain.Entities.Businesses;
+using BeautyGo.Domain.Entities.Persons;
+using BeautyGo.Domain.Patterns.Specifications;
+using BeautyGo.Domain.Repositories;
+
+namespace BeautyGo.Application.ProfessionalRequests.ProfessionalRequestAccepted;
+
+internal class CreateBusinessProfessionalOnProfessionalRequestAcceptedDomainEventHandler : IDomainEventHandler<ProfessionalRequestAcceptedDomainEvent>
+{
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthService _authService;
+    private readonly IBaseRepository<Business> _businessRepository;
+    private readonly IBaseRepository<Professional> _professionalRepository;
+
+    public CreateBusinessProfessionalOnProfessionalRequestAcceptedDomainEventHandler(
+        IAuthService authService,
+        IUnitOfWork unitOfWork,
+        IBaseRepository<Business> businessRepository,
+        IBaseRepository<Professional> professionalRepository)
+
+    {
+        _authService = authService;
+        _unitOfWork = unitOfWork;
+        _businessRepository = businessRepository;
+        _professionalRepository = professionalRepository;
+    }
+
+    #region Utilities
+
+    private async Task<Business> GetBusinessByIdAsync(Guid businessId, CancellationToken cancellationToken)
+    {
+        var businessByIdSpec = new EntityByIdSpecification<Business>(businessId);
+        businessByIdSpec.AddInclude(p => p.Professionals);
+
+        return await _businessRepository.GetFirstOrDefaultAsync(businessByIdSpec, true, cancellationToken);
+    }
+
+    #endregion
+
+    public async Task Handle(ProfessionalRequestAcceptedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        var business = await GetBusinessByIdAsync(notification.ProfessionalRequest.BusinessId, cancellationToken);
+
+        var professional = await _professionalRepository.GetFirstOrDefaultAsync(
+            new EntityByIdSpecification<Professional>(notification.ProfessionalRequest.UserId), cancellationToken: cancellationToken);
+
+        business.AddProfessional(professional);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+}

@@ -18,4 +18,9 @@ public class Appointment : BaseEntity
 
     public ICollection<WaitingList> WaitingLists { get; set; }
     public ICollection<AppointmentService> Services { get; set; }
+
+    public bool IsConfirmed()
+    {
+        return DateTime > DateTime.Now && Status == AppointmentStatus.Confirmed;
+    }
 }

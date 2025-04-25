@@ -72,7 +72,12 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
 
     #endregion
 
-    #region Methods
+    #region Methods 
+
+    public bool CanWork()
+    {
+        return IsActive && EmailConfirmed && !Deleted.HasValue && DocumentValidated;
+    }
 
     public static Business Create(string name, string homePageTitle, string homePageDescription, string cnpj, Guid ownerId, Guid addressId)
     {
@@ -118,6 +123,13 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     public void ClearWorkingHours()
     {
         WorkingHours.Clear();
+    }
+
+    public void AddProfessional(Professional professional)
+    {
+        Professionals.Add(professional);
+
+        //AddDomainEvent(new BusinessProfessionalAddedDomainEvent(professional));
     }
 
     public void AddWorkingHours(IEnumerable<BusinessWorkingHours> workingHours) =>

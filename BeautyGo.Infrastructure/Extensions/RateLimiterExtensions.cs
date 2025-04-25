@@ -31,5 +31,5 @@ public static class RateLimiterExtensions
     }
 
     private static async ValueTask ResponseManyRequests(OnRejectedContext context, CancellationToken cancellationToken) =>
-        await context.HttpContext.Response.WriteAsJsonAsync(DomainErrors.General.ServiceManyRequests);
+        await context.HttpContext.Response.WriteAsJsonAsync(DomainErrors.General.ServiceManyRequests, cancellationToken);
 }

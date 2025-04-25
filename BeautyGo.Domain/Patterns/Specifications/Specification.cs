@@ -42,6 +42,12 @@ public abstract class Specification<T>
         return this;
     }
 
+    public Specification<T> AddInclude(IReadOnlyList<string> includes)
+    {
+        IncludeStrings.AddRange(includes);
+        return this;
+    }
+
     public Specification<T> AddInclude(string include)
     {
         IncludeStrings.Add(include);

@@ -7,4 +7,6 @@ public interface IBusinessEmailNotificationPublisher
     Task PublishAsync(ConfirmAccountEmail message, CancellationToken cancellationToken = default);
 
     Task PublishAsync(DocumentValidatedEmail message, CancellationToken cancellationToken = default);
+
+    Task PublishAsync(BusinessProfessionalAddedEmail message, CancellationToken cancellationToken = default);
 }

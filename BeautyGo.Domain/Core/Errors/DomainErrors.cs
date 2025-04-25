@@ -1,4 +1,5 @@
 ﻿using BeautyGo.Domain.Core.Primitives;
+using System.Xml.Serialization;
 
 namespace BeautyGo.Domain.Core.Errors;
 
@@ -189,6 +190,10 @@ public static class DomainErrors
             "Business.Inactive",
             $"Loja inativa.");
 
+        public static Error CannotWork => new(
+            "Business.CanotWork",
+            $"Loja não pode ser utilizada, está inativa, deletada ou ainda não teve o e-email e documento confirmado.");
+
         public static Error Deleted(DateTime date) => new(
             "Business.Deleted",
             $"Loja deletada em '{date.ToShortDateString()}'.");
@@ -198,7 +203,7 @@ public static class DomainErrors
             $"Loja '{businessId}' não encontrada para o usuário '{user}'.");
     }
 
-    public static class WorkingHours 
+    public static class WorkingHours
     {
         public static Error DuplicateDayOfWeek => new(
              "WorkingHours.DuplicateDayOfWeek",
@@ -220,10 +225,29 @@ public static class DomainErrors
                 $"Coordenadas não encontrada para a loja: '{businessId}'.");
     }
 
-    public static class ProfessionalRequest 
+    public static class ProfessionalRequest
     {
         public static Error ProfessionalRequestAlreadyExists => new(
                 "ProfessionalRequest.DuplicateProfessionalRequest",
                 "Já existe um convite para esse profissional.");
+
+        public static Error NotFound => new(
+                "ProfessionalRequest.NotFound",
+                $"Convite para profissional não encontrado.");
+
+        public static Error AlreadyAccepted => new(
+            "ProfessionalRequest.AlreadyAccepted",
+            "Este convite já foi aceito e não está mais válido para alterar.");
+
+        public static Error Expired(DateTime expiredAt) => new(
+                "ProfessionalRequest.Expired",
+                $"O convite foi expirado em '{expiredAt}'.");
+    }
+
+    public static class Professional
+    {
+        public static Error ProfessionalHasConfirmedAppointments => new(
+            "Professional.ProfessionalHasConfirmedAppointments.",
+            "Professional possui agendamentos confirmados.");
     }
 }

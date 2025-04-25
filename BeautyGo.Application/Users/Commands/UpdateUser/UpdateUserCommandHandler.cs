@@ -24,7 +24,7 @@ internal class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, Res
 
     public async Task<Result> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var currentUser = await _authService.GetCurrentUserAsync();
+        var currentUser = await _authService.GetCurrentUserAsync(cancellationToken);
 
         currentUser.ChangeName(request.FirstName, request.LastName);
 

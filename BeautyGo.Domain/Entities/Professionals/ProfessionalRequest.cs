@@ -35,6 +35,19 @@ public class ProfessionalRequest : BaseEntity
         return professionalInvitation;
     }
 
+    public bool IsAccepted()
+    {
+        return Status == InvitationStatus.Accepted && AcceptedAt.HasValue;
+    }
+
+    public void Accept()
+    {
+        AcceptedAt = DateTime.Now;
+        Status = InvitationStatus.Accepted;
+
+        AddDomainEvent(new ProfessionalRequestAcceptedDomainEvent(this));
+    }
+
     public bool IsExpired()
     {
         return ExpireAt < DateTime.Now;

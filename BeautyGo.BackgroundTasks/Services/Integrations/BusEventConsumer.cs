@@ -10,6 +10,6 @@ internal sealed class BusEventConsumer : IBusEventConsumer
     public BusEventConsumer(IMediator mediator) =>
         _mediator = mediator;
 
-    public async Task ConsumeAsync(IIntegrationEvent integrationEvent) => 
-        await _mediator.Publish(integrationEvent);
+    public async Task ConsumeAsync(IIntegrationEvent integrationEvent, CancellationToken cancellationToken = default) => 
+        await _mediator.Publish(integrationEvent, cancellationToken);
 }

@@ -15,10 +15,16 @@ namespace BeautyGo.BackgroundTasks.Tasks;
 
 internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDisposable
 {
+    #region Fields
+
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly IModel _channel;
     private readonly MessageBrokerSettings _settings;
+
+    #endregion
+
+    #region Ctor
 
     public BusEventConsumerBackgroundService(
         AppSettings appSettings,
@@ -39,6 +45,17 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
+        QueueDeclares();
+        ConfigureExchange();
+        QueueBind();
+    }
+
+    #endregion
+
+    #region Utilities
+
+    private void QueueDeclares()
+    {
         // Garantir que as filas existam
         _channel.QueueDeclare(
             queue: _settings.QueueName,
@@ -74,14 +91,20 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
             autoDelete: false,
             arguments: dlqArguments
         );
+    }
 
+    private void ConfigureExchange()
+    {
         // Configurar Exchange
         _channel.ExchangeDeclare(
             exchange: _settings.ExchangeName,
             type: "direct", // Pode ser "direct", "fanout", etc.
             durable: true
         );
+    }
 
+    private void QueueBind()
+    {
         // Associar filas ao Exchange
         _channel.QueueBind(
             queue: _settings.QueueName,
@@ -102,17 +125,7 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         );
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.Received += async (sender, eventArgs) => await HandleMessageAsync(eventArgs);
-
-        _channel.BasicConsume(queue: _settings.QueueName, autoAck: false, consumer: consumer);
-
-        await Task.CompletedTask;
-    }
-
-    private async Task HandleMessageAsync(BasicDeliverEventArgs eventArgs)
+    private async Task HandleMessageAsync(BasicDeliverEventArgs eventArgs, CancellationToken stoppingToken)
     {
         using var scope = _serviceProvider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
@@ -135,7 +148,7 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
 
             await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Received - {@event}");
 
-            await retryPolicy.ExecuteAsync(() => eventConsumer.ConsumeAsync(@event));
+            await retryPolicy.ExecuteAsync(() => eventConsumer.ConsumeAsync(@event, stoppingToken));
 
             await unitOfWork.SaveChangesAsync();
 
@@ -148,11 +161,11 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
             await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex);
 
             // Redireciona para DLQ ou fila de retry
-            HandleFailedMessage(eventArgs);
+            await HandleFailedMessageAsync(eventArgs);
         }
     }
 
-    private void HandleFailedMessage(BasicDeliverEventArgs eventArgs)
+    private Task HandleFailedMessageAsync(BasicDeliverEventArgs eventArgs)
     {
         var properties = _channel.CreateBasicProperties();
         properties.Persistent = true;
@@ -162,7 +175,27 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         _channel.BasicPublish(exchange: "", routingKey: _settings.DLQName, basicProperties: properties, body: eventArgs.Body.ToArray());
 
         _channel.BasicAck(eventArgs.DeliveryTag, false);
+
+        return Task.CompletedTask;
     }
+
+    #endregion
+
+    #region Execute
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        var consumer = new AsyncEventingBasicConsumer(_channel);
+        consumer.Received += async (sender, eventArgs) => await HandleMessageAsync(eventArgs, stoppingToken);
+
+        _channel.BasicConsume(queue: _settings.QueueName, autoAck: false, consumer: consumer);
+
+        return Task.CompletedTask;
+    }
+
+    #endregion
+
+    #region Dispose
 
     public override void Dispose()
     {
@@ -173,6 +206,8 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
 
         base.Dispose();
     }
+
+    #endregion
 }
 
 
