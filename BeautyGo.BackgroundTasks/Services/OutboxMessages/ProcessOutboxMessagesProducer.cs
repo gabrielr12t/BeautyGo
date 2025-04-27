@@ -1,8 +1,10 @@
-﻿using BeautyGo.Application.Core.Abstractions.Data;
+﻿using BeautyGo.Application.Common.BackgroundServices;
+using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Repositories;
+using MediatR;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
 
@@ -12,11 +14,14 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
 {
     #region Fields
 
+    private readonly IMediator _mediator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger _logger;
     private readonly IPublisherBusEvent _publisher;
     private readonly IOutboxMessageRepository _outboxRepository;
     private readonly SemaphoreSlim _semaphore;
+
+    private const int MaxAttempsFailed = 3;
 
     #endregion
 
@@ -26,13 +31,15 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
        IUnitOfWork unitOfWork,
        ILogger logger,
        IPublisherBusEvent publisher,
-       IOutboxMessageRepository outboxRepository)
+       IOutboxMessageRepository outboxRepository,
+       IMediator mediator)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _publisher = publisher;
         _outboxRepository = outboxRepository;
         _semaphore = new(1, 1);
+        _mediator = mediator;
     }
 
     #endregion
@@ -66,6 +73,11 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
 
             updateQueue.Enqueue(
                 new OutboxUpdate { Id = message.Id, ProcessedOn = DateTime.Now, Error = ex.ToString() });
+
+            if (message.Attempts == MaxAttempsFailed)
+            {
+                await _mediator.Publish(new ProcessOuboxMessageFailedEvent(message.Id, ex), cancellationToken);
+            }
         }
         finally
         {
@@ -93,7 +105,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
 
     public async Task ProduceAsync(CancellationToken cancellationToken)
     {
-        var unprocessedOutboxMessages = await _outboxRepository.GetRecentUnprocessedOutboxMessages(5);
+        var unprocessedOutboxMessages = await _outboxRepository.GetRecentUnprocessedOutboxMessages(5, cancellationToken);
 
         var updateQueue = new ConcurrentQueue<OutboxUpdate>();
 
@@ -112,6 +124,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
                 {
                     message.ProcessedOn = updatedMessage.ProcessedOn;
                     message.Error = updatedMessage.Error;
+                    message.Attempts++;
 
                     await _outboxRepository.UpdateAsync(message);
                 }

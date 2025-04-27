@@ -1,3 +1,3 @@
 ﻿namespace BeautyGo.Contracts.Common.Filters;
 
-public record FilterBase(int PageIndex, int PageSize);
+public record FilterBase(int PageIndex = 1, int PageSize = 20);

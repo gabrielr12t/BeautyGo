@@ -1,4 +1,5 @@
-﻿using BeautyGo.Application.Core.Abstractions.Data;
+﻿using BeautyGo.Application.Common.BackgroundServices;
+using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Core.Events;
@@ -19,7 +20,7 @@ public class EventProcessor : IEventProcessor
     private readonly IMediator _mediator;
     private readonly ILogger _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IBaseRepository<Event> _eventRepository;
+    private readonly IBaseRepository<Event> _eventRepository; 
 
     #endregion
 
@@ -92,6 +93,11 @@ public class EventProcessor : IEventProcessor
                 pendingEvent.EventErrors.Add(EventError.Create(ex.Message, pendingEvent.Id));
 
                 await _logger.ErrorAsync($"Erro ao executar o evento: {pendingEvent.Id}", ex);
+
+                if (pendingEvent.Attempts == eventSettings.MaxAttempsFailed)
+                {
+                    await _mediator.Publish(new EventProcessorFailedEvent(pendingEvent.Id, ex));
+                }
             }
             finally
             {

@@ -1,7 +1,5 @@
 ﻿namespace BeautyGo.Contracts.Emails;
 
-public record MailRequest(string EmailTo, string Subject, string Body);
-
 public record BusinessConfirmEmail(string EmailTo, string Name, string Link) : IEmailNotification;
 
 public record BusinessProfessionalAddedEmail(string EmailTo, string Professional, string Business) : IEmailNotification;
@@ -15,3 +13,5 @@ public record NotificationEmail(string EmailTo, string Subject, string Body) : I
 public record PasswordChangedEmail(string EmailTo, string Name) : IEmailNotification;
 
 public record WelcomeEmail(string EmailTo, string Name) : IEmailNotification;
+
+public record SupportBackgroundFailedEmail(string EmailTo, string Subject, string Body): IEmailNotification;

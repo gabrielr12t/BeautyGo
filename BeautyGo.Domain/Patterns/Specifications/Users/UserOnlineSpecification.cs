@@ -13,5 +13,5 @@ public sealed class UserOnlineSpecification : Specification<User>
     }
 
     public override Expression<Func<User, bool>> ToExpression() =>
-        user => _lastActivityFrom <= user.LastActivityDate;
+        user => user.LastActivityDate >= _lastActivityFrom;
 }

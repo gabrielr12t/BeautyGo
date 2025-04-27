@@ -14,7 +14,7 @@ namespace BeautyGo.Domain.Patterns.Specifications.Notifications
 
         public override Expression<Func<EmailNotification, bool>> ToExpression() =>
             notification => !notification.IsSent
-                            && notification.RetryCount < 3
+                            && notification.RetryCount <= 3
                             && (notification.FailedDate == null || notification.ScheduledDate <= _date);
     }
 }

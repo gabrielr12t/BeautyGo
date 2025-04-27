@@ -89,10 +89,13 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
             return Result.Failure<TokenModel>(DomainErrors.UserEmailValidationToken.RequiredValidToken);
 
         user.LastLoginDate = DateTime.Now;
+        user.LastActivityDate = DateTime.Now;
 
         var token = await _authService.AuthenticateAsync(user);
 
-        await _unitOfWork.SaveChangesAsync();
+        _userRepository.Update(user);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success(token);
     }

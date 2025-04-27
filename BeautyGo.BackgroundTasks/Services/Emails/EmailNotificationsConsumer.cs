@@ -1,4 +1,5 @@
 ﻿using BeautyGo.Application.Businesses.Commands.BusinessCreated;
+using BeautyGo.Application.Common.BackgroundServices;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Notifications;
 using BeautyGo.Contracts.Emails;
@@ -62,6 +63,8 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
                 if (notification.RetryCount >= 3)
                 {
                     notification.FailedDate = DateTime.UtcNow;
+
+                    await _mediator.Publish(new EmailNotificationFailedEvent(notification.Id, ex));
                 }
             }
         }

@@ -1,7 +1,9 @@
-﻿using BeautyGo.Application.Core.Abstractions.Data;
+﻿using BeautyGo.Application.Common.BackgroundServices;
+using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.BackgroundTasks.Services.OutboxMessages;
 using BeautyGo.BackgroundTasks.Settings;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -44,14 +46,13 @@ internal class ProcessOutboxMessagesProducerBackgroundService : BackgroundServic
         }
 
         await logger.InformationAsync($"{nameof(ProcessOutboxMessagesProducerBackgroundService)} background task is stopping.");
-
-        await Task.CompletedTask;
     }
 
     private async Task ProduceEventNotificationsAsync(CancellationToken stoppingToken)
     {
         using IServiceScope scope = _serviceProvider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         try
         {
@@ -62,6 +63,8 @@ internal class ProcessOutboxMessagesProducerBackgroundService : BackgroundServic
         catch (Exception e)
         {
             await logger.ErrorAsync($"ERROR: Failed to process the batch of events: {e.Message}", e);
+
+            await unitOfWork.SaveChangesAsync(stoppingToken);
         }
     }
 }

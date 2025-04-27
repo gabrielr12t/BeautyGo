@@ -96,6 +96,7 @@ public static class DependencyInjection
         services.AddTransient<IUserEmailNotificationPublisher, UserEmailNotificationPublisher>();
         services.AddTransient<IBusinessEmailNotificationPublisher, BusinessEmailNotificationPublisher>();
         services.AddTransient<IProfessionalEmailNotificationPublisher, ProfessionalEmailNotificationPublisher>();
+        services.AddTransient<ISupportNotificationPublisher, SupportNotificationPublisher>();
         services.AddTransient<EmailService>();
         services.AddTransient<IEmailService>(serviceProvicer =>
         {

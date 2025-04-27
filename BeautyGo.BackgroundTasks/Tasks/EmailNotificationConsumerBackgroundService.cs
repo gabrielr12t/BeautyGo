@@ -44,8 +44,6 @@ internal class EmailNotificationConsumerBackgroundService : BackgroundService
         }
 
         await logger.InformationAsync("EmailNotificationConsumerBackgroundService background task is stopping.");
-
-        await Task.CompletedTask;
     }
 
     private async Task ConsumeEventNotificationsAsync(CancellationToken stoppingToken)

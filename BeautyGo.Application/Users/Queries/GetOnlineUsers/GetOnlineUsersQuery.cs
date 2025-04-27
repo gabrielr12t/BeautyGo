@@ -5,4 +5,5 @@ using BeautyGo.Domain.Core.Abstractions;
 
 namespace BeautyGo.Application.Users.Queries.GetOnlineUsers;
 
-public sealed record GetOnlineUsersQuery(FilterBase Filter) : IQuery<IPagedList<UserOnlineResponse>>;
+public sealed record GetOnlineUsersQuery(int PageIndex, int PageSize) 
+    : FilterBase(PageIndex, PageSize), IQuery<IPagedList<UserOnlineResponse>>;

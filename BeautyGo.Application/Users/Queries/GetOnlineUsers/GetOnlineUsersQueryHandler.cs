@@ -25,8 +25,8 @@ internal class GetOnlineUsersQueryHandler : IQueryHandler<GetOnlineUsersQuery, I
         var onlineUsers = await _userRepository.GetAllPagedAsync(
             onlineUserSpec,
             userSelect,
-            request.Filter.PageIndex,
-            request.Filter.PageSize, false,
+            request.PageIndex,
+            request.PageSize, false,
             cancellationToken);
 
         return onlineUsers;

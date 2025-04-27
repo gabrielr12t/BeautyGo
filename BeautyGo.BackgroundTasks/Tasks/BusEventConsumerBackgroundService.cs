@@ -1,9 +1,11 @@
-﻿using BeautyGo.Application.Core.Abstractions.Data;
+﻿using BeautyGo.Application.Common.BackgroundServices;
+using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.BackgroundTasks.Services.Integrations;
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Settings;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
@@ -129,6 +131,7 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
     {
         using var scope = _serviceProvider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         var eventConsumer = scope.ServiceProvider.GetRequiredService<IBusEventConsumer>();
         var retryPolicy = scope.ServiceProvider.GetRequiredService<IRabbitMqRetryPolicy>();
@@ -160,6 +163,8 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         {
             await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex);
 
+            await mediator.Publish(new BusEventConsumerFailedEvent(@event, ex));
+
             // Redireciona para DLQ ou fila de retry
             await HandleFailedMessageAsync(eventArgs);
         }
@@ -186,7 +191,7 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.Received += async (sender, eventArgs) => await HandleMessageAsync(eventArgs, stoppingToken);
+        consumer.Received += (sender, eventArgs) => HandleMessageAsync(eventArgs, stoppingToken);
 
         _channel.BasicConsume(queue: _settings.QueueName, autoAck: false, consumer: consumer);
 

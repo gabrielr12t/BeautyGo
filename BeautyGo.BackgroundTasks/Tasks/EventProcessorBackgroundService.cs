@@ -52,14 +52,13 @@ internal class EventProcessorBackgroundService : BackgroundService
         }
 
         await logger.InformationAsync($"{nameof(EventProcessorBackgroundService)} background task is stopping.");
-
-        await Task.CompletedTask;
     }
 
     private async Task ProduceEventNotificationsAsync(CancellationToken stoppingToken)
     {
         using IServiceScope scope = _serviceProvider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         try
         {
@@ -70,6 +69,8 @@ internal class EventProcessorBackgroundService : BackgroundService
         catch (Exception e)
         {
             await logger.ErrorAsync($"ERROR: Failed to process the batch of events: {e.Message}", e);
+
+            await unitOfWork.SaveChangesAsync(stoppingToken);
         }
     }
 }
