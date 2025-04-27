@@ -1,6 +1,7 @@
 ﻿using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Patterns.Specifications;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BeautyGo.Persistence.Extensions;
 
@@ -9,7 +10,7 @@ internal static class SpecificationQueryableExtensions
     internal static IQueryable<T> GetQuerySpecification<T>(this IQueryable<T> query, Specification<T> specification)
         where T : BaseEntity
     {
-        var criteria = specification.ToExpression();
+        Expression<Func<T, bool>> criteria = specification.ToExpression();
 
         if (criteria != null)
             query = query.Where(criteria);

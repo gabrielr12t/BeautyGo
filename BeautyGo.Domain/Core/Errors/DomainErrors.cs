@@ -231,6 +231,10 @@ public static class DomainErrors
                 "ProfessionalRequest.DuplicateProfessionalRequest",
                 "Já existe um convite para esse profissional.");
 
+        public static readonly Error CannotSendRequestToYourself = new(
+              "ProfessionalRequest.CannotSendRequestToYourself",
+              "Você não pode enviar um convite para você mesmo.");
+
         public static Error NotFound => new(
                 "ProfessionalRequest.NotFound",
                 $"Convite para profissional não encontrado.");

@@ -25,4 +25,8 @@
 		<ProjectReference Include="..\BeautyGo.Persistence\BeautyGo.Persistence.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\db_backups\" />
+	</ItemGroup>
+
 </Project>

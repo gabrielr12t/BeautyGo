@@ -4,7 +4,7 @@ using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Repositories;
 
-namespace BeautyGo.Application.ProfessionalInvitations.ProfessionalInvitationRequestSent;
+namespace BeautyGo.Application.ProfessionalRequests.ProfessionalRequestSent.Events;
 
 public class NotifyUserOnProfessionalRequestExpirationReminderEventHandler : IEventHandler<ProfessionalRequestExpirationReminderEvent>
 {

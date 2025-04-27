@@ -1,5 +1,6 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.ProfessionalInvitations.ProfessionalInvitationRequestSent;
+using BeautyGo.Application.ProfessionalRequests.ProfessionalRequestSent.Events;
 using BeautyGo.BackgroundTasks.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;

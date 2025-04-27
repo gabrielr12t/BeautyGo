@@ -54,6 +54,11 @@ public class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfess
         if (!await _userService.AuthorizeAsync(BeautyGoUserRoleDefaults.OWNER, cancellationToken))
             return Result.Failure(DomainErrors.General.UnauthorizedUser);
 
+        var currentUser = await _authService.GetCurrentUserAsync(cancellationToken);
+
+        if (request.UserId == currentUser.Id)
+            return Result.Failure(DomainErrors.ProfessionalRequest.CannotSendRequestToYourself);
+
         if (!await _userRepository.ExistAsync(new EntityByIdSpecification<User>(request.UserId), cancellationToken))
             return Result.Failure(DomainErrors.User.UserNotFound);
 
@@ -64,7 +69,7 @@ public class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfess
         if (business is null)
             return Result.Failure(DomainErrors.Business.BusinessNotFound(request.BusinessId));
 
-        if (!business.IsOwner(await _authService.GetCurrentUserAsync(cancellationToken)))
+        if (!business.IsOwner(currentUser))
             return Result.Failure(DomainErrors.Business.UserNotOwnerOfBusiness);
 
         if (!business.CanWork())
@@ -88,6 +93,7 @@ public class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfess
 
     #region Handle
 
+    //TESTAR A PARTIR DAQUI
     public async Task<Result> Handle(SendProfessionalRequestCommand request, CancellationToken cancellationToken)
     {
         var validationResult = await BusinessValidationAsync(request, cancellationToken);

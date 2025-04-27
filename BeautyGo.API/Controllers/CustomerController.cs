@@ -1,6 +1,5 @@
-﻿namespace BeautyGo.API.Controllers
+﻿namespace BeautyGo.API.Controllers;
+
+public class CustomerController
 {
-    public class CustomerController
-    {
-    }
 }

@@ -36,6 +36,6 @@ internal class SendDocumentValidateOnBusinessConfirmedAccountlntegrationEventHan
 
         var message = new DocumentValidatedEmail(business.Owner.Email, business.Name, "LINK TESTE");
 
-        await _businessEmailNotificationPublisher.EnqueueAsync(message, cancellationToken); 
+        await _businessEmailNotificationPublisher.PublishAsync(message, cancellationToken); 
     }
 }

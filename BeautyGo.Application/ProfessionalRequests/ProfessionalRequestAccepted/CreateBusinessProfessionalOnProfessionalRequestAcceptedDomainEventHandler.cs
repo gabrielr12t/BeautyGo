@@ -46,7 +46,7 @@ internal class CreateBusinessProfessionalOnProfessionalRequestAcceptedDomainEven
         var business = await GetBusinessByIdAsync(notification.ProfessionalRequest.BusinessId, cancellationToken);
 
         var professional = await _professionalRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<Professional>(notification.ProfessionalRequest.UserId), cancellationToken: cancellationToken);
+            new EntityByIdSpecification<Professional>(notification.ProfessionalRequest.UserId), false, cancellationToken);
 
         business.AddProfessional(professional);
 

@@ -67,7 +67,7 @@ public class EventProcessor : IEventProcessor
         var eventSettings = appSettings.Get<EventSettings>();
 
         var pendingEventsSpec = new PendingEventSpecification(eventSettings.MaxAttempsFailed);
-        var pendingEvents = await _eventRepository.GetAsync(pendingEventsSpec, cancellationToken: cancellationToken);
+        var pendingEvents = await _eventRepository.GetAsync(pendingEventsSpec, true, cancellationToken);
 
         foreach (var pendingEvent in pendingEvents)
         {

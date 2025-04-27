@@ -1,11 +1,14 @@
-﻿using BeautyGo.Application.Core.Abstractions.Authentication;
+﻿using Azure.Core;
+using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Businesses;
+using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.Businesses;
 using BeautyGo.Domain.Repositories;
+using System.Threading;
 
 namespace BeautyGo.Application.Businesses.Commands.CreateWorkingHours;
 
@@ -47,6 +50,16 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
     private bool HasInvalidTimeRange(IEnumerable<WorkingHoursDto> workingHours) =>
         workingHours.Any(OpeningIsMoreThanClosing);
 
+    private async Task<Business> GetBusinessAsync(Guid businessId, Guid businessOwnerId, CancellationToken cancellationToken)
+    {
+        var businessOwnerSpecification = new BusinessOwnerSpecification(businessOwnerId).AddInclude(p => p.WorkingHours);
+        var businessByIdSpecification = new EntityByIdSpecification<Business>(businessId);
+
+        var businesSpec = businessByIdSpecification.And(businessOwnerSpecification);
+
+        return await _businessRepository.GetFirstOrDefaultAsync(businesSpec, true, cancellationToken);
+    }
+
     #endregion
 
     #region Handle
@@ -61,8 +74,7 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
 
         var currentUser = await _authService.GetCurrentUserAsync(cancellationToken);
 
-        var businessOwnerSpecification = new BusinessOwnerSpecification(currentUser.Id).AddInclude(p => p.WorkingHours);
-        var business = await _businessRepository.GetFirstOrDefaultAsync(businessOwnerSpecification, true, cancellationToken);
+        var business = await GetBusinessAsync(request.BusinessId, currentUser.Id, cancellationToken);
 
         if (business is null)
             return Result.Failure(DomainErrors.Business.BusinessNotFoundToUser(request.BusinessId, currentUser.Email));

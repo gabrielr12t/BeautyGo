@@ -1,5 +1,4 @@
 using BeautyGo.Application;
-using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Infrastructure;
 using BeautyGo.Infrastructure.Core;
 using BeautyGo.Infrastructure.Extensions;
@@ -51,7 +50,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRateLimiter();
-
 app.MapControllers();
 
 app.Run();
