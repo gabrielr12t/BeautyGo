@@ -1,4 +1,4 @@
-﻿using BeautyGo.Application.ProfessionalInvitations.ProfessionalInvitationRequestSent;
+﻿using BeautyGo.Application.ProfessionalRequests.ProfessionalRequestSent;
 using BeautyGo.BackgroundTasks.Abstractions.Messaging;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.ProfessionalRequests.ProfessionalRequestSent;

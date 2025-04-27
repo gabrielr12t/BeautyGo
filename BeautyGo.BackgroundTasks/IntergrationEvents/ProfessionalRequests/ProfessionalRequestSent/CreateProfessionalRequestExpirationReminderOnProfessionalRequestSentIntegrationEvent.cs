@@ -1,5 +1,5 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Data;
-using BeautyGo.Application.ProfessionalInvitations.ProfessionalInvitationRequestSent;
+using BeautyGo.Application.ProfessionalRequests.ProfessionalRequestSent;
 using BeautyGo.Application.ProfessionalRequests.ProfessionalRequestSent.Events;
 using BeautyGo.BackgroundTasks.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Errors;
@@ -12,7 +12,7 @@ namespace BeautyGo.BackgroundTasks.IntergrationEvents.ProfessionalRequests.Profe
 
 //Criar JOB para notificar o usuário um dia antes de expirar o prazo.
 //Excluir job caso o usuário aceite ou recuse o convite
-internal class CreateProfessionalRequestEventOnProfessionalRequestSentIntegrationEvent
+internal class CreateProfessionalRequestExpirationReminderOnProfessionalRequestSentIntegrationEvent
     : IIntegrationEventHandler<ProfessionalRequestSentIntegrationEvent>
 {
     #region Fields
@@ -25,9 +25,9 @@ internal class CreateProfessionalRequestEventOnProfessionalRequestSentIntegratio
 
     #region Ctor
 
-    public CreateProfessionalRequestEventOnProfessionalRequestSentIntegrationEvent(
+    public CreateProfessionalRequestExpirationReminderOnProfessionalRequestSentIntegrationEvent(
         IBaseRepository<ProfessionalRequest> professionalRequestRepository,
-         IBaseRepository<Event> eventRepository,
+        IBaseRepository<Event> eventRepository,
         IUnitOfWork unitOfWork)
     {
         _professionalRequestRepository = professionalRequestRepository;

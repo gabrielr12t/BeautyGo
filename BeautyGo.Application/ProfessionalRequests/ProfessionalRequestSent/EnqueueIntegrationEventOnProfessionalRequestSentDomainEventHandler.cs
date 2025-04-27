@@ -2,7 +2,7 @@
 using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.DomainEvents.Professionals;
 
-namespace BeautyGo.Application.ProfessionalInvitations.ProfessionalInvitationRequestSent;
+namespace BeautyGo.Application.ProfessionalRequests.ProfessionalRequestSent;
 
 public class EnqueueIntegrationEventOnProfessionalRequestSentDomainEventHandler : IDomainEventHandler<ProfessionalRequestSentDomainEvent>
 {

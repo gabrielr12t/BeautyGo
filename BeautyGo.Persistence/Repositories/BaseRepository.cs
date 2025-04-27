@@ -133,11 +133,20 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         bool asTracking = false,
         CancellationToken cancellationToken = default)
     {
-        var query = Query(asTracking);
-
-        return await query
+        return await Query(asTracking)
             .GetQuerySpecification(specification)
             .FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
+    }
+
+    public virtual async Task<TResult> GetFirstOrDefaultAsync<TResult>(Specification<TEntity> specification, Func<TEntity, TResult> select, bool asTracking = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await Query(asTracking)
+            .GetQuerySpecification(specification)
+            .Where(specification.ToExpression())
+            .Select(select)
+            .AsQueryable()
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public virtual async Task<bool> ExistAsync(
@@ -154,6 +163,18 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
     {
         return await Query(asTracking)
             .GetQuerySpecification(specification)
+            .ToListAsync(cancellationToken);
+    }
+
+    public virtual async Task<IList<TResult>> GetAsync<TResult>(
+        Specification<TEntity> specification,
+        Func<TEntity, TResult> select,
+        bool asTracking = false, CancellationToken cancellationToken = default)
+    {
+        return await Query(asTracking)
+            .GetQuerySpecification(specification)
+            .Select(select)
+            .AsQueryable()
             .ToListAsync(cancellationToken);
     }
 

@@ -1,0 +1,3 @@
+﻿namespace BeautyGo.Contracts.OpenStreetMap;
+
+   

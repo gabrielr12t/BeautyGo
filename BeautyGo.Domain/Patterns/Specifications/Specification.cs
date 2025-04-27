@@ -8,8 +8,13 @@ public abstract class Specification<T>
 {
     public List<Expression<Func<T, object>>> IncludeExpression { get; }
     public List<string> IncludeStrings { get; }
+
     public Expression<Func<T, object>> OrderByExpression { get; private set; }
     public Expression<Func<T, object>> ThenByExpression { get; private set; }
+
+    public Expression<Func<T, object>> OrderByDescExpression { get; private set; }
+    public Expression<Func<T, object>> ThenByDescExpression { get; private set; }
+
     public int? Limit { get; private set; }
 
     protected Specification()
@@ -30,6 +35,9 @@ public abstract class Specification<T>
 
         OrderByExpression = left.OrderByExpression ?? right.OrderByExpression;
         ThenByExpression = left.ThenByExpression ?? right.ThenByExpression;
+
+        OrderByDescExpression = left.OrderByDescExpression ?? right.OrderByDescExpression;
+        ThenByDescExpression = left.ThenByDescExpression ?? right.ThenByDescExpression;
     }
 
     public Specification<T> And(Specification<T> specification) => new AndSpecification<T>(this, specification);
@@ -63,6 +71,18 @@ public abstract class Specification<T>
     public Specification<T> ApplyThenBy(Expression<Func<T, object>> thenByExpression)
     {
         ThenByExpression = thenByExpression;
+        return this;
+    }
+
+    public Specification<T> ApplyOrderByDesc(Expression<Func<T, object>> orderByExpression)
+    {
+        OrderByDescExpression = orderByExpression;
+        return this;
+    }
+
+    public Specification<T> ApplyThenByDesc(Expression<Func<T, object>> thenByExpression)
+    {
+        ThenByDescExpression = thenByExpression;
         return this;
     }
 

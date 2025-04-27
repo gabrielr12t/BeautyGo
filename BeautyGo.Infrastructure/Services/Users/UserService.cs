@@ -1,8 +1,11 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Users;
+using BeautyGo.Contracts.Common.Filters;
+using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
+using BeautyGo.Domain.Extensions;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
 using BeautyGo.Domain.Repositories;
 
@@ -22,7 +25,7 @@ internal class UserService : IUserService
     #region Ctor
 
     public UserService(
-        IBaseRepository<User> userRepository, 
+        IBaseRepository<User> userRepository,
         IUnitOfWork unitOfWork,
         IAuthService authService,
         IBaseRepository<UserRoleMapping> userRoleRepository)
@@ -42,7 +45,7 @@ internal class UserService : IUserService
 
     public async Task<bool> AuthorizeAsync(string role, User user, CancellationToken cancellationToken = default)
     {
-        if(string.IsNullOrEmpty(role)) 
+        if (string.IsNullOrEmpty(role))
             return false;
 
         var userRoleSpecification = new UserRoleByUserIdSpecification(user.Id);
@@ -69,5 +72,18 @@ internal class UserService : IUserService
         await _userRepository.InsertAsync(professional, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<IPagedList<User>> GetOnlineUsersAsync(FilterBase filter, bool asTracking = false, CancellationToken cancellationToken = default)
+    {
+        var lastActivityFrom = DateTime.Now.AddMinutes(-10);
+
+        var query = _userRepository.Query(asTracking);
+
+        query = query.Where(p => lastActivityFrom <= p.LastActivityDate);
+
+        query = query.OrderByDescending(p => p.LastActivityDate);
+
+        return await query.ToPagedListAsync(filter.PageIndex, filter.PageSize, false, cancellationToken);
     }
 }

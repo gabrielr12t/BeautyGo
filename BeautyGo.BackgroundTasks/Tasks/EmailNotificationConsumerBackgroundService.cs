@@ -69,7 +69,7 @@ internal class EmailNotificationConsumerBackgroundService : BackgroundService
         }
         finally
         {
-            await unitOfWork.SaveChangesAsync();
+            await unitOfWork.SaveChangesAsync(stoppingToken);
         }
     }
 }

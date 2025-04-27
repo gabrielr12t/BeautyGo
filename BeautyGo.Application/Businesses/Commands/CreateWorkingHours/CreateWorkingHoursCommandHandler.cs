@@ -52,10 +52,12 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
 
     private async Task<Business> GetBusinessAsync(Guid businessId, Guid businessOwnerId, CancellationToken cancellationToken)
     {
-        var businessOwnerSpecification = new BusinessOwnerSpecification(businessOwnerId).AddInclude(p => p.WorkingHours);
+        var businessOwnerSpecification = new BusinessOwnerSpecification(businessOwnerId);
         var businessByIdSpecification = new EntityByIdSpecification<Business>(businessId);
 
-        var businesSpec = businessByIdSpecification.And(businessOwnerSpecification);
+        var businesSpec = businessByIdSpecification
+            .And(businessOwnerSpecification)
+            .AddInclude(p => p.WorkingHours);
 
         return await _businessRepository.GetFirstOrDefaultAsync(businesSpec, true, cancellationToken);
     }

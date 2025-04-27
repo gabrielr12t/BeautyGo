@@ -46,6 +46,11 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 
     Task<IList<TEntity>> GetAsync(Specification<TEntity> specification, bool asTracking = false, CancellationToken cancellationToken = default);
 
+    Task<IList<TResult>> GetAsync<TResult>(Specification<TEntity> specification, Func<TEntity, TResult> select, bool asTracking = false, CancellationToken cancellationToken = default);
+
     Task<TEntity> GetFirstOrDefaultAsync(Specification<TEntity> specification, bool asTracking = false,
+        CancellationToken cancellationToken = default);
+
+    Task<TResult> GetFirstOrDefaultAsync<TResult>(Specification<TEntity> specification, Func<TEntity, TResult> select, bool asTracking = false,
         CancellationToken cancellationToken = default);
 }

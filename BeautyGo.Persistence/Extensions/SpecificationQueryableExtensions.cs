@@ -32,6 +32,15 @@ internal static class SpecificationQueryableExtensions
 
             query = orderedQuery;
         }
+        else if (specification.OrderByDescExpression != null)
+        {
+            var orderedQuery = query.OrderByDescending(specification.OrderByDescExpression);
+
+            if (specification.ThenByDescExpression != null)
+                orderedQuery = orderedQuery.ThenByDescending(specification.ThenByDescExpression);
+
+            query = orderedQuery;
+        }
 
         if (specification.Limit.HasValue)
             query = query.Take(specification.Limit.Value);
