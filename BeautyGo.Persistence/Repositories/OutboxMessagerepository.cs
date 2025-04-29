@@ -26,7 +26,7 @@ internal class OutboxMessagerepository : BaseRepository<OutboxMessage>, IOutboxM
 
     public async Task<ICollection<OutboxMessage>> GetRecentUnprocessedOutboxMessages(int size, CancellationToken cancellation = default)
     {
-        var unProcessedOutboxMessagesSpec = new UnprocessedOutboxMessagesSpecification(5);
+        var unProcessedOutboxMessagesSpec = new UnprocessedOutboxMessagesSpecification(size);
 
         var query = Query();
 

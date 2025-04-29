@@ -137,10 +137,10 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         var retryPolicy = scope.ServiceProvider.GetRequiredService<IRabbitMqRetryPolicy>();
 
         IIntegrationEvent? @event = null;
+        var body = Encoding.UTF8.GetString(eventArgs.Body.Span);
 
         try
         {
-            var body = Encoding.UTF8.GetString(eventArgs.Body.Span);
             @event = JsonConvert.DeserializeObject<IIntegrationEvent>(body, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All
@@ -163,9 +163,8 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         {
             await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex);
 
-            await mediator.Publish(new BusEventConsumerFailedEvent(@event, ex));
+            await mediator.Publish(new BusEventConsumerFailedEvent(body, ex));
 
-            // Redireciona para DLQ ou fila de retry
             await HandleFailedMessageAsync(eventArgs);
         }
     }

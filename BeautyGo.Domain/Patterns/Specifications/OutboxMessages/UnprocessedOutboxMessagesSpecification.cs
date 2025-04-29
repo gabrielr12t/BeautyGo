@@ -11,5 +11,5 @@ public sealed class UnprocessedOutboxMessagesSpecification : Specification<Outbo
     }
 
     public override Expression<Func<OutboxMessage, bool>> ToExpression() =>
-        outboxMessage => outboxMessage.ProcessedOn == null && outboxMessage.Attempts <= 3;
+        outboxMessage => outboxMessage.ProcessedOn == null;
 }

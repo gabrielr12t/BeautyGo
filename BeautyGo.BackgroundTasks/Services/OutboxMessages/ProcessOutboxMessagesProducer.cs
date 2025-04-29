@@ -74,10 +74,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
             updateQueue.Enqueue(
                 new OutboxUpdate { Id = message.Id, ProcessedOn = DateTime.Now, Error = ex.ToString() });
 
-            if (message.Attempts == MaxAttempsFailed)
-            {
-                await _mediator.Publish(new ProcessOuboxMessageFailedEvent(message.Id, ex), cancellationToken);
-            }
+            await _mediator.Publish(new ProcessOuboxMessageFailedEvent(message.Id, ex), cancellationToken);
         }
         finally
         {
@@ -105,7 +102,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
 
     public async Task ProduceAsync(CancellationToken cancellationToken)
     {
-        var unprocessedOutboxMessages = await _outboxRepository.GetRecentUnprocessedOutboxMessages(5, cancellationToken);
+        var unprocessedOutboxMessages = await _outboxRepository.GetRecentUnprocessedOutboxMessages(10, cancellationToken);
 
         var updateQueue = new ConcurrentQueue<OutboxUpdate>();
 
@@ -124,7 +121,6 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
                 {
                     message.ProcessedOn = updatedMessage.ProcessedOn;
                     message.Error = updatedMessage.Error;
-                    message.Attempts++;
 
                     await _outboxRepository.UpdateAsync(message);
                 }

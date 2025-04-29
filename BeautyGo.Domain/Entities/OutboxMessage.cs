@@ -10,8 +10,6 @@ public sealed class OutboxMessage : BaseEntity
 
     public DateTime? ProcessedOn { get; set; }
 
-    public int Attempts { get; set; }
-
     public string? Error { get; set; }
 
     public static OutboxMessage Create(string type, string content)

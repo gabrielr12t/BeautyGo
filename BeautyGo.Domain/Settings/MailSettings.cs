@@ -6,6 +6,8 @@ public class MailSettings : ISettings
 
     public string SenderDisplayName { get; set; }
 
+    public string SupportEmail { get; set; }
+
     public string SenderEmail { get; set; }
 
     public string SmtpPassword { get; set; }

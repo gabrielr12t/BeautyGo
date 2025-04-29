@@ -14,4 +14,4 @@ public record PasswordChangedEmail(string EmailTo, string Name) : IEmailNotifica
 
 public record WelcomeEmail(string EmailTo, string Name) : IEmailNotification;
 
-public record SupportBackgroundFailedEmail(string EmailTo, string Subject, string Body): IEmailNotification;
+public record SupportBackgroundFailedEmail(string Subject, string Body): IEmailNotification;
