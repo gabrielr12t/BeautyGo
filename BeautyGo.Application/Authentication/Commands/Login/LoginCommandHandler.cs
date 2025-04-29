@@ -88,6 +88,8 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
         if (!user.EmailConfirmed)
             return Result.Failure<TokenModel>(DomainErrors.UserEmailValidationToken.RequiredValidToken);
 
+        //Adicionar condition para MustChangePassword
+
         user.LastLoginDate = DateTime.Now;
         user.LastActivityDate = DateTime.Now;
 

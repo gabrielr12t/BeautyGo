@@ -8,14 +8,16 @@ internal class EnqueueIntegrationEventOnbusinessAccountConfirmedEventHandler : I
 {
     private readonly IOutboxMessageService _outboxMessageService;
 
-    public EnqueueIntegrationEventOnbusinessAccountConfirmedEventHandler(IOutboxMessageService outboxMessageService)
+    public EnqueueIntegrationEventOnbusinessAccountConfirmedEventHandler(
+        IOutboxMessageService outboxMessageService)
     {
         _outboxMessageService = outboxMessageService;
     }
 
     public async Task Handle(BusinessAccountConfirmedDomainEvent notification, CancellationToken cancellationToken)
     {
-        await _outboxMessageService.PublishAsync(new BusinessAccountConfirmedIntegrationEvent(notification.Business),
+        await _outboxMessageService.PublishAsync(
+            new BusinessAccountConfirmedIntegrationEvent(notification.Business),
             cancellationToken);
     }
 }

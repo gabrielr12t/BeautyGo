@@ -15,3 +15,5 @@ public record PasswordChangedEmail(string EmailTo, string Name) : IEmailNotifica
 public record WelcomeEmail(string EmailTo, string Name) : IEmailNotification;
 
 public record SupportBackgroundFailedEmail(string Subject, string Body): IEmailNotification;
+
+public record ProfessionalRequestReminderEmail(string EmailTo, string Name, string Business, DateTime ExpireIn);
