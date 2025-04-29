@@ -10,7 +10,7 @@ internal class UserAddressMappingConfiguration : BaseEntityConfiguration<UserAdd
     {
         base.Configure(builder);
 
-        builder.ToTable("UsersAddresses", "User");
+        builder.ToTable("UsersAddresses", "Users");
 
         builder.HasKey(uam => new { uam.UserId, uam.AddressId });
 

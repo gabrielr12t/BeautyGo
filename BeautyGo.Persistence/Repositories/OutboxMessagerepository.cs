@@ -1,4 +1,4 @@
-﻿using BeautyGo.Domain.Entities;
+﻿using BeautyGo.Domain.Entities.Outbox;
 using BeautyGo.Domain.Patterns.Specifications.OutboxMessages;
 using BeautyGo.Domain.Repositories;
 using Dapper;

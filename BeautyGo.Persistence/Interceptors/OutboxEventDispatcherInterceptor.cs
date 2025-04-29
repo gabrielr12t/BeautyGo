@@ -1,4 +1,5 @@
 ﻿using BeautyGo.Domain.Entities;
+using BeautyGo.Domain.Entities.Outbox;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
 

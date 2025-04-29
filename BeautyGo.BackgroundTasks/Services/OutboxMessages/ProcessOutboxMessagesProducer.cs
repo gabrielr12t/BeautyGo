@@ -2,7 +2,7 @@
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.Application.Core.Abstractions.Messaging;
-using BeautyGo.Domain.Entities;
+using BeautyGo.Domain.Entities.Outbox;
 using BeautyGo.Domain.Repositories;
 using MediatR;
 using Newtonsoft.Json;
@@ -21,7 +21,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
     private readonly IOutboxMessageRepository _outboxRepository;
     private readonly SemaphoreSlim _semaphore;
 
-    private const int MaxAttempsFailed = 3;
+    private const int _maxAttemptsFailed = 3;
 
     #endregion
 
@@ -46,14 +46,16 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
 
     #region Utilities
 
-    private async Task PublishMessage(
+    private record OutboxUpdate(Guid Id, DateTime ProcessedOn, string Error, Exception Exception, int Attempts);
+
+    private async Task PublishMessageAsync(
         OutboxMessage message,
         ConcurrentQueue<OutboxUpdate> updateQueue,
         CancellationToken cancellationToken)
     {
         try
         {
-            await _logger.InformationAsync($"Publishin outbox message on event bus: {message.Id}");
+            await _logger.InformationAsync($"Publishing outbox message on event bus: {message.Id}");
 
             var deserializedMessage = JsonConvert
                 .DeserializeObject<IIntegrationEvent>(
@@ -65,16 +67,15 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
 
             await _publisher.PublishAsync(deserializedMessage, cancellationToken);
 
-            updateQueue.Enqueue(new OutboxUpdate { Id = message.Id, ProcessedOn = DateTime.Now });
+            updateQueue.Enqueue(new OutboxUpdate(message.Id, DateTime.Now, null, null, message.Attempts));
         }
         catch (Exception ex)
         {
-            await _logger.ErrorAsync($"Error publishing outbox message on event bus: {message.Id}");
+            await _logger.ErrorAsync($"Error publishing outbox message {message.Id}: {ex.Message}");
 
-            updateQueue.Enqueue(
-                new OutboxUpdate { Id = message.Id, ProcessedOn = DateTime.Now, Error = ex.ToString() });
+            message.Attempts++;
 
-            await _mediator.Publish(new ProcessOuboxMessageFailedEvent(message.Id, ex), cancellationToken);
+            updateQueue.Enqueue(new OutboxUpdate(message.Id, DateTime.Now, ex.ToString(), ex, message.Attempts));
         }
         finally
         {
@@ -91,23 +92,56 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         }
     }
 
-    private struct OutboxUpdate
+    private async Task ProcessUpdateAsync(OutboxUpdate updatedMessage, CancellationToken cancellationToken)
     {
-        public Guid Id { get; init; }
-        public DateTime ProcessedOn { get; init; }
-        public string? Error { get; init; }
+        var message = await _outboxRepository.GetByIdAsync(updatedMessage.Id, cancellationToken);
+        if (message is null)
+            return;
+
+        UpdateMessageState(message, updatedMessage);
+
+        if (HasReachedMaxAttempts(message))
+        {
+            await HandleMaxAttemptsReachedAsync(message, updatedMessage.Exception!, cancellationToken);
+        }
+
+        await _outboxRepository.UpdateAsync(message);
+    }
+
+    private void UpdateMessageState(OutboxMessage message, OutboxUpdate updatedMessage)
+    {
+        if (updatedMessage.Error is not null)
+        {
+            message.Errors.Add(new(updatedMessage.Error, updatedMessage.Exception?.StackTrace));
+        }
+        else
+        {
+            message.ProcessedOn = updatedMessage.ProcessedOn;
+        }
+
+        message.Attempts = updatedMessage.Attempts;
+    }
+
+    private bool HasReachedMaxAttempts(OutboxMessage message)
+        => message.Attempts >= _maxAttemptsFailed;
+
+    private async Task HandleMaxAttemptsReachedAsync(OutboxMessage message, Exception exception, CancellationToken cancellationToken)
+    {
+        message.ProcessedOn = DateTime.Now;
+
+        await _mediator.Publish(new ProcessOuboxMessageFailedEvent(message.Id, exception), cancellationToken);
     }
 
     #endregion
 
     public async Task ProduceAsync(CancellationToken cancellationToken)
     {
-        var unprocessedOutboxMessages = await _outboxRepository.GetRecentUnprocessedOutboxMessages(10, cancellationToken);
+        var unprocessedOutboxMessages = await _outboxRepository.GetRecentUnprocessedOutboxMessages(5, cancellationToken);
 
         var updateQueue = new ConcurrentQueue<OutboxUpdate>();
 
         var publishTasks = unprocessedOutboxMessages
-            .Select(p => PublishMessage(p, updateQueue, cancellationToken))
+            .Select(p => PublishMessageAsync(p, updateQueue, cancellationToken))
             .ToList();
 
         await Task.WhenAll(publishTasks);
@@ -116,14 +150,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         {
             foreach (var updatedMessage in updateQueue)
             {
-                var message = await _outboxRepository.GetByIdAsync(updatedMessage.Id, cancellationToken);
-                if (message != null)
-                {
-                    message.ProcessedOn = updatedMessage.ProcessedOn;
-                    message.Error = updatedMessage.Error;
-
-                    await _outboxRepository.UpdateAsync(message);
-                }
+                await ProcessUpdateAsync(updatedMessage, cancellationToken);
             }
         }
     }

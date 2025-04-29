@@ -1,4 +1,4 @@
-﻿using BeautyGo.Domain.Entities;
+﻿using BeautyGo.Domain.Entities.Outbox;
 
 namespace BeautyGo.Domain.Repositories;
 

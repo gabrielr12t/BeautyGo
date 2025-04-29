@@ -10,7 +10,7 @@ public class UserRoleConfiguration : BaseEntityConfiguration<UserRole>
     {
         base.Configure(builder);
 
-        builder.ToTable("UserRoles", "User");
+        builder.ToTable("UserRoles", "Users");
 
         builder.Property(p => p.Description).IsRequired().HasMaxLength(25);
     }

@@ -10,7 +10,7 @@ internal class UserPasswordConfiguration : BaseEntityConfiguration<UserPassword>
     {
         base.Configure(builder);
 
-        builder.ToTable("UserPasswords", "User");
+        builder.ToTable("UserPasswords", "Users");
 
         builder.HasOne(p => p.User)
             .WithMany(u => u.Passwords)

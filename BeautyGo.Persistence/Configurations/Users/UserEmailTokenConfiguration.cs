@@ -8,7 +8,7 @@ internal class UserEmailTokenConfiguration : BaseEntityConfiguration<UserEmailTo
 {
     public override void Configure(EntityTypeBuilder<UserEmailTokenValidation> builder)
     {
-        builder.ToTable("EmailTokens", "User");
+        builder.ToTable("EmailTokens", "Users");
 
         builder.Property(e => e.UserId)
             .IsRequired();

@@ -10,6 +10,6 @@ internal class EventErrorConfiguration : BaseEntityConfiguration<EventError>
     {
         base.Configure(builder);
 
-        builder.ToTable("Event", "EventErrors");
+        builder.ToTable("EventError", "Events");
     }
 }

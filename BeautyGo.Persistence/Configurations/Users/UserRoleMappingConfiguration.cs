@@ -10,7 +10,7 @@ internal class UserRoleMappingConfiguration : BaseEntityConfiguration<UserRoleMa
     {
         base.Configure(builder);
 
-        builder.ToTable("UserRolesMapping", "User");
+        builder.ToTable("UserRolesMapping", "Users");
 
         builder.HasKey(p => new { p.UserId, p.UserRoleId });
 

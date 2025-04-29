@@ -1,4 +1,4 @@
-﻿using BeautyGo.Domain.Entities;
+﻿using BeautyGo.Domain.Entities.Outbox;
 using System.Linq.Expressions;
 
 namespace BeautyGo.Domain.Patterns.Specifications.OutboxMessages;
@@ -11,5 +11,5 @@ public sealed class UnprocessedOutboxMessagesSpecification : Specification<Outbo
     }
 
     public override Expression<Func<OutboxMessage, bool>> ToExpression() =>
-        outboxMessage => outboxMessage.ProcessedOn == null;
+        outboxMessage => outboxMessage.ProcessedOn == null && !outboxMessage.ProcessedOn.HasValue;
 }

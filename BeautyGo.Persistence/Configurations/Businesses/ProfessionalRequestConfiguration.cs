@@ -8,7 +8,7 @@ public class ProfessionalRequestConfiguration : BaseEntityConfiguration<Professi
 {
     public override void Configure(EntityTypeBuilder<ProfessionalRequest> builder)
     {
-        builder.ToTable("ProfessionalRequests", "Business");
+        builder.ToTable("ProfessionalRequests", "Businesses");
 
         builder
             .HasOne(pi => pi.Business)

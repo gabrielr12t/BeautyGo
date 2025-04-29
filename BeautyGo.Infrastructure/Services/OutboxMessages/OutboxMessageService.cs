@@ -1,7 +1,7 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Application.Core.Abstractions.OutboxMessages;
-using BeautyGo.Domain.Entities;
+using BeautyGo.Domain.Entities.Outbox;
 using BeautyGo.Domain.Repositories;
 using Newtonsoft.Json;
 
