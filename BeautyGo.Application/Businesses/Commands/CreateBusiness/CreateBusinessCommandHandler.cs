@@ -69,6 +69,8 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
         if (await _businessRepository.ExistAsync(businessByCnpjSpec, cancellationToken))
             return Result.Failure(DomainErrors.Business.CnpjAlreadyExists);
 
+        //VALIDAR SE FOR PROFESSIONAL NÃO PODE CRIAR LOJA
+
         return Result.Success();
     }
 

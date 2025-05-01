@@ -15,6 +15,8 @@ internal class EnqueueIntegrationEventOnBusinessCreatedDomainEventHandler : IDom
 
     public async Task Handle(EntityInsertedEvent<Business> notification, CancellationToken cancellationToken)
     {
-        await _outboxMessageService.PublishAsync(new BusinessCreatedIntegrationEvent(notification.Entity), cancellationToken);
+        await _outboxMessageService.PublishAsync(
+            new BusinessCreatedIntegrationEvent(notification.Entity), 
+            cancellationToken);
     }
 }
