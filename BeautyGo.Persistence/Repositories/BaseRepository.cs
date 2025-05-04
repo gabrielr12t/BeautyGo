@@ -184,7 +184,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false,
         CancellationToken cancellationToken = default)
     {
-        return await Query()
+        return await Query(false)
             .GetQuerySpecification(specification)
             .Select(resultSelector)
             .AsQueryable()

@@ -22,13 +22,13 @@ internal class BusinessRepository : BaseRepository<Business>, IBusinessRepositor
         await connection.OpenAsync(cancellation);
 
         var parameters = new DynamicParameters();
-        parameters.Add("@Latitude", filter.Latitude, DbType.Double);
-        parameters.Add("@Longitude", filter.Longitude, DbType.Double);
-        parameters.Add("@RadiusKm", filter.RadiusKm, DbType.Double);
-        parameters.Add("@Name", filter.Name, DbType.String);
-        parameters.Add("@Description", filter.Description, DbType.String);
-        parameters.Add("@PageNumber", filter.PageNumber, DbType.Int32);
-        parameters.Add("@PageSize", filter.PageSize, DbType.Int32);
+        parameters.Add($"@{nameof(BusinessFilter.Latitude)}"    , filter.Latitude, DbType.Double);
+        parameters.Add($"@{nameof(BusinessFilter.Longitude)}"   , filter.Longitude, DbType.Double);
+        parameters.Add($"@{nameof(BusinessFilter.RadiusKm)}"    , filter.RadiusKm, DbType.Double);
+        parameters.Add($"@{nameof(BusinessFilter.Name)}"        , filter.Name, DbType.String);
+        parameters.Add($"@{nameof(BusinessFilter.Description)}" , filter.Description, DbType.String);
+        parameters.Add($"@{nameof(BusinessFilter.PageNumber)}"  , filter.PageNumber, DbType.Int32);
+        parameters.Add($"@{nameof(BusinessFilter.PageSize)}"    , filter.PageSize, DbType.Int32);
 
         using var multi = await connection.QueryMultipleAsync(
             "Businesses.GetFilteredBusinesses",
