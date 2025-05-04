@@ -30,7 +30,7 @@ public class StandardizedResultMiddleware
 
                 var responseText = await FormatResponse(context.Response);
                 var byteArray = Encoding.UTF8.GetBytes(responseText);
-                await originalBodyStream.WriteAsync(byteArray, 0, byteArray.Length);
+                await originalBodyStream.WriteAsync(byteArray, 0, byteArray.Length, context.RequestAborted);
             }
         }
         finally
@@ -45,7 +45,7 @@ public class StandardizedResultMiddleware
 
         using (var stream = new StreamReader(response.Body))
         {
-            var responseBody = await stream.ReadToEndAsync();
+            var responseBody = await stream.ReadToEndAsync(response.HttpContext.RequestAborted);
 
             var responseBodyObject = JsonConvert.DeserializeObject<object>(responseBody);
 

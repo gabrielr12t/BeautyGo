@@ -141,7 +141,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         var updateQueue = new ConcurrentQueue<OutboxUpdate>();
 
         var publishTasks = unprocessedOutboxMessages
-            .Select(p => PublishMessageAsync(p, updateQueue, cancellationToken))
+            .Select(outboxMesage => PublishMessageAsync(outboxMesage, updateQueue, cancellationToken))
             .ToList();
 
         await Task.WhenAll(publishTasks);

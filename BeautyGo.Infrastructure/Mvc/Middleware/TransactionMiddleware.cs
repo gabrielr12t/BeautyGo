@@ -17,8 +17,6 @@ public class TransactionMiddleware
 
     public async Task InvokeAsync(HttpContext context, IUnitOfWork unitOfWork)
     {
-        var request = context.Request;
-
         if (context.RequestServices.GetService<IQuery<object>>() != null)
         {
             await _next(context);

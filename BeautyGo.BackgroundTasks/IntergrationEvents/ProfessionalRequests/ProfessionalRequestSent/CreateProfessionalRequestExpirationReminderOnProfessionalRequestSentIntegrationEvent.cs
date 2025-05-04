@@ -39,15 +39,15 @@ internal class CreateProfessionalRequestExpirationReminderOnProfessionalRequestS
 
     public async Task Handle(ProfessionalRequestSentIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        var professionalRequest = await _professionalRequestRepository.GetByIdAsync(notification.ProfessionalInvitationId, cancellationToken);
+        var professionalRequest = await _professionalRequestRepository.GetByIdAsync(notification.ProfessionalRequestId, cancellationToken);
 
         if (professionalRequest is null)
-            throw new DomainException(DomainErrors.General.EntityNotFound(notification.ProfessionalInvitationId));
+            throw new DomainException(DomainErrors.General.EntityNotFound(notification.ProfessionalRequestId));
 
         var notificationAt = professionalRequest.ExpireAt.Date.AddDays(-1).AddHours(8);
 
         var professionalRequestExpirationReminderEvent = Event.Create(
-            new ProfessionalRequestExpirationReminderEvent(notification.ProfessionalInvitationId),
+            new ProfessionalRequestExpirationReminderEvent(notification.ProfessionalRequestId),
         notificationAt);
 
         await _eventRepository.InsertAsync(professionalRequestExpirationReminderEvent, cancellationToken);

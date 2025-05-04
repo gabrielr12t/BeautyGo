@@ -15,17 +15,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace BeautyGo.Api.Controllers;
 
 [Route("api/[controller]")] 
-public class BusinessController : BasePublicController
+public class BusinessController : BaseController
 {
     public BusinessController(IMediator mediator) : base(mediator)
     {
     }
 
-    [HttpGet("filter")]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> FilterBusiness([FromQuery] GetBusinessesFilterPagedQuery query) =>
-        Ok(await mediator.Send(query));
+    #region Command
 
     [HttpPost("register")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
@@ -35,18 +31,8 @@ public class BusinessController : BasePublicController
             .Bind(command => mediator.Send(command, cancellationToken))
             .Match(Ok, BadRequest);
 
-    [Authorize]
-    [AuthorizeOwner]
-    [HttpPost("working-hours")]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RegisterWorkingHours([FromBody] CreateWorkingHoursCommand command, CancellationToken cancellationToken) =>
-        await Result.Create(command, DomainErrors.General.UnProcessableRequest)
-            .Bind(command => mediator.Send(command, cancellationToken))
-            .Match(Ok, BadRequest);
-
-    [AllowAnonymous]
     [HttpGet("register/confirm")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ConfirmAccount([FromQuery] string token, CancellationToken cancellationToken) =>
@@ -54,13 +40,35 @@ public class BusinessController : BasePublicController
        .Bind(command => mediator.Send(new ConfirmAccountCommand(token), cancellationToken))
        .Match(Ok, BadRequest);
 
-    [Authorize]
+    [HttpPost("working-hours")]
     [AuthorizeOwner]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RegisterWorkingHours([FromBody] CreateWorkingHoursCommand command, CancellationToken cancellationToken) =>
+        await Result.Create(command, DomainErrors.General.UnProcessableRequest)
+            .Bind(command => mediator.Send(command, cancellationToken))
+            .Match(Ok, BadRequest);
+    
     [HttpPost("professional/invitation")]
+    [AuthorizeOwner]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ProfessionalInvitationRequest([FromBody] SendProfessionalRequestCommand command, CancellationToken cancellationToken) =>
         await Result.Create(command, DomainErrors.General.UnProcessableRequest)
             .Bind(command => mediator.Send(command, cancellationToken))
-            .Match(Ok, BadRequest); 
+            .Match(Ok, BadRequest);
+
+    #endregion
+
+    #region Query
+
+    [HttpGet("filter")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> FilterBusiness([FromQuery] GetBusinessesFilterPagedQuery query) =>
+        Ok(await mediator.Send(query));
+
+    #endregion
 }
+

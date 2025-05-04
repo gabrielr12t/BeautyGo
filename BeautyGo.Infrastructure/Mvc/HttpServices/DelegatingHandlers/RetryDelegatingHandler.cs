@@ -80,10 +80,8 @@ public class RetryDelegatingHandler : DelegatingHandler
     {
         try
         {
-            var response = await GetAsyncPolicy().ExecuteAsync(async () =>
+            return await GetAsyncPolicy().ExecuteAsync(async () =>
                 await HandleResponseMessageAsync(request, cancellationToken).ConfigureAwait(false));
-
-            return response;
         }
         finally
         {

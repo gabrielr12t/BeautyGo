@@ -51,11 +51,11 @@ public class ExceptionHandlerMiddleware
         }
         catch (Exception ex)
         {
-            await log.ErrorAsync($"An exception ocurred: {ex.Message}", ex, await authService.GetCurrentUserAsync());
+            await log.ErrorAsync($"An exception ocurred: {ex.Message}", ex, await authService.GetCurrentUserAsync(httpContext.RequestAborted));
 
             await HandleExceptionAsync(httpContext, ex);
 
-            await unitOfWork.SaveChangesAsync(); 
+            await unitOfWork.SaveChangesAsync(httpContext.RequestAborted); 
         }
     }
 }

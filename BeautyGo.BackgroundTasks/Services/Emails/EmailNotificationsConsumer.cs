@@ -1,15 +1,11 @@
-﻿using BeautyGo.Application.Businesses.Commands.BusinessCreated;
-using BeautyGo.Application.Common.BackgroundServices;
+﻿using BeautyGo.Application.Common.BackgroundServices;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Notifications;
 using BeautyGo.Contracts.Emails;
-using BeautyGo.Domain.Core.Events;
-using BeautyGo.Domain.Entities.Events;
 using BeautyGo.Domain.Entities.Notifications;
 using BeautyGo.Domain.Patterns.Specifications.Notifications;
 using BeautyGo.Domain.Repositories;
 using MediatR;
-using Newtonsoft.Json;
 
 namespace BeautyGo.BackgroundTasks.Services.Emails;
 
@@ -35,7 +31,7 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
     public async Task ConsumeAsync(int batchSize, CancellationToken cancellationToken = default)
     {
         var pendingEmailNotificationsSpecification = new PendingEmailNotificationsSpecification(DateTime.Now).Size(batchSize);
-        var pendingEmailNotifications = await _emailNotificationRepository.GetAsync(pendingEmailNotificationsSpecification);
+        var pendingEmailNotifications = await _emailNotificationRepository.GetAsync(pendingEmailNotificationsSpecification, false, cancellationToken);
 
         var sendNotificationEmailTasks = new List<Task>();
 
@@ -51,7 +47,7 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
                     notification.Subject,
                     notification.Body);
 
-                sendNotificationEmailTasks.Add(_emailNotificationService.SendAsync(notificationEmail));
+                sendNotificationEmailTasks.Add(_emailNotificationService.SendAsync(notificationEmail, cancellationToken));
 
                 _emailNotificationRepository.Update(notification);
             }
@@ -64,7 +60,7 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
                 {
                     notification.FailedDate = DateTime.UtcNow;
 
-                    await _mediator.Publish(new EmailNotificationFailedEvent(notification.Id, ex));
+                    await _mediator.Publish(new EmailNotificationFailedEvent(notification.Id, ex), cancellationToken);
                 }
             }
         }

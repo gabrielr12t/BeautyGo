@@ -16,7 +16,7 @@ internal class EmailService : IEmailService
     public EmailService(AppSettings appSettings) =>
         _mailSettings = appSettings.Get<MailSettings>();
 
-    public async Task SendEmailAsync(MailRequest mailRequest)
+    public async Task SendEmailAsync(MailRequest mailRequest, CancellationToken cancellationToken = default)
     {
         var email = new MimeMessage
         {
@@ -28,12 +28,12 @@ internal class EmailService : IEmailService
 
         using var smtpClient = new SmtpClient();
 
-        await smtpClient.ConnectAsync(_mailSettings.SmtpServer, _mailSettings.SmtpPort, SecureSocketOptions.StartTls);
+        await smtpClient.ConnectAsync(_mailSettings.SmtpServer, _mailSettings.SmtpPort, SecureSocketOptions.StartTls, cancellationToken);
 
-        await smtpClient.AuthenticateAsync(_mailSettings.SenderEmail, _mailSettings.SmtpAppPassword);
+        await smtpClient.AuthenticateAsync(_mailSettings.SenderEmail, _mailSettings.SmtpAppPassword, cancellationToken);
 
-        await smtpClient.SendAsync(email);
+        await smtpClient.SendAsync(email, cancellationToken);
 
-        await smtpClient.DisconnectAsync(true);
+        await smtpClient.DisconnectAsync(true, cancellationToken);
     }
 }

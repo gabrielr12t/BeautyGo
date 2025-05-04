@@ -28,17 +28,17 @@ public class LoggerDelegatingHandler : DelegatingHandler
         {
             request.Headers.Add("X-Request-ID", requestId);
 
-            var requestContent = await (request.Content?.ReadAsStringAsync() ?? Task.FromResult(string.Empty));
+            var requestContent = await (request.Content?.ReadAsStringAsync(cancellationToken) ?? Task.FromResult(string.Empty));
 
             await _logger.InformationAsync($"{requestId} | Enviando requisição para {request.RequestUri} | {requestContent}",
-                user: await _authService.GetCurrentUserAsync());
+                user: await _authService.GetCurrentUserAsync(cancellationToken));
 
             var response = await base.SendAsync(request, cancellationToken);
 
-            var responseContent = await response.Content?.ReadAsStringAsync();
+            var responseContent = await response.Content?.ReadAsStringAsync(cancellationToken);
 
             await _logger.InformationAsync($"{requestId} | Resposta da requisição {request.RequestUri} | StatusCode:{response.StatusCode} | {responseContent}",
-                user: await _authService.GetCurrentUserAsync());
+                user: await _authService.GetCurrentUserAsync(cancellationToken));
 
             return response;
         }
@@ -49,7 +49,7 @@ public class LoggerDelegatingHandler : DelegatingHandler
         }
         finally
         {
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -2,5 +2,4 @@
 
 namespace BeautyGo.Application.ProfessionalRequests.ProfessionalRequestSent.Events;
 
-public record ProfessionalRequestExpirationReminderEvent(
-    Guid ProfessionalRequestId) : IEvent;
+public record ProfessionalRequestExpirationReminderEvent(Guid ProfessionalRequestId) : IEvent;

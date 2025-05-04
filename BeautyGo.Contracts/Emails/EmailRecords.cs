@@ -4,6 +4,8 @@ public record BusinessConfirmEmail(string EmailTo, string Name, string Link) : I
 
 public record BusinessProfessionalAddedEmail(string EmailTo, string Professional, string Business) : IEmailNotification;
 
+public record ProfessionalRequestInviteEmail(string EmailTo, string Business) : IEmailNotification;
+
 public record ConfirmAccountEmail(string EmailTo, string Name, string Link) : IEmailNotification;
 
 public record DocumentValidatedEmail(string EmailTo, string BusinessName, string Link) : IEmailNotification;

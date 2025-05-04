@@ -14,10 +14,10 @@ internal class EmailNotificationService : IEmailNotificationService
         _emailService = emailService;
     }
 
-    public async Task SendAsync(NotificationEmail notificationEmail)
+    public async Task SendAsync(NotificationEmail notificationEmail, CancellationToken cancellationToken = default)
     {
         var mailRequest = new MailRequest(notificationEmail.EmailTo, notificationEmail.Subject, notificationEmail.Body);
 
-        await _emailService.SendEmailAsync(mailRequest);
-    }  
+        await _emailService.SendEmailAsync(mailRequest, cancellationToken);
+    }
 }

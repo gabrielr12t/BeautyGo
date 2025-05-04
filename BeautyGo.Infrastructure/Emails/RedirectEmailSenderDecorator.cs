@@ -17,13 +17,13 @@ internal class RedirectEmailSenderDecorator : IEmailService
         _mailSettings = mailSettings;
     }
 
-    public async Task SendEmailAsync(MailRequest mailRequest)
+    public async Task SendEmailAsync(MailRequest mailRequest, CancellationToken cancellationToken = default)
     {
         if (_mailSettings.RedirectEmailsInHomologation)
         {
             mailRequest.EmailTo = _mailSettings.RedirectEmailTo;
         }
 
-        await _innerEmailService.SendEmailAsync(mailRequest);
+        await _innerEmailService.SendEmailAsync(mailRequest, cancellationToken);
     }
 }

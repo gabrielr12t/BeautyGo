@@ -9,9 +9,9 @@ public class UnitOfWork : IUnitOfWork
 
     public UnitOfWork(BeautyGoContext beautyGoContext) => _beautyGoContext = beautyGoContext;
 
-    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
-        => _beautyGoContext.Database.BeginTransactionAsync(cancellationToken);
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        => await _beautyGoContext.Database.BeginTransactionAsync(cancellationToken);
 
-    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        => _beautyGoContext.SaveChangesAsync(cancellationToken);
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        => await _beautyGoContext.SaveChangesAsync(cancellationToken);
 }

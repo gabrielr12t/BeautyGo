@@ -59,5 +59,4 @@ public class UserController : BaseController
     [ProducesResponseType(typeof(Result), StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetOnlineUsers([FromQuery] GetOnlineUsersQuery query) =>
         Ok(await mediator.Send(query));
-
 }

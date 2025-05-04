@@ -1,6 +1,5 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
-using BeautyGo.Application.Core.Abstractions.Web;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;

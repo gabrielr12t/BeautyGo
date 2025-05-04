@@ -36,4 +36,22 @@ internal class ProfessionalEmailNotificationPublisher : IProfessionalEmailNotifi
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task PublishAsync(ProfessionalRequestInviteEmail message, CancellationToken cancellationToken = default)
+    {
+        var body = $"Você foi convidado para trabalhar em '{message.Business}'," +
+            Environment.NewLine +
+            Environment.NewLine +
+            $"acesse o aplicativo e veja em suas notificações.";
+
+        var notification = EmailNotification.Create(
+            message.EmailTo,
+            $"Novo convite para fazer parte do(a) {message.Business}! 🎉",
+            body,
+            DateTime.Now);
+
+        await _emailRepository.InsertAsync(notification, cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
 }

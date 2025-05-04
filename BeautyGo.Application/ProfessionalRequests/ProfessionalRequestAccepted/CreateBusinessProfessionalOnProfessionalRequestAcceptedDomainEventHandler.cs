@@ -9,7 +9,8 @@ using BeautyGo.Domain.Repositories;
 
 namespace BeautyGo.Application.ProfessionalRequests.ProfessionalRequestAccepted;
 
-internal class CreateBusinessProfessionalOnProfessionalRequestAcceptedDomainEventHandler : IDomainEventHandler<ProfessionalRequestAcceptedDomainEvent>
+internal class CreateBusinessProfessionalOnProfessionalRequestAcceptedDomainEventHandler
+    : IDomainEventHandler<ProfessionalRequestAcceptedDomainEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;

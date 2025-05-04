@@ -55,7 +55,7 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
             EntityId = (Guid)entityEntry.Property("Id").CurrentValue,
             ActionTimestamp = timestamp,
             UserId = _userIdentifierProvider?.UserId,
-            Action = nameof(entityEntry.State)
+            Action = entityEntry.State.ToString()
         };
 
         switch (entityEntry.State)

@@ -20,7 +20,7 @@ public class EventProcessor : IEventProcessor
     private readonly IMediator _mediator;
     private readonly ILogger _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IBaseRepository<Event> _eventRepository; 
+    private readonly IBaseRepository<Event> _eventRepository;
 
     #endregion
 
@@ -96,7 +96,7 @@ public class EventProcessor : IEventProcessor
 
                 if (pendingEvent.Attempts == eventSettings.MaxAttempsFailed)
                 {
-                    await _mediator.Publish(new EventProcessorFailedEvent(pendingEvent.Id, ex));
+                    await _mediator.Publish(new EventProcessorFailedEvent(pendingEvent.Id, ex), cancellationToken);
                 }
             }
             finally

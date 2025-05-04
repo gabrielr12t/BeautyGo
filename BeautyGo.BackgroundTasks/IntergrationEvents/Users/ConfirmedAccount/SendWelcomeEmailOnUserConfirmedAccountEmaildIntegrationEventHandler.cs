@@ -25,10 +25,10 @@ internal class SendWelcomeEmailOnUserConfirmedAccountEmaildIntegrationEventHandl
     public async Task Handle(UserConfirmedAccountIntegrationEvent notification, CancellationToken cancellationToken)
     {
         var userByIdSpecification = new EntityByIdSpecification<User>(notification.UserId);
-        var user = await _userRepository.GetFirstOrDefaultAsync(userByIdSpecification);
+        var user = await _userRepository.GetFirstOrDefaultAsync(userByIdSpecification, false, cancellationToken);
 
         var message = new WelcomeEmail(user.Email, user.FullName());
 
-        await _emailNotificationPublisher.PublishAsync(message);
+        await _emailNotificationPublisher.PublishAsync(message, cancellationToken);
     }
 }
