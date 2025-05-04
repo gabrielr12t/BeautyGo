@@ -2,6 +2,7 @@
 using BeautyGo.Application.Businesses.Commands.CreateBusiness;
 using BeautyGo.Application.Businesses.Commands.CreateWorkingHours;
 using BeautyGo.Application.Businesses.Commands.SendProfessionalRequest;
+using BeautyGo.Application.Businesses.Queries.GetBusinessesFilter;
 using BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
@@ -13,13 +14,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeautyGo.Api.Controllers;
 
-[Route("api/[controller]")]
-[Authorize]
+[Route("api/[controller]")] 
 public class BusinessController : BasePublicController
 {
     public BusinessController(IMediator mediator) : base(mediator)
     {
     }
+
+    [HttpGet("filter")]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> FilterBusiness([FromQuery] GetBusinessesFilterPagedQuery query) =>
+        Ok(await mediator.Send(query));
 
     [HttpPost("register")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
@@ -29,6 +35,8 @@ public class BusinessController : BasePublicController
             .Bind(command => mediator.Send(command, cancellationToken))
             .Match(Ok, BadRequest);
 
+    [Authorize]
+    [AuthorizeOwner]
     [HttpPost("working-hours")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
@@ -46,6 +54,7 @@ public class BusinessController : BasePublicController
        .Bind(command => mediator.Send(new ConfirmAccountCommand(token), cancellationToken))
        .Match(Ok, BadRequest);
 
+    [Authorize]
     [AuthorizeOwner]
     [HttpPost("professional/invitation")]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]

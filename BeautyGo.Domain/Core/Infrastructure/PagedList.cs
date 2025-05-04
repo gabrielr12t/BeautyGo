@@ -21,9 +21,10 @@ public class PagedList<T> : List<T>, IPagedList<T>
         AddRange(source.Skip(pageIndex * pageSize).Take(pageSize).ToList());
     }
 
-    public PagedList(IList<T> source, int pageIndex, int pageSize)
+    public PagedList(IList<T> source, int pageIndex, int pageSize, int totalCount)
+
     {
-        TotalCount = source.Count;
+        TotalCount = totalCount;
         TotalPages = TotalCount / pageSize;
 
         if (TotalCount % pageSize > 0)

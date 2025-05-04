@@ -5,7 +5,7 @@ namespace BeautyGo.Domain.Repositories;
 
 public interface IAddressRepository : IBaseRepository<Address>
 {
-    Task<IList<AddressNearbyDTO>> GetAddressWithinRadiusAsync(
+    Task<IList<NearbyAddressDTO>> GetAddressWithinRadiusAsync(
         double latitude,
         double longitude,
         double radiousKm,

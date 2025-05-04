@@ -12,7 +12,7 @@ internal sealed class AddressRepository : BaseRepository<Address>, IAddressRepos
 {
     public AddressRepository(BeautyGoContext context) : base(context) { }
 
-    public async Task<IList<AddressNearbyDTO>> GetAddressWithinRadiusAsync(double latitude, double longitude, double maxRadiousKm, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<IList<NearbyAddressDTO>> GetAddressWithinRadiusAsync(double latitude, double longitude, double maxRadiousKm, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         const string query = "EXEC dbo.GetAddressesWithinRadiusPaged @Latitude, @Longitude, @MaxDistanceKm, @PageNumber, @PageSize";
 
@@ -28,7 +28,7 @@ internal sealed class AddressRepository : BaseRepository<Address>, IAddressRepos
         using var connection = new SqlConnection(_context.Database.GetConnectionString());
         await connection.OpenAsync(cancellationToken);
 
-        var addresses = await connection.QueryAsync<AddressNearbyDTO>(query, parameters, commandType: CommandType.Text);
+        var addresses = await connection.QueryAsync<NearbyAddressDTO>(query, parameters, commandType: CommandType.Text);
 
         return addresses.ToList();
     }

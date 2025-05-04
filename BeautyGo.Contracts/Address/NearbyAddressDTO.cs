@@ -1,6 +1,6 @@
 ﻿namespace BeautyGo.Contracts.Address;
 
-public class AddressNearbyDTO
+public class NearbyAddressDTO
 {
     public Guid Id { get; set; }
     public string FirstName { get; set; }

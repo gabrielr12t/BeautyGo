@@ -217,7 +217,7 @@ public static class AsyncIQueryableExtensions
     public static async Task<IPagedList<T>> ToPagedListAsync<T>(this IQueryable<T> source, int pageIndex, int pageSize, bool getOnlyTotalCount = false, CancellationToken cancellationToken = default)
     {
         if (source == null)
-            return new PagedList<T>(new List<T>(), pageIndex, pageSize);
+            return new PagedList<T>(new List<T>(), pageIndex, pageSize, 0);
 
         //min allowed page size is 1
         pageSize = Math.Max(pageSize, 1);
