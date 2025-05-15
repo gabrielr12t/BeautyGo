@@ -4,17 +4,17 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Patterns.Specifications.EmailTokenValidations;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
 
 internal class ConfirmAccountCommandHandler : ICommandHandler<ConfirmAccountCommand, Result>
 {
-    private readonly IBaseRepository<EmailTokenValidation> _businessEmailTokenValidationRepository;
+    private readonly IEFBaseRepository<EmailTokenValidation> _businessEmailTokenValidationRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public ConfirmAccountCommandHandler(
-        IBaseRepository<EmailTokenValidation> businessEmailTokenValidationRepository,
+        IEFBaseRepository<EmailTokenValidation> businessEmailTokenValidationRepository,
         IUnitOfWork unitOfWork)
     {
         _businessEmailTokenValidationRepository = businessEmailTokenValidationRepository;

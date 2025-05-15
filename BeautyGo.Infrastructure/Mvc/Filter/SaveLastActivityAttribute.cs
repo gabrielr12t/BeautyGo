@@ -1,7 +1,7 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Domain.Entities.Users;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -23,13 +23,13 @@ public class SaveLastActivityAttribute : TypeFilterAttribute
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAuthService _authService;
-        private readonly IBaseRepository<User> _userRepository;
+        private readonly IEFBaseRepository<User> _userRepository;
 
         #endregion
 
         #region Ctor
 
-        public SaveLastActivityFilter(IAuthService authService, IBaseRepository<User> userRepository, IUnitOfWork unitOfWork)
+        public SaveLastActivityFilter(IAuthService authService, IEFBaseRepository<User> userRepository, IUnitOfWork unitOfWork)
         {
             _authService = authService;
             _userRepository = userRepository;
@@ -55,7 +55,7 @@ public class SaveLastActivityAttribute : TypeFilterAttribute
             {
                 user.LastActivityDate = DateTime.Now;
 
-                _userRepository.Update(user);
+                _userRepository.UpdateAsync(user);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }

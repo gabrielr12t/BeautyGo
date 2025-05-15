@@ -6,7 +6,7 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.Businesses.DocumentValidated;
 
@@ -14,10 +14,10 @@ internal class SendDocumentValidateOnBusinessConfirmedAccountlntegrationEventHan
     : IIntegrationEventHandler<BusinessDocumentValidatedIntegrationEvent>
 {
     private readonly IBusinessEmailNotificationPublisher _businessEmailNotificationPublisher;
-    private readonly IBaseRepository<Business> _businessRepository;
+    private readonly IEFBaseRepository<Business> _businessRepository;
 
     public SendDocumentValidateOnBusinessConfirmedAccountlntegrationEventHandler(
-        IBaseRepository<Business> businessRepository,
+        IEFBaseRepository<Business> businessRepository,
         IBusinessEmailNotificationPublisher businessEmailNotificationPublisher)
     {
         _businessRepository = businessRepository;

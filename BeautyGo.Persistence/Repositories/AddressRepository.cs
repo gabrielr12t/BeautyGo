@@ -1,6 +1,7 @@
 ﻿using BeautyGo.Contracts.Address;
 using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Repositories;
+using BeautyGo.Persistence.Repositories.Bases;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ using System.Data;
 
 namespace BeautyGo.Persistence.Repositories;
 
-internal sealed class AddressRepository : BaseRepository<Address>, IAddressRepository
+internal sealed class AddressRepository : EFBaseRepository<Address>, IAddressRepository
 {
     public AddressRepository(BeautyGoContext context) : base(context) { }
 

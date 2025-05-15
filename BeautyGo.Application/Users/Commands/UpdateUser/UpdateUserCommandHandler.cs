@@ -3,7 +3,7 @@ using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Users;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.Users.Commands.UpdateUser;
 
@@ -11,10 +11,10 @@ internal class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, Res
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;
-    private readonly IBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
 
     public UpdateUserCommandHandler(IAuthService authService,
-        IBaseRepository<User> userRepository,
+        IEFBaseRepository<User> userRepository,
         IUnitOfWork unitOfWork)
     {
         _authService = authService;
@@ -28,7 +28,7 @@ internal class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, Res
 
         currentUser.ChangeName(request.FirstName, request.LastName);
 
-        _userRepository.Update(currentUser);
+        _userRepository.UpdateAsync(currentUser);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

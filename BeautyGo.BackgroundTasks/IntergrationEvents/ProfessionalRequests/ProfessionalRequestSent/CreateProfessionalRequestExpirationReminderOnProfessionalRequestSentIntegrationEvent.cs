@@ -6,7 +6,7 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Events;
 using BeautyGo.Domain.Entities.Professionals;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.ProfessionalRequests.ProfessionalRequestSent;
 
@@ -17,8 +17,8 @@ internal class CreateProfessionalRequestExpirationReminderOnProfessionalRequestS
 {
     #region Fields
 
-    private readonly IBaseRepository<ProfessionalRequest> _professionalRequestRepository;
-    private readonly IBaseRepository<Event> _eventRepository;
+    private readonly IEFBaseRepository<ProfessionalRequest> _professionalRequestRepository;
+    private readonly IEFBaseRepository<Event> _eventRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     #endregion
@@ -26,8 +26,8 @@ internal class CreateProfessionalRequestExpirationReminderOnProfessionalRequestS
     #region Ctor
 
     public CreateProfessionalRequestExpirationReminderOnProfessionalRequestSentIntegrationEvent(
-        IBaseRepository<ProfessionalRequest> professionalRequestRepository,
-        IBaseRepository<Event> eventRepository,
+        IEFBaseRepository<ProfessionalRequest> professionalRequestRepository,
+        IEFBaseRepository<Event> eventRepository,
         IUnitOfWork unitOfWork)
     {
         _professionalRequestRepository = professionalRequestRepository;

@@ -5,7 +5,7 @@ using BeautyGo.Domain.DomainEvents.Professionals;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.ProfessionalRequests.ProfessionalRequestAccepted;
 
@@ -14,14 +14,14 @@ internal class CreateBusinessProfessionalOnProfessionalRequestAcceptedDomainEven
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;
-    private readonly IBaseRepository<Business> _businessRepository;
-    private readonly IBaseRepository<Professional> _professionalRepository;
+    private readonly IEFBaseRepository<Business> _businessRepository;
+    private readonly IEFBaseRepository<Professional> _professionalRepository;
 
     public CreateBusinessProfessionalOnProfessionalRequestAcceptedDomainEventHandler(
         IAuthService authService,
         IUnitOfWork unitOfWork,
-        IBaseRepository<Business> businessRepository,
-        IBaseRepository<Professional> professionalRepository)
+        IEFBaseRepository<Business> businessRepository,
+        IEFBaseRepository<Professional> professionalRepository)
 
     {
         _authService = authService;

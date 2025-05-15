@@ -12,7 +12,7 @@ using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
 using BeautyGo.Domain.Patterns.Specifications.Users;
 using BeautyGo.Domain.Providers.Files;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
@@ -29,8 +29,8 @@ public class AuthService : IAuthService
 {
     #region Fields
 
-    private readonly IBaseRepository<User> _userRepository;
-    private readonly IBaseRepository<UserRoleMapping> _userRoleRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<UserRoleMapping> _userRoleRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IBeautyGoFileProvider _BeautyGoFileProvider;
     private readonly IHttpContextAccessor _contextAccessor;
@@ -45,14 +45,14 @@ public class AuthService : IAuthService
     #region Ctor
 
     public AuthService(
-        IBaseRepository<User> userRepository,
+        IEFBaseRepository<User> userRepository,
         AppSettings appSettings,
         IBeautyGoFileProvider BeautyGoFileProvider,
         IHttpContextAccessor contextAccessor,
         IWebHelper webHelper,
         IWebWorkContext webWorkContext,
         IMediator mediator,
-        IBaseRepository<UserRoleMapping> userRoleRepository,
+        IEFBaseRepository<UserRoleMapping> userRoleRepository,
         IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
@@ -217,7 +217,7 @@ public class AuthService : IAuthService
     {
         var owner = customer.PromoteToOwner();
 
-        _userRepository.Remove(customer);
+        _userRepository.RemoveAsync(customer);
         await _userRepository.InsertAsync(owner, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -227,7 +227,7 @@ public class AuthService : IAuthService
     {
         var professional = customer.PromoteToProfessional(businessId);
 
-        _userRepository.Remove(customer);
+        _userRepository.RemoveAsync(customer);
         await _userRepository.InsertAsync(professional, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

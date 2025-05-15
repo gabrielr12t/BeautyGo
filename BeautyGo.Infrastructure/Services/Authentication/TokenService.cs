@@ -2,17 +2,17 @@
 using BeautyGo.Application.Core.Abstractions.Web;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Entities.Users;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Infrastructure.Services.Authentication;
 
 internal class TokenService : ITokenService
 {
-    private readonly IBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
     private readonly IWebHelper _webHelper;
 
     public TokenService(
-        IBaseRepository<User> userRepository,
+        IEFBaseRepository<User> userRepository,
         IWebHelper webHelper)
     {
         _userRepository = userRepository;

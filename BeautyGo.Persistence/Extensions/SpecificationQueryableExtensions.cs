@@ -7,7 +7,7 @@ namespace BeautyGo.Persistence.Extensions;
 
 internal static class SpecificationQueryableExtensions
 {
-    internal static IQueryable<T> GetQuerySpecification<T>(this IQueryable<T> query, Specification<T> specification)
+    internal static IQueryable<T> ApplySpecification<T>(this IQueryable<T> query, Specification<T> specification)
         where T : BaseEntity
     {
         Expression<Func<T, bool>> criteria = specification.ToExpression();

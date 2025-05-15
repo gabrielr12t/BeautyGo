@@ -2,7 +2,7 @@
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Web;
 using BeautyGo.Domain.Entities.Users;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -25,13 +25,13 @@ public class SaveLastIpAddressAttribute : TypeFilterAttribute
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHelper _webHelper;
         private readonly IAuthService _authService;
-        private readonly IBaseRepository<User> _userRepository;
+        private readonly IEFBaseRepository<User> _userRepository;
 
         #endregion
 
         #region Ctor
 
-        public SaveLastIpAddressFilter(IAuthService authService, IBaseRepository<User> userRepository, IUnitOfWork unitOfWork, IWebHelper webHelper)
+        public SaveLastIpAddressFilter(IAuthService authService, IEFBaseRepository<User> userRepository, IUnitOfWork unitOfWork, IWebHelper webHelper)
         {
             _authService = authService;
             _userRepository = userRepository;
@@ -58,7 +58,7 @@ public class SaveLastIpAddressAttribute : TypeFilterAttribute
             {
                 user.ChangeIpAddress(await _webHelper.GetCurrentIpAddressAsync());
 
-                _userRepository.Update(user);
+                _userRepository.UpdateAsync(user);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }

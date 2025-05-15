@@ -6,7 +6,7 @@ using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Events;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.Businesses.ConfirmedAccount;
 
@@ -14,13 +14,13 @@ internal class CreateAccountConfirmedEventOnBusinessConfirmedAccountIntegrationE
 {
     private DateTime _triggerToEvent => DateTime.Now.AddMinutes(1);
 
-    private readonly IBaseRepository<Event> _eventRepository;
-    private readonly IBaseRepository<Business> _businessRepository;
+    private readonly IEFBaseRepository<Event> _eventRepository;
+    private readonly IEFBaseRepository<Business> _businessRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateAccountConfirmedEventOnBusinessConfirmedAccountIntegrationEventHandler(
-        IBaseRepository<Event> eventRepository,
-        IBaseRepository<Business> businessRepository,
+        IEFBaseRepository<Event> eventRepository,
+        IEFBaseRepository<Business> businessRepository,
         IUnitOfWork unitOfWork)
     {
         _eventRepository = eventRepository;

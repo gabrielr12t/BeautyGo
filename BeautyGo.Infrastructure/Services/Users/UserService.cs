@@ -7,7 +7,7 @@ using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Extensions;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Infrastructure.Services.Users;
 
@@ -16,8 +16,8 @@ internal class UserService : IUserService
     #region Fields
 
     private readonly IAuthService _authService;
-    private readonly IBaseRepository<User> _userRepository;
-    private readonly IBaseRepository<UserRoleMapping> _userRoleRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<UserRoleMapping> _userRoleRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     #endregion
@@ -25,10 +25,10 @@ internal class UserService : IUserService
     #region Ctor
 
     public UserService(
-        IBaseRepository<User> userRepository,
+        IEFBaseRepository<User> userRepository,
         IUnitOfWork unitOfWork,
         IAuthService authService,
-        IBaseRepository<UserRoleMapping> userRoleRepository)
+        IEFBaseRepository<UserRoleMapping> userRoleRepository)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
@@ -58,7 +58,7 @@ internal class UserService : IUserService
     {
         var owner = customer.PromoteToOwner();
 
-        _userRepository.Remove(customer);
+        _userRepository.RemoveAsync(customer);
         await _userRepository.InsertAsync(owner, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -68,7 +68,7 @@ internal class UserService : IUserService
     {
         var professional = customer.PromoteToProfessional(businessId);
 
-        _userRepository.Remove(customer);
+        _userRepository.RemoveAsync(customer);
         await _userRepository.InsertAsync(professional, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -2,17 +2,17 @@
 using BeautyGo.Application.Core.Abstractions.Notifications;
 using BeautyGo.Contracts.Emails;
 using BeautyGo.Domain.Entities.Notifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Infrastructure.Notifications;
 
 internal class BusinessEmailNotificationPublisher : IBusinessEmailNotificationPublisher
 {
-    private readonly IBaseRepository<EmailNotification> _emailRepository;
+    private readonly IEFBaseRepository<EmailNotification> _emailRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public BusinessEmailNotificationPublisher(
-        IBaseRepository<EmailNotification> emailRepository,
+        IEFBaseRepository<EmailNotification> emailRepository,
         IUnitOfWork unitOfWork)
     {
         _emailRepository = emailRepository;

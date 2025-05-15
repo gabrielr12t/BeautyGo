@@ -1,35 +1,28 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Patterns.Specifications;
-using Microsoft.Data.SqlClient;
 
-namespace BeautyGo.Domain.Repositories;
+namespace BeautyGo.Domain.Repositories.Bases;
 
 public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 {
     IQueryable<TEntity> Query(bool asTracking = false);
-
-    Task<int> ExecuteSqlAsync(string sql, IEnumerable<SqlParameter> parameters, CancellationToken cancellationToken = default);
-
-    Task<IList<TEntity>> FromSqlAsync(string sql, CancellationToken cancellationToken = default, params IEnumerable<SqlParameter> parameters);
-
+    
     Task<IList<TEntity>> GetByIdAsync(IReadOnlyList<Guid> ids, CancellationToken cancellationToken = default);
 
     Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-    Task InsertRangeAsync(IReadOnlyCollection<TEntity> entities);
+    Task InsertRangeAsync(IReadOnlyCollection<TEntity> entities, CancellationToken cancellation = default);
 
-    void Update(TEntity entity);
+    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-    void Remove(TEntity entity);
+    Task RemoveAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-    void Remove(IReadOnlyCollection<TEntity> entities);
+    Task RemoveAsync(IReadOnlyCollection<TEntity> entities, CancellationToken cancellationToken = default);
 
-    void Detach(TEntity entity);
-
-    void Truncate();
+    Task TruncateAsync();
 
     Task<IPagedList<TEntity>> GetAllPagedAsync(
         Specification<TEntity> specification,
@@ -40,7 +33,7 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
         Specification<TEntity> specification,
         Func<TEntity, TResult> resultSelector = null,
         int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false,
-        CancellationToken cancellationToken = default); 
+        CancellationToken cancellationToken = default);
 
     Task<bool> ExistAsync(Specification<TEntity> specification, CancellationToken cancellationToken = default);
 

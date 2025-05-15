@@ -6,7 +6,7 @@ using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.Entities.Events;
 using BeautyGo.Domain.Patterns.Singletons;
 using BeautyGo.Domain.Patterns.Specifications.Events;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 using MediatR;
 using Newtonsoft.Json;
@@ -20,7 +20,7 @@ public class EventProcessor : IEventProcessor
     private readonly IMediator _mediator;
     private readonly ILogger _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IBaseRepository<Event> _eventRepository;
+    private readonly IEFBaseRepository<Event> _eventRepository;
 
     #endregion
 
@@ -30,7 +30,7 @@ public class EventProcessor : IEventProcessor
         IMediator mediator,
         ILogger logger,
         IUnitOfWork unitOfWork,
-        IBaseRepository<Event> eventRepository)
+        IEFBaseRepository<Event> eventRepository)
     {
         _mediator = mediator;
         _logger = logger;
@@ -101,7 +101,7 @@ public class EventProcessor : IEventProcessor
             }
             finally
             {
-                _eventRepository.Update(pendingEvent);
+                _eventRepository.UpdateAsync(pendingEvent);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }

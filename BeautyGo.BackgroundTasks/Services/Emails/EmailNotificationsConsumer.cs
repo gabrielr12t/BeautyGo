@@ -4,20 +4,20 @@ using BeautyGo.Application.Core.Abstractions.Notifications;
 using BeautyGo.Contracts.Emails;
 using BeautyGo.Domain.Entities.Notifications;
 using BeautyGo.Domain.Patterns.Specifications.Notifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using MediatR;
 
 namespace BeautyGo.BackgroundTasks.Services.Emails;
 
 internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
 {
-    private readonly IBaseRepository<EmailNotification> _emailNotificationRepository;
+    private readonly IEFBaseRepository<EmailNotification> _emailNotificationRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailNotificationService _emailNotificationService;
     private readonly IMediator _mediator;
 
     public EmailNotificationsConsumer(
-        IBaseRepository<EmailNotification> emailNotificationRepository,
+        IEFBaseRepository<EmailNotification> emailNotificationRepository,
         IUnitOfWork unitOfWork,
         IEmailNotificationService emailNotificationService,
         IMediator mediator)
@@ -49,7 +49,7 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
 
                 sendNotificationEmailTasks.Add(_emailNotificationService.SendAsync(notificationEmail, cancellationToken));
 
-                _emailNotificationRepository.Update(notification);
+                _emailNotificationRepository.UpdateAsync(notification);
             }
             catch (Exception ex)
             {

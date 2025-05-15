@@ -45,17 +45,17 @@ public class DefaultLogger : ILogger
         if (log == null)
             throw new ArgumentNullException(nameof(log));
 
-        _repository.Remove(log);
+        _repository.RemoveAsync(log);
     }
 
     public virtual void DeleteLogs(IReadOnlyCollection<Log> logs)
     {
-        _repository.Remove(logs);
+        _repository.RemoveAsync(logs);
     }
 
     public virtual void ClearLog()
     {
-        _repository.Truncate();
+        _repository.TruncateAsync();
     }
 
     public virtual async Task<IPagedList<Log>> GetAllLogsAsync(string userEmail = null, DateTime? fromUtc = null, DateTime? toUtc = null,

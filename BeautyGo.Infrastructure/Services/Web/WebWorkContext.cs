@@ -1,6 +1,5 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Web;
 using BeautyGo.Domain.Entities.Users;
-using BeautyGo.Domain.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +7,7 @@ using System.Security.Claims;
 using BeautyGo.Domain.Common.Defaults;
 using BeautyGo.Domain.Helpers;
 using System;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Infrastructure.Services.Web
 {
@@ -16,11 +16,11 @@ namespace BeautyGo.Infrastructure.Services.Web
         private const string SYSTEM_HEADER_KEY = "sys";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IBaseRepository<User> _userRepository;
+        private readonly IEFBaseRepository<User> _userRepository;
 
         public WebWorkContext(
             IHttpContextAccessor httpContextAccessor,
-            IBaseRepository<User> userRepository)
+            IEFBaseRepository<User> userRepository)
         {
             _httpContextAccessor = httpContextAccessor;
             _userRepository = userRepository;

@@ -3,19 +3,19 @@ using BeautyGo.Application.Core.Abstractions.Notifications;
 using BeautyGo.Contracts.Emails;
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Entities.Notifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 
 namespace BeautyGo.Infrastructure.Notifications;
 
 public class SupportNotificationPublisher : ISupportNotificationPublisher
 {
-    private readonly IBaseRepository<EmailNotification> _emailRepository;
+    private readonly IEFBaseRepository<EmailNotification> _emailRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly MailSettings _mailSettings;
 
     public SupportNotificationPublisher(
-        IBaseRepository<EmailNotification> emailRepository,
+        IEFBaseRepository<EmailNotification> emailRepository,
         IUnitOfWork unitOfWork,
         AppSettings appSettings)
     {

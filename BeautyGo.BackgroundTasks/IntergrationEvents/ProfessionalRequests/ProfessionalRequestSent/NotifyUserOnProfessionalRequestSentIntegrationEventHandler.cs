@@ -6,7 +6,7 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.ProfessionalRequests.ProfessionalRequestSent;
 
@@ -15,7 +15,7 @@ internal class NotifyUserOnProfessionalRequestSentIntegrationEventHandler
 {
     #region Fields
 
-    private readonly IBaseRepository<ProfessionalRequest> _professionalRequestRepository;
+    private readonly IEFBaseRepository<ProfessionalRequest> _professionalRequestRepository;
     private readonly IProfessionalEmailNotificationPublisher _notificationPublisher;
 
     #endregion
@@ -23,7 +23,7 @@ internal class NotifyUserOnProfessionalRequestSentIntegrationEventHandler
     #region Ctor
 
     public NotifyUserOnProfessionalRequestSentIntegrationEventHandler(
-        IBaseRepository<ProfessionalRequest> professionalRequestRepository,
+        IEFBaseRepository<ProfessionalRequest> professionalRequestRepository,
         IProfessionalEmailNotificationPublisher notificationPublisher)
     {
         _professionalRequestRepository = professionalRequestRepository;

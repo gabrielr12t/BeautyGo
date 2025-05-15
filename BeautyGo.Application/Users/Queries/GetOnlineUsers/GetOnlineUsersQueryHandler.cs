@@ -3,16 +3,16 @@ using BeautyGo.Contracts.Users;
 using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications.Users;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.Users.Queries.GetOnlineUsers;
 
 internal class GetOnlineUsersQueryHandler : IQueryHandler<GetOnlineUsersQuery, IPagedList<UserOnlineResponse>>
 {
-    private IBaseRepository<User> _userRepository;
+    private IEFBaseRepository<User> _userRepository;
 
     public GetOnlineUsersQueryHandler(
-        IBaseRepository<User> userRepository)
+        IEFBaseRepository<User> userRepository)
     {
         _userRepository = userRepository;
     }

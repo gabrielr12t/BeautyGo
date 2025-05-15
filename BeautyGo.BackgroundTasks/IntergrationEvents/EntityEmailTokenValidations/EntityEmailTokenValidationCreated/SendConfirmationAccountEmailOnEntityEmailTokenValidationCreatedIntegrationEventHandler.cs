@@ -13,7 +13,7 @@ using BeautyGo.Domain.Entities.Notifications;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Visitor.EmailTokenValidation;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.EntityEmailTokenValidations.EntityEmailTokenValidationCreated;
@@ -24,10 +24,10 @@ public class SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedInte
 {
     #region Fields
 
-    private readonly IBaseRepository<UserEmailTokenValidation> _userEmailTokenValidationRepository;
-    private readonly IBaseRepository<BusinessEmailTokenValidation> _businessEmailTokenValidationRepository;
-    private readonly IBaseRepository<EmailTokenValidation> _emailValidationTokenRepository;
-    private readonly IBaseRepository<EmailNotification> _emailRespotory;
+    private readonly IEFBaseRepository<UserEmailTokenValidation> _userEmailTokenValidationRepository;
+    private readonly IEFBaseRepository<BusinessEmailTokenValidation> _businessEmailTokenValidationRepository;
+    private readonly IEFBaseRepository<EmailTokenValidation> _emailValidationTokenRepository;
+    private readonly IEFBaseRepository<EmailNotification> _emailRespotory;
 
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
     private readonly IUserEmailNotificationPublisher _userEmailNotificationPublisher;
@@ -40,15 +40,15 @@ public class SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedInte
     #region Ctor
 
     public SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler(
-        IBaseRepository<UserEmailTokenValidation> userEmailTokenValidationRepository,
-        IBaseRepository<BusinessEmailTokenValidation> businessEmailTokenValidationRepository,
-        IBaseRepository<EmailTokenValidation> emailValidationTokenRepository,
+        IEFBaseRepository<UserEmailTokenValidation> userEmailTokenValidationRepository,
+        IEFBaseRepository<BusinessEmailTokenValidation> businessEmailTokenValidationRepository,
+        IEFBaseRepository<EmailTokenValidation> emailValidationTokenRepository,
         IReceitaFederalIntegrationService receitaFederalIntegration,
         IUnitOfWork unitOfWork,
         AppSettings appSettings,
         IUserEmailNotificationPublisher userEmailNotificationPublisher,
         IBusinessEmailNotificationPublisher businessEmailNotificationPublisher,
-        IBaseRepository<EmailNotification> emailRespotory)
+        IEFBaseRepository<EmailNotification> emailRespotory)
     {
         _userEmailTokenValidationRepository = userEmailTokenValidationRepository;
         _businessEmailTokenValidationRepository = businessEmailTokenValidationRepository;

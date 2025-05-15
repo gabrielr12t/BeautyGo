@@ -8,7 +8,7 @@ using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using FluentAssertions;
 using Moq;
 
@@ -43,9 +43,9 @@ namespace BeautyGo.Application.Tests;
 public class SendProfessionalRequestCommandHandlerTests
 {
     private readonly Mock<IUserService> _userServiceMock = new();
-    private readonly Mock<IBaseRepository<User>> _userRepositoryMock = new();
-    private readonly Mock<IBaseRepository<Business>> _businessRepositoryMock = new();
-    private readonly Mock<IBaseRepository<ProfessionalRequest>> _professionalRequestRepositoryMock = new();
+    private readonly Mock<IEFBaseRepository<User>> _userRepositoryMock = new();
+    private readonly Mock<IEFBaseRepository<Business>> _businessRepositoryMock = new();
+    private readonly Mock<IEFBaseRepository<ProfessionalRequest>> _professionalRequestRepositoryMock = new();
     private readonly Mock<IAuthService> _authServiceMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
 
@@ -184,7 +184,7 @@ public class SendProfessionalRequestCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        _businessRepositoryMock.Verify(r => r.Update(business), Times.Once);
+        _businessRepositoryMock.Verify(r => r.UpdateAsync(business), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

@@ -9,7 +9,7 @@ using BeautyGo.Domain.Entities.Media;
 using BeautyGo.Domain.Extensions;
 using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Providers.Files;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
@@ -25,8 +25,8 @@ public partial class PictureService : IPictureService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBeautyGoFileProvider _fileProvider;
-    private readonly IBaseRepository<Picture> _pictureRepository;
-    private readonly IBaseRepository<PictureBinary> _pictureBinaryRepository;
+    private readonly IEFBaseRepository<Picture> _pictureRepository;
+    private readonly IEFBaseRepository<PictureBinary> _pictureBinaryRepository;
     private readonly IWebHelper _webHelper;
     private readonly MediaSettings _mediaSettings;
 
@@ -37,8 +37,8 @@ public partial class PictureService : IPictureService
     public PictureService(
         IHttpContextAccessor httpContextAccessor,
         IBeautyGoFileProvider fileProvider,
-        IBaseRepository<Picture> pictureRepository,
-        IBaseRepository<PictureBinary> pictureBinaryRepository,
+        IEFBaseRepository<Picture> pictureRepository,
+        IEFBaseRepository<PictureBinary> pictureBinaryRepository,
         IWebHelper webHelper,
         AppSettings appSettings,
         IUnitOfWork unitOfWork)
@@ -195,7 +195,7 @@ public partial class PictureService : IPictureService
         if (isNew)
             await _pictureBinaryRepository.InsertAsync(pictureBinary);
         else
-            _pictureBinaryRepository.Update(pictureBinary);
+            _pictureBinaryRepository.UpdateAsync(pictureBinary);
 
         return pictureBinary;
     }
@@ -522,7 +522,7 @@ public partial class PictureService : IPictureService
         await DeletePictureOnFileSystemAsync(picture);
 
         //delete from database
-        _pictureRepository.Remove(picture);
+        _pictureRepository.RemoveAsync(picture);
 
         await _unitOfWork.SaveChangesAsync();
     }
@@ -678,7 +678,7 @@ public partial class PictureService : IPictureService
         picture.TitleAttribute = titleAttribute;
         picture.IsNew = isNew;
 
-        _pictureRepository.Update(picture);
+        _pictureRepository.UpdateAsync(picture);
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -703,7 +703,7 @@ public partial class PictureService : IPictureService
 
         picture.SeoFilename = seoFilename;
 
-        _pictureRepository.Update(picture);
+        _pictureRepository.UpdateAsync(picture);
         await _unitOfWork.SaveChangesAsync();
 
         await UpdatePictureBinaryAsync(picture, true ? (await GetPictureBinaryByPictureIdAsync(picture.Id)).BinaryData : Array.Empty<byte>());

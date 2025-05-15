@@ -2,9 +2,11 @@
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Patterns.Singletons;
 using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 using BeautyGo.Persistence.Interceptors;
 using BeautyGo.Persistence.Repositories;
+using BeautyGo.Persistence.Repositories.Bases;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +43,7 @@ public static class DependencyInjection
                     contextLifetime: ServiceLifetime.Scoped);
 
         services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionSettings.Value));
-        services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+        services.AddScoped(typeof(IEFBaseRepository<>), typeof(EFBaseRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<ILogRepository, LogRepository>();

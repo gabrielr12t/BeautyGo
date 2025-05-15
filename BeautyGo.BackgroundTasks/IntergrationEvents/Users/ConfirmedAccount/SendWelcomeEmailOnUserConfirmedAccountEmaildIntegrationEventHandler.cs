@@ -4,18 +4,18 @@ using BeautyGo.BackgroundTasks.Abstractions.Messaging;
 using BeautyGo.Contracts.Emails;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.Users.ConfirmedAccount;
 
 internal class SendWelcomeEmailOnUserConfirmedAccountEmaildIntegrationEventHandler
     : IIntegrationEventHandler<UserConfirmedAccountIntegrationEvent>
 {
-    private readonly IBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
     private readonly IUserEmailNotificationPublisher _emailNotificationPublisher;
 
     public SendWelcomeEmailOnUserConfirmedAccountEmaildIntegrationEventHandler(
-        IBaseRepository<User> userRepository,
+        IEFBaseRepository<User> userRepository,
         IUserEmailNotificationPublisher emailNotificationPublisher)
     {
         _userRepository = userRepository;

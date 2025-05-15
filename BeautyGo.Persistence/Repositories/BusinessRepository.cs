@@ -3,6 +3,7 @@ using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.Core.Infrastructure;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Repositories;
+using BeautyGo.Persistence.Repositories.Bases;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ using System.Data;
 
 namespace BeautyGo.Persistence.Repositories;
 
-internal class BusinessRepository : BaseRepository<Business>, IBusinessRepository
+internal class BusinessRepository : EFBaseRepository<Business>, IBusinessRepository
 {
     public BusinessRepository(BeautyGoContext context) : base(context)
     {

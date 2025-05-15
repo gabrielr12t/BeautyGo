@@ -8,7 +8,7 @@ using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications.UserEmailValidationTokens;
 using BeautyGo.Domain.Patterns.Specifications.Users;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.Authentication.Commands.Login;
 
@@ -16,8 +16,8 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 {
     #region Fields
 
-    private readonly IBaseRepository<User> _userRepository;
-    private readonly IBaseRepository<UserEmailTokenValidation> _userEmailValidationTokenRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<UserEmailTokenValidation> _userEmailValidationTokenRepository;
     private readonly IAuthService _authService;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -26,8 +26,8 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
     #region Ctor
 
     public LoginCommandHandler(
-        IBaseRepository<User> userRepository,
-        IBaseRepository<UserEmailTokenValidation> userEmailValidationTokenRepository,
+        IEFBaseRepository<User> userRepository,
+        IEFBaseRepository<UserEmailTokenValidation> userEmailValidationTokenRepository,
         IAuthService authService,
         IUnitOfWork unitOfWork)
     {
@@ -95,7 +95,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 
         var token = await _authService.AuthenticateAsync(user);
 
-        _userRepository.Update(user);
+        _userRepository.UpdateAsync(user);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

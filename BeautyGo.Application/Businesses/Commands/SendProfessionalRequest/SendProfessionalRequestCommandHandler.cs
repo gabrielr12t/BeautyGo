@@ -10,7 +10,7 @@ using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.ProfessionalRequests;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.Businesses.Commands.SendProfessionalRequest;
 
@@ -21,9 +21,9 @@ public class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfess
     private readonly IUserService _userService;
     private readonly IAuthService _authService;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IBaseRepository<User> _userRepository;
-    private readonly IBaseRepository<Business> _businessRepository;
-    private readonly IBaseRepository<ProfessionalRequest> _professionalRequestRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<Business> _businessRepository;
+    private readonly IEFBaseRepository<ProfessionalRequest> _professionalRequestRepository;
 
     #endregion
 
@@ -33,9 +33,9 @@ public class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfess
         IUserService userService,
         IAuthService authService,
         IUnitOfWork unitOfWork,
-        IBaseRepository<User> userRepository,
-        IBaseRepository<Business> businessRepository,
-        IBaseRepository<ProfessionalRequest> professionalRequestRepository)
+        IEFBaseRepository<User> userRepository,
+        IEFBaseRepository<Business> businessRepository,
+        IEFBaseRepository<ProfessionalRequest> professionalRequestRepository)
     {
         _userService = userService;
         _authService = authService;
@@ -112,7 +112,7 @@ public class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfess
 
         businessTarget.SendProfessionalRequest(userTarget);
 
-        _businessRepository.Update(businessTarget);
+        _businessRepository.UpdateAsync(businessTarget);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

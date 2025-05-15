@@ -3,7 +3,7 @@ using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.Professionals.CreateProfessional;
 
@@ -16,11 +16,11 @@ public class CreateProfessionalCommandHandler : ICommandHandler<CreateProfession
     //apenas confirmar o cadastro pelo email do profissional
     //Depois de confirmado o cadastro como profissional ele poderá registrar serviços e hora no sistema
 
-    private readonly IBaseRepository<Business> _businessrepository;
+    private readonly IEFBaseRepository<Business> _businessrepository;
     private readonly IAuthService _authService;
 
     public CreateProfessionalCommandHandler(
-        IBaseRepository<Business> businessrepository,
+        IEFBaseRepository<Business> businessrepository,
         IAuthService authService)
     {
         _businessrepository = businessrepository;

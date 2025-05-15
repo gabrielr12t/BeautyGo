@@ -1,9 +1,10 @@
 ﻿using BeautyGo.Contracts.Address;
 using BeautyGo.Domain.Entities.Common;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Domain.Repositories;
 
-public interface IAddressRepository : IBaseRepository<Address>
+public interface IAddressRepository : IEFBaseRepository<Address>
 {
     Task<IList<NearbyAddressDTO>> GetAddressWithinRadiusAsync(
         double latitude,

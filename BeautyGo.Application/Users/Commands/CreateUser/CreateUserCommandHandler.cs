@@ -12,7 +12,7 @@ using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
 using BeautyGo.Domain.Patterns.Specifications.Users;
 using BeautyGo.Domain.Patterns.Visitor.Users;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using MediatR;
 
 namespace BeautyGo.Application.Users.Commands.CreateUser;
@@ -23,8 +23,8 @@ internal class CreateUserCommandHandler :
 {
     #region Fields
 
-    private readonly IBaseRepository<User> _userRepository;
-    private readonly IBaseRepository<UserRole> userRoleRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<UserRole> userRoleRepository;
     private readonly IUnitOfWork unitOfWork;
     private readonly IUserFactory userFactory;
 
@@ -33,8 +33,8 @@ internal class CreateUserCommandHandler :
     #region Ctor
 
     public CreateUserCommandHandler(
-        IBaseRepository<User> userRepository,
-        IBaseRepository<UserRole> userRoleRepository,
+        IEFBaseRepository<User> userRepository,
+        IEFBaseRepository<UserRole> userRoleRepository,
         IUnitOfWork unitOfWork,
         IMediator mediator,
         IAuthService authService,

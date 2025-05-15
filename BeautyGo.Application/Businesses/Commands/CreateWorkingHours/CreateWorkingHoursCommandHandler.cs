@@ -7,7 +7,7 @@ using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.Businesses;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using System.Threading;
 
 namespace BeautyGo.Application.Businesses.Commands.CreateWorkingHours;
@@ -17,7 +17,7 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
     #region Fields
 
     private readonly IAuthService _authService;
-    private readonly IBaseRepository<Business> _businessRepository;
+    private readonly IEFBaseRepository<Business> _businessRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     #endregion
@@ -26,7 +26,7 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
 
     public CreateWorkingHoursCommandHandler(
         IAuthService authService,
-        IBaseRepository<Business> businessRepository,
+        IEFBaseRepository<Business> businessRepository,
         IUnitOfWork unitOfWork)
     {
         _authService = authService;

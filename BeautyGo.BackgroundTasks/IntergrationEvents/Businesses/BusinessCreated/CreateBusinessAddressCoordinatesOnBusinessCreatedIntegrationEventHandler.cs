@@ -6,7 +6,7 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.Businesses.BusinessCreated;
 
@@ -14,7 +14,7 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
 {
     #region Fields
 
-    private readonly IBaseRepository<Business> _businessRepository;
+    private readonly IEFBaseRepository<Business> _businessRepository;
 
     private readonly ILocationIQIntegrationService _openStreetMapIntegrationService;
     private readonly IUnitOfWork _unitOfWork;
@@ -25,7 +25,7 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
 
     public CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEventHandler(
         ILocationIQIntegrationService openStreetMapIntegrationService,
-        IBaseRepository<Business> businessRepository,
+        IEFBaseRepository<Business> businessRepository,
         IUnitOfWork unitOfWork)
     {
         _openStreetMapIntegrationService = openStreetMapIntegrationService;
@@ -53,7 +53,7 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
 
         business.Address.ChangeCoordinates(addressCoordinates.Value.Latitude, addressCoordinates.Value.Longitude);
 
-        _businessRepository.Update(business);
+        _businessRepository.UpdateAsync(business);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

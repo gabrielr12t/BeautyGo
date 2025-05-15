@@ -3,14 +3,14 @@ using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Extensions;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Persistence.Extensions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-namespace BeautyGo.Persistence.Repositories;
+namespace BeautyGo.Persistence.Repositories.Bases;
 
-internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
+internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
     where TEntity : BaseEntity
 {
     #region Fields
@@ -22,7 +22,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     #region Ctor
 
-    public BaseRepository(
+    public EFBaseRepository(
        BeautyGoContext context)
     {
         _context = context;
@@ -52,44 +52,54 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     #region Update
 
-    public virtual void Update(TEntity entity)
+    public virtual Task UpdateAsync(TEntity entity)
     {
         _context.Entry(entity).State = EntityState.Modified;
 
         entity.AddDomainEvent(new EntityUpdatedEvent<TEntity>(entity));
+
+        return Task.CompletedTask;
     }
 
     #endregion
 
     #region Delete
 
-    public virtual void Remove(TEntity entity)
+    public virtual Task RemoveAsync(TEntity entity)
     {
         _dbSet.Remove(entity);
 
         entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
+
+        return Task.CompletedTask;
     }
 
-    public virtual void Remove(IReadOnlyCollection<TEntity> entities)
+    public virtual Task RemoveAsync(IReadOnlyCollection<TEntity> entities)
     {
         _dbSet.RemoveRange(entities);
 
         foreach (var entity in entities)
             entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
+
+        return Task.CompletedTask;
     }
 
-    public void Detach(TEntity entity)
+    public Task DetachAsync(TEntity entity)
     {
         _dbSet.Entry(entity).State = EntityState.Detached;
+
+        return Task.CompletedTask;
     }
 
-    public virtual void Truncate()
+    public virtual Task TruncateAsync()
     {
         foreach (TEntity entity in Query())
         {
             _dbSet.Entry(entity).State = EntityState.Deleted;
             entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
         }
+
+        return Task.CompletedTask;
     }
 
     #endregion
@@ -111,7 +121,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
     {
         var specification = new EntityByIdsSpecification<TEntity>(ids);
 
-        return await Query().GetQuerySpecification(specification).ToListAsync(cancellationToken);
+        return await Query().ApplySpecification(specification).ToListAsync(cancellationToken);
     }
 
     public virtual Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -124,7 +134,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         var specification = new EntityByIdSpecification<TEntity>(id);
 
         return query
-            .GetQuerySpecification(specification)
+            .ApplySpecification(specification)
             .FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
     }
 
@@ -134,7 +144,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         return Query(asTracking)
-            .GetQuerySpecification(specification)
+            .ApplySpecification(specification)
             .FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
     }
 
@@ -142,7 +152,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         return Query(asTracking)
-            .GetQuerySpecification(specification)
+            .ApplySpecification(specification)
             .Where(specification.ToExpression())
             .Select(select)
             .AsQueryable()
@@ -153,7 +163,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         Specification<TEntity> specification, CancellationToken cancellationToken = default)
     {
         return Query(false)
-            .GetQuerySpecification(specification)
+            .ApplySpecification(specification)
             .AnyAsync(cancellationToken);
     }
 
@@ -162,7 +172,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         bool asTracking = true, CancellationToken cancellationToken = default)
     {
         return await Query(asTracking)
-            .GetQuerySpecification(specification)
+            .ApplySpecification(specification)
             .ToListAsync(cancellationToken);
     }
 
@@ -172,7 +182,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         bool asTracking = false, CancellationToken cancellationToken = default)
     {
         return await Query(asTracking)
-            .GetQuerySpecification(specification)
+            .ApplySpecification(specification)
             .Select(select)
             .AsQueryable()
             .ToListAsync(cancellationToken);
@@ -185,7 +195,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         return await Query(false)
-            .GetQuerySpecification(specification)
+            .ApplySpecification(specification)
             .Select(resultSelector)
             .AsQueryable()
             .ToPagedListAsync(pageIndex, pageSize, getOnlyTotalCount, cancellationToken);
@@ -197,7 +207,7 @@ internal class BaseRepository<TEntity> : IBaseRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         return await Query()
-            .GetQuerySpecification(specification)
+            .ApplySpecification(specification)
             .ToPagedListAsync(pageIndex, pageSize, getOnlyTotalCount, cancellationToken);
     }
 

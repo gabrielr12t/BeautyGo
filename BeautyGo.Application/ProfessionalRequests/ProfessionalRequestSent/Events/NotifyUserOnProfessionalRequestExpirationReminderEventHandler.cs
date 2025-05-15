@@ -5,17 +5,17 @@ using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.ProfessionalRequests.ProfessionalRequestSent.Events;
 
 public class NotifyUserOnProfessionalRequestExpirationReminderEventHandler : IEventHandler<ProfessionalRequestExpirationReminderEvent>
 {
-    private readonly IBaseRepository<ProfessionalRequest> _professionalRequestRepository;
+    private readonly IEFBaseRepository<ProfessionalRequest> _professionalRequestRepository;
     private readonly IProfessionalRequestEmailNotificationPublisher _notification;
 
     public NotifyUserOnProfessionalRequestExpirationReminderEventHandler(
-        IBaseRepository<ProfessionalRequest> professionalRequestRepository,
+        IEFBaseRepository<ProfessionalRequest> professionalRequestRepository,
         IProfessionalRequestEmailNotificationPublisher professionalRequestEmailNotificationPublisher)
     {
         _professionalRequestRepository = professionalRequestRepository;

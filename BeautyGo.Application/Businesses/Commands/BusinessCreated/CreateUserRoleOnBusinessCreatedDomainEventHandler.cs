@@ -8,20 +8,20 @@ using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
 using BeautyGo.Domain.Patterns.Specifications.Users;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.Businesses.Commands.BusinessCreated;
 
 internal class CreateUserRoleOnBusinessCreatedDomainEventHandler : IDomainEventHandler<EntityInsertedEvent<Business>>
 {
-    private readonly IBaseRepository<UserRole> _userRoleRepository;
-    private readonly IBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<UserRole> _userRoleRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
 
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateUserRoleOnBusinessCreatedDomainEventHandler(
-        IBaseRepository<UserRole> userRoleRepository,
-        IBaseRepository<User> userRepository,
+        IEFBaseRepository<UserRole> userRoleRepository,
+        IEFBaseRepository<User> userRepository,
         IUnitOfWork unitOfWork)
     {
         _userRoleRepository = userRoleRepository;

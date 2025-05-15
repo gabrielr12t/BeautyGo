@@ -14,7 +14,7 @@ using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.Businesses;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.Businesses.Commands.CreateBusiness;
 
@@ -22,10 +22,10 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
 {
     #region Fields
 
-    private readonly IBaseRepository<Business> _businessRepository;
-    private readonly IBaseRepository<Address> _addressRepository;
-    private readonly IBaseRepository<User> _userRepository;
-    private readonly IBaseRepository<UserRole> _userRoleRepository;
+    private readonly IEFBaseRepository<Business> _businessRepository;
+    private readonly IEFBaseRepository<Address> _addressRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<UserRole> _userRoleRepository;
 
     private readonly IUserService _userService;
     private readonly IViaCepIntegrationService _viaCepIntegration;
@@ -37,10 +37,10 @@ internal class CreateBusinessCommandHandler : ICommandHandler<CreateBusinessComm
     #region Ctor
 
     public CreateBusinessCommandHandler(
-        IBaseRepository<Business> businessRepository,
-        IBaseRepository<Address> addressRepository,
-        IBaseRepository<User> userRepository,
-        IBaseRepository<UserRole> userRoleRepository,
+        IEFBaseRepository<Business> businessRepository,
+        IEFBaseRepository<Address> addressRepository,
+        IEFBaseRepository<User> userRepository,
+        IEFBaseRepository<UserRole> userRoleRepository,
         IViaCepIntegrationService viaCepIntegration,
         IAuthService authService,
         IUnitOfWork unitOfWork,

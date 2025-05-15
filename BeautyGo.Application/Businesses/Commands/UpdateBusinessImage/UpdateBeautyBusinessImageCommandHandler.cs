@@ -6,22 +6,22 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 using Microsoft.AspNetCore.Http;
 
 namespace BeautyGo.Application.Businesses.Commands.UpdateBusinessImage;
 
 internal class UpdateBeautyBusinessImageCommandHandler : ICommandHandler<UpdateBeautyBusinessImageCommand, Result>
 {
-    private readonly IBaseRepository<Domain.Entities.Businesses.Business> _businessRepository;
-    private readonly IBaseRepository<User> _userRepository;
+    private readonly IEFBaseRepository<Domain.Entities.Businesses.Business> _businessRepository;
+    private readonly IEFBaseRepository<User> _userRepository;
 
     private readonly IAuthService _authService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPictureService _pictureService;
 
-    public UpdateBeautyBusinessImageCommandHandler(IBaseRepository<Domain.Entities.Businesses.Business> businessRepository,
-        IBaseRepository<User> userRepository,
+    public UpdateBeautyBusinessImageCommandHandler(IEFBaseRepository<Domain.Entities.Businesses.Business> businessRepository,
+        IEFBaseRepository<User> userRepository,
         IAuthService authService,
         IUnitOfWork unitOfWork,
         IPictureService pictureService)

@@ -10,7 +10,7 @@ using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.Appointments;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.ProfessionalRequests.AcceptProfessionalRequest;
 
@@ -20,9 +20,9 @@ internal class AcceptProfessionalRequestCommandHandler : ICommandHandler<AcceptP
 
     private readonly IAuthService _authService;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IBaseRepository<ProfessionalRequest> _professionalRequestRepository;
-    private readonly IBaseRepository<Appointment> _appointmentRepository;
-    private readonly IBaseRepository<Business> _businessRepository;
+    private readonly IEFBaseRepository<ProfessionalRequest> _professionalRequestRepository;
+    private readonly IEFBaseRepository<Appointment> _appointmentRepository;
+    private readonly IEFBaseRepository<Business> _businessRepository;
 
     #endregion
 
@@ -30,10 +30,10 @@ internal class AcceptProfessionalRequestCommandHandler : ICommandHandler<AcceptP
 
     public AcceptProfessionalRequestCommandHandler(
         IUnitOfWork unitOfWork,
-        IBaseRepository<ProfessionalRequest> professionalRequestRepository,
+        IEFBaseRepository<ProfessionalRequest> professionalRequestRepository,
         IAuthService authService,
-        IBaseRepository<Appointment> appointmentRepository,
-        IBaseRepository<Business> businessRepository)
+        IEFBaseRepository<Appointment> appointmentRepository,
+        IEFBaseRepository<Business> businessRepository)
     {
         _unitOfWork = unitOfWork;
         _professionalRequestRepository = professionalRequestRepository;

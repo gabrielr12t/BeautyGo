@@ -1,13 +1,14 @@
 ﻿using BeautyGo.Domain.Entities.Outbox;
 using BeautyGo.Domain.Patterns.Specifications.OutboxMessages;
 using BeautyGo.Domain.Repositories;
+using BeautyGo.Persistence.Repositories.Bases;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace BeautyGo.Persistence.Repositories;
 
-internal class OutboxMessagerepository : BaseRepository<OutboxMessage>, IOutboxMessageRepository
+internal class OutboxMessagerepository : EFBaseRepository<OutboxMessage>, IOutboxMessageRepository
 {
     private readonly IDbConnection _connetion;
 
@@ -39,7 +40,7 @@ internal class OutboxMessagerepository : BaseRepository<OutboxMessage>, IOutboxM
 
     public Task UpdateAsync(OutboxMessage message)
     {
-        Update(message);
+        base.UpdateAsync(message);
 
         return Task.CompletedTask;
 

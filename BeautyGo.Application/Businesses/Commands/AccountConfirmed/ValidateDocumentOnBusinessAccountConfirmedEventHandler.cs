@@ -6,7 +6,7 @@ using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.Businesses.Commands.AccountConfirmed;
 
@@ -14,7 +14,7 @@ public class ValidateDocumentOnBusinessAccountConfirmedEventHandler : IEventHand
 {
     #region Fields
 
-    private readonly IBaseRepository<Business> _businessRepository;
+    private readonly IEFBaseRepository<Business> _businessRepository;
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -22,7 +22,7 @@ public class ValidateDocumentOnBusinessAccountConfirmedEventHandler : IEventHand
 
     #region Ctor
 
-    public ValidateDocumentOnBusinessAccountConfirmedEventHandler(IReceitaFederalIntegrationService receitaFederalIntegration, IBaseRepository<Business> businessRepository, IUnitOfWork unitOfWork)
+    public ValidateDocumentOnBusinessAccountConfirmedEventHandler(IReceitaFederalIntegrationService receitaFederalIntegration, IEFBaseRepository<Business> businessRepository, IUnitOfWork unitOfWork)
     {
         _receitaFederalIntegration = receitaFederalIntegration;
         _businessRepository = businessRepository;
@@ -52,7 +52,7 @@ public class ValidateDocumentOnBusinessAccountConfirmedEventHandler : IEventHand
 
         business.ValidatedDocument();
 
-        _businessRepository.Update(business);
+        _businessRepository.UpdateAsync(business);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
