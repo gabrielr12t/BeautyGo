@@ -110,7 +110,6 @@ public class AuthService : IAuthService
             claims: claims,
             notBefore: DateTime.UtcNow,
             expires: DateTime.UtcNow.AddMinutes(authSettings.ExpirationTokenMinutes),
-
             signingCredentials: credentials
         );
 
