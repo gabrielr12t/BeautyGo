@@ -30,7 +30,7 @@ internal class MongoDBBaseRepository<TEntity> : IBaseRepository<TEntity>
 
     #region Query
 
-    public IQueryable<TEntity> Query(bool asTracking = false) =>
+    public IQueryable<TEntity> Query() =>
         _collection.AsQueryable();
 
     public async Task<IList<TEntity>> GetByIdAsync(IReadOnlyList<Guid> ids, CancellationToken cancellationToken = default)
@@ -86,9 +86,9 @@ internal class MongoDBBaseRepository<TEntity> : IBaseRepository<TEntity>
         return _collection.DeleteManyAsync(filter, cancellationToken: cancellationToken);
     }
 
-    public Task TruncateAsync()
+    public Task TruncateAsync(CancellationToken cancellationToken = default)
     {
-        return _collection.DeleteManyAsync(Builders<TEntity>.Filter.Empty);
+        return _collection.DeleteManyAsync(Builders<TEntity>.Filter.Empty, cancellationToken);
     }
 
     #endregion

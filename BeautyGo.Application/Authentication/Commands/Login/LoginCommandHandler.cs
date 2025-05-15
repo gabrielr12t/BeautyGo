@@ -95,7 +95,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 
         var token = await _authService.AuthenticateAsync(user);
 
-        _userRepository.UpdateAsync(user);
+        await _userRepository.UpdateAsync(user);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

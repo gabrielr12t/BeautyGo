@@ -195,7 +195,7 @@ public partial class PictureService : IPictureService
         if (isNew)
             await _pictureBinaryRepository.InsertAsync(pictureBinary);
         else
-            _pictureBinaryRepository.UpdateAsync(pictureBinary);
+            await _pictureBinaryRepository.UpdateAsync(pictureBinary);
 
         return pictureBinary;
     }
@@ -522,14 +522,14 @@ public partial class PictureService : IPictureService
         await DeletePictureOnFileSystemAsync(picture);
 
         //delete from database
-        _pictureRepository.RemoveAsync(picture);
+        await _pictureRepository.RemoveAsync(picture);
 
         await _unitOfWork.SaveChangesAsync();
     }
 
     public virtual async Task<IPagedList<Picture>> GetPicturesAsync(string virtualPath = "", int pageIndex = 0, int pageSize = int.MaxValue)
     {
-        var query = _pictureRepository.Query();
+        var query = _pictureRepository.QueryNoTracking();
 
         if (!string.IsNullOrEmpty(virtualPath))
             query = virtualPath.EndsWith('/') ? query.Where(p => p.VirtualPath.StartsWith(virtualPath) || p.VirtualPath == virtualPath.TrimEnd('/')) : query.Where(p => p.VirtualPath == virtualPath);
@@ -565,8 +565,7 @@ public partial class PictureService : IPictureService
 
         await UpdatePictureBinaryAsync(picture, true ? pictureBinary : Array.Empty<byte>(), publishEvent: publishEvent);
 
-        if (!true)
-            await SavePictureInFileAsync(picture.Id, pictureBinary, mimeType);
+        await SavePictureInFileAsync(picture.Id, pictureBinary, mimeType);
 
         return picture;
     }
@@ -678,14 +677,13 @@ public partial class PictureService : IPictureService
         picture.TitleAttribute = titleAttribute;
         picture.IsNew = isNew;
 
-        _pictureRepository.UpdateAsync(picture);
+        await _pictureRepository.UpdateAsync(picture);
 
         await _unitOfWork.SaveChangesAsync();
 
         await UpdatePictureBinaryAsync(picture, true ? pictureBinary : Array.Empty<byte>());
 
-        if (!true)
-            await SavePictureInFileAsync(picture.Id, pictureBinary, mimeType);
+        await SavePictureInFileAsync(picture.Id, pictureBinary, mimeType);
 
         return picture;
     }
@@ -715,7 +713,7 @@ public partial class PictureService : IPictureService
 
     public virtual async Task<PictureBinary> GetPictureBinaryByPictureIdAsync(Guid pictureId)
     {
-        return await _pictureBinaryRepository.Query()
+        return await _pictureBinaryRepository.QueryNoTracking()
             .FirstOrDefaultAsync(pb => pb.PictureId == pictureId);
     }
 

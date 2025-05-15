@@ -53,7 +53,7 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
 
         business.Address.ChangeCoordinates(addressCoordinates.Value.Latitude, addressCoordinates.Value.Longitude);
 
-        _businessRepository.UpdateAsync(business);
+        await _businessRepository.UpdateAsync(business);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

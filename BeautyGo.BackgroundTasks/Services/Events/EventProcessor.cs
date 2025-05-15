@@ -101,7 +101,7 @@ public class EventProcessor : IEventProcessor
             }
             finally
             {
-                _eventRepository.UpdateAsync(pendingEvent);
+                await _eventRepository.UpdateAsync(pendingEvent);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }

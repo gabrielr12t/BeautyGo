@@ -58,7 +58,7 @@ internal class UserService : IUserService
     {
         var owner = customer.PromoteToOwner();
 
-        _userRepository.RemoveAsync(customer);
+        await _userRepository.RemoveAsync(customer);
         await _userRepository.InsertAsync(owner, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -68,7 +68,7 @@ internal class UserService : IUserService
     {
         var professional = customer.PromoteToProfessional(businessId);
 
-        _userRepository.RemoveAsync(customer);
+        await _userRepository.RemoveAsync(customer);
         await _userRepository.InsertAsync(professional, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -78,7 +78,7 @@ internal class UserService : IUserService
     {
         var lastActivityFrom = DateTime.Now.AddMinutes(-10);
 
-        var query = _userRepository.Query(asTracking);
+        var query = _userRepository.QueryNoTracking();
 
         query = query.Where(p => lastActivityFrom <= p.LastActivityDate);
 

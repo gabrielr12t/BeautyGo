@@ -55,7 +55,7 @@ public class SaveLastActivityAttribute : TypeFilterAttribute
             {
                 user.LastActivityDate = DateTime.Now;
 
-                _userRepository.UpdateAsync(user);
+                await _userRepository.UpdateAsync(user);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }

@@ -6,7 +6,7 @@ namespace BeautyGo.Domain.Repositories.Bases;
 
 public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 {
-    IQueryable<TEntity> Query(bool asTracking = false);
+    IQueryable<TEntity> Query();
     
     Task<IList<TEntity>> GetByIdAsync(IReadOnlyList<Guid> ids, CancellationToken cancellationToken = default);
 
@@ -22,7 +22,7 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 
     Task RemoveAsync(IReadOnlyCollection<TEntity> entities, CancellationToken cancellationToken = default);
 
-    Task TruncateAsync();
+    Task TruncateAsync(CancellationToken cancellationToken = default);
 
     Task<IPagedList<TEntity>> GetAllPagedAsync(
         Specification<TEntity> specification,

@@ -112,7 +112,7 @@ public class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfess
 
         businessTarget.SendProfessionalRequest(userTarget);
 
-        _businessRepository.UpdateAsync(businessTarget);
+        await _businessRepository.UpdateAsync(businessTarget);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

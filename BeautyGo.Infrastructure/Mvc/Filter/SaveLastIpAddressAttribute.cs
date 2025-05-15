@@ -58,7 +58,7 @@ public class SaveLastIpAddressAttribute : TypeFilterAttribute
             {
                 user.ChangeIpAddress(await _webHelper.GetCurrentIpAddressAsync());
 
-                _userRepository.UpdateAsync(user);
+               await _userRepository.UpdateAsync(user, cancellationToken);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }

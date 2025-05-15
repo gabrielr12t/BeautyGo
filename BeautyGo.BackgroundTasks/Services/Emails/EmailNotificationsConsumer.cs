@@ -49,7 +49,7 @@ internal sealed class EmailNotificationsConsumer : IEmailNotificationsConsumer
 
                 sendNotificationEmailTasks.Add(_emailNotificationService.SendAsync(notificationEmail, cancellationToken));
 
-                _emailNotificationRepository.UpdateAsync(notification);
+                await _emailNotificationRepository.UpdateAsync(notification);
             }
             catch (Exception ex)
             {

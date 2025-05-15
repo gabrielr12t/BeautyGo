@@ -40,7 +40,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
         entity.AddDomainEvent(new EntityInsertedEvent<TEntity>(entity));
     }
 
-    public virtual async Task InsertRangeAsync(IReadOnlyCollection<TEntity> entities)
+    public virtual async Task InsertRangeAsync(IReadOnlyCollection<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await _dbSet.AddRangeAsync(entities);
 
@@ -52,7 +52,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
 
     #region Update
 
-    public virtual Task UpdateAsync(TEntity entity)
+    public virtual Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         _context.Entry(entity).State = EntityState.Modified;
 
@@ -65,7 +65,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
 
     #region Delete
 
-    public virtual Task RemoveAsync(TEntity entity)
+    public virtual Task RemoveAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         _dbSet.Remove(entity);
 
@@ -74,7 +74,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
         return Task.CompletedTask;
     }
 
-    public virtual Task RemoveAsync(IReadOnlyCollection<TEntity> entities)
+    public virtual Task RemoveAsync(IReadOnlyCollection<TEntity> entities, CancellationToken cancellationToken = default)
     {
         _dbSet.RemoveRange(entities);
 
@@ -91,7 +91,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
         return Task.CompletedTask;
     }
 
-    public virtual Task TruncateAsync()
+    public virtual Task TruncateAsync(CancellationToken cancellationToken = default)
     {
         foreach (TEntity entity in Query())
         {
@@ -213,6 +213,16 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
 
     #endregion
 
+    #region Utilities
+
     public IQueryable<TEntity> Query(bool asTracking = false)
         => asTracking ? _dbSet.AsTracking() : _dbSet.AsNoTracking();
+
+    #endregion
+
+    public IQueryable<TEntity> QueryNoTracking()
+        => _dbSet.AsNoTracking();
+
+    public IQueryable<TEntity> Query()
+        => _dbSet.AsTracking();
 }

@@ -29,7 +29,7 @@ internal class OutboxMessagerepository : EFBaseRepository<OutboxMessage>, IOutbo
     {
         var unProcessedOutboxMessagesSpec = new UnprocessedOutboxMessagesSpecification(size);
 
-        var query = Query();
+        var query = QueryNoTracking();
 
         query = query.Where(unProcessedOutboxMessagesSpec.ToExpression());
 

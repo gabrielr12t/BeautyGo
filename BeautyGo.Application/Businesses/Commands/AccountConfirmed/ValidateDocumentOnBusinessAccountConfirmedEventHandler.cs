@@ -52,7 +52,7 @@ public class ValidateDocumentOnBusinessAccountConfirmedEventHandler : IEventHand
 
         business.ValidatedDocument();
 
-        _businessRepository.UpdateAsync(business);
+        await _businessRepository.UpdateAsync(business);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
