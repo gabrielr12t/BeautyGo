@@ -145,7 +145,7 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
                 body: body
             );
 
-            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Published - {@event}");
+            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Published - {@event}", cancellation: cancellationToken);
         }
         catch (Exception ex)
         {

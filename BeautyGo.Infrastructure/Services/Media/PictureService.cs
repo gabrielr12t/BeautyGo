@@ -534,7 +534,7 @@ public partial class PictureService : IPictureService
         if (!string.IsNullOrEmpty(virtualPath))
             query = virtualPath.EndsWith('/') ? query.Where(p => p.VirtualPath.StartsWith(virtualPath) || p.VirtualPath == virtualPath.TrimEnd('/')) : query.Where(p => p.VirtualPath == virtualPath);
 
-        query = query.OrderByDescending(p => p.Id);
+        query = query.OrderByDescending(p => p.CreatedOn);
 
         return await query.ToPagedListAsync(pageIndex, pageSize);
     }
