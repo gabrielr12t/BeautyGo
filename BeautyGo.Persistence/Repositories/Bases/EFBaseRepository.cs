@@ -133,7 +133,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
 
         var specification = new EntityByIdSpecification<TEntity>(id);
 
-        return query
+        return await query
             .ApplySpecification(specification)
             .FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
     }
@@ -143,7 +143,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
         bool asTracking = false,
         CancellationToken cancellationToken = default)
     {
-        return Query(asTracking)
+        return await Query(asTracking)
             .ApplySpecification(specification)
             .FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
     }
@@ -151,7 +151,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
     public virtual async Task<TResult> GetFirstOrDefaultAsync<TResult>(Specification<TEntity> specification, Func<TEntity, TResult> select, bool asTracking = false,
         CancellationToken cancellationToken = default)
     {
-        return Query(asTracking)
+        return await Query(asTracking)
             .ApplySpecification(specification)
             .Where(specification.ToExpression())
             .Select(select)
@@ -162,7 +162,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
     public virtual async Task<bool> ExistAsync(
         Specification<TEntity> specification, CancellationToken cancellationToken = default)
     {
-        return Query(false)
+        return await Query(false)
             .ApplySpecification(specification)
             .AnyAsync(cancellationToken);
     }
