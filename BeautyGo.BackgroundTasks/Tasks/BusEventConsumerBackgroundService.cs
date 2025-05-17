@@ -153,7 +153,7 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
 
             await retryPolicy.ExecuteAsync(() => eventConsumer.ConsumeAsync(@event, stoppingToken));
 
-            await unitOfWork.SaveChangesAsync(stoppingToken);
+            await unitOfWork.SaveChangesAsync();
 
             _channel.BasicAck(eventArgs.DeliveryTag, false);
 

@@ -54,7 +54,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
 
     public virtual Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        _context.Entry(entity).State = EntityState.Modified;
+        _dbSet.Update(entity);
 
         entity.AddDomainEvent(new EntityUpdatedEvent<TEntity>(entity));
 
@@ -106,9 +106,9 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
 
     #region SQL
 
-    public virtual Task<int> ExecuteSqlAsync(string sql,
+    public virtual async Task<int> ExecuteSqlAsync(string sql,
         IEnumerable<SqlParameter> parameters, CancellationToken cancellationToken = default) =>
-        _context.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
+        await _context.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
 
     public virtual async Task<IList<TEntity>> FromSqlAsync(string sql, CancellationToken cancellationToken = default, params IEnumerable<SqlParameter> parameters) =>
         await _context.Set<TEntity>().FromSqlRaw(sql, parameters).ToListAsync(cancellationToken);
@@ -124,7 +124,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
         return await Query().ApplySpecification(specification).ToListAsync(cancellationToken);
     }
 
-    public virtual Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         if (id == Guid.Empty)
             return default;
@@ -138,7 +138,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
             .FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
     }
 
-    public virtual Task<TEntity> GetFirstOrDefaultAsync(
+    public virtual async Task<TEntity> GetFirstOrDefaultAsync(
         Specification<TEntity> specification,
         bool asTracking = false,
         CancellationToken cancellationToken = default)
@@ -148,7 +148,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
             .FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
     }
 
-    public virtual Task<TResult> GetFirstOrDefaultAsync<TResult>(Specification<TEntity> specification, Func<TEntity, TResult> select, bool asTracking = false,
+    public virtual async Task<TResult> GetFirstOrDefaultAsync<TResult>(Specification<TEntity> specification, Func<TEntity, TResult> select, bool asTracking = false,
         CancellationToken cancellationToken = default)
     {
         return Query(asTracking)
@@ -159,7 +159,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public virtual Task<bool> ExistAsync(
+    public virtual async Task<bool> ExistAsync(
         Specification<TEntity> specification, CancellationToken cancellationToken = default)
     {
         return Query(false)

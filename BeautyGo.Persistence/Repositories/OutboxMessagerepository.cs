@@ -21,7 +21,7 @@ internal class OutboxMessagerepository : EFBaseRepository<OutboxMessage>, IOutbo
 
     public override async Task<OutboxMessage> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        const string query = "SELECT Id, ProcessedOn, OccurredOn, Content, Type FROM OutboxMessage WHERE Id = @Id";
+        const string query = "SELECT Id, ProcessedOn, OccurredOn, Content, Type, Error FROM OutboxMessage WHERE Id = @Id";
         return await _connetion.QueryFirstOrDefaultAsync<OutboxMessage>(query, new { Id = id });
     }
 
@@ -38,28 +38,13 @@ internal class OutboxMessagerepository : EFBaseRepository<OutboxMessage>, IOutbo
         return await query.ToListAsync(cancellation);
     }
 
-    public Task UpdateAsync(OutboxMessage message)
+    public async Task UpdateAsync(OutboxMessage message)
     {
-        base.UpdateAsync(message);
+        const string query = @"
+            UPDATE OutboxMessage
+            SET ProcessedOn = @ProcessedOn, Error = @Error
+            WHERE Id = @Id";
 
-        return Task.CompletedTask;
-
-        //using (_connetion)
-        //{
-        //    using (var tran = _connetion.BeginTransaction())
-        //    {
-        //        const string query = @"
-        //        UPDATE OutboxMessage
-        //        SET ProcessedOn = @ProcessedOn, Error = @Error
-        //        WHERE Id = @Id";
-
-        //        if (message.Errors.Any())
-        //        {
-
-        //        }
-
-        //        await _connetion.ExecuteAsync(query, message);
-        //    }
-        //}
+        await _connetion.ExecuteAsync(query, message);
     }
 }

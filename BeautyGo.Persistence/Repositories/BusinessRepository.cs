@@ -23,13 +23,13 @@ internal class BusinessRepository : EFBaseRepository<Business>, IBusinessReposit
         await connection.OpenAsync(cancellation);
 
         var parameters = new DynamicParameters();
-        parameters.Add($"@{nameof(BusinessFilter.Latitude)}", filter.Latitude);
-        parameters.Add($"@{nameof(BusinessFilter.Longitude)}", filter.Longitude);
-        parameters.Add($"@{nameof(BusinessFilter.RadiusKm)}", filter.RadiusKm);
-        parameters.Add($"@{nameof(BusinessFilter.Name)}", filter.Name);
-        parameters.Add($"@{nameof(BusinessFilter.Description)}", filter.Description);
-        parameters.Add($"@{nameof(BusinessFilter.PageNumber)}", filter.PageNumber);
-        parameters.Add($"@{nameof(BusinessFilter.PageSize)}", filter.PageSize);
+        parameters.Add($"@{nameof(BusinessFilter.Latitude)}"    , filter.Latitude, DbType.Double);
+        parameters.Add($"@{nameof(BusinessFilter.Longitude)}"   , filter.Longitude, DbType.Double);
+        parameters.Add($"@{nameof(BusinessFilter.RadiusKm)}"    , filter.RadiusKm, DbType.Double);
+        parameters.Add($"@{nameof(BusinessFilter.Name)}"        , filter.Name, DbType.String);
+        parameters.Add($"@{nameof(BusinessFilter.Description)}" , filter.Description, DbType.String);
+        parameters.Add($"@{nameof(BusinessFilter.PageNumber)}"  , filter.PageNumber, DbType.Int32);
+        parameters.Add($"@{nameof(BusinessFilter.PageSize)}"    , filter.PageSize, DbType.Int32);
 
         using var multi = await connection.QueryMultipleAsync(
             "Businesses.GetFilteredBusinesses",

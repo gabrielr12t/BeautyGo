@@ -3,7 +3,6 @@ using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Entities.Outbox;
-using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories;
 using MediatR;
 using Newtonsoft.Json;
@@ -95,10 +94,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
 
     private async Task ProcessUpdateAsync(OutboxUpdate updatedMessage, CancellationToken cancellationToken)
     {
-        var message = await _outboxRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<OutboxMessage>(updatedMessage.Id), true, 
-            cancellationToken);
-
+        var message = await _outboxRepository.GetByIdAsync(updatedMessage.Id, cancellationToken);
         if (message is null)
             return;
 
