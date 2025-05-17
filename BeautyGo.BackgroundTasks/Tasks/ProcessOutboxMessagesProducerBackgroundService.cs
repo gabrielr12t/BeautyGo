@@ -62,7 +62,7 @@ internal class ProcessOutboxMessagesProducerBackgroundService : BackgroundServic
         }
         catch (Exception e)
         {
-            await logger.ErrorAsync($"ERROR: Failed to process the batch of events: {e.Message}", e);
+            await logger.ErrorAsync($"ERROR: Failed to process the batch of events: {e.Message}", e, cancellation: stoppingToken);
 
             await unitOfWork.SaveChangesAsync(stoppingToken);
         }

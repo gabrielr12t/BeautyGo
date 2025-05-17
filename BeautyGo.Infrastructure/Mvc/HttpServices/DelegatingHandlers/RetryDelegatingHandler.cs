@@ -68,7 +68,8 @@ public class RetryDelegatingHandler : DelegatingHandler
             var content = await result.Content?.ReadAsStringAsync(cancellationToken);
 
             await _logger.WarningAsync($"{requestId} | Resposta com falha. URL: {request.RequestUri}, " +
-                               $"StatusCode: {result.StatusCode}, Conteúdo: {content}", user: await _authService.GetCurrentUserAsync(cancellationToken));
+                               $"StatusCode: {result.StatusCode}, Conteúdo: {content}", user: await _authService.GetCurrentUserAsync(cancellationToken),
+                               cancellation: cancellationToken);
         }
 
         return result;

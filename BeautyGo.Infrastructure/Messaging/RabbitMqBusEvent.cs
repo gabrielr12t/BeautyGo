@@ -149,7 +149,7 @@ internal sealed class RabbitMqBusEvent : IPublisherBusEvent, IDisposable
         }
         catch (Exception ex)
         {
-            await logger.ErrorAsync($"MESSAGE: {@event.GetType()} - Publish failed - {ex.Message}", ex);
+            await logger.ErrorAsync($"MESSAGE: {@event.GetType()} - Publish failed - {ex.Message}", ex, cancellation: cancellationToken);
             throw;
         }
     }

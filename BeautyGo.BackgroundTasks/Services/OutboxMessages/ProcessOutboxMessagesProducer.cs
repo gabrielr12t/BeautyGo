@@ -71,7 +71,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         }
         catch (Exception ex)
         {
-            await _logger.ErrorAsync($"Error publishing outbox message {message.Id}: {ex.Message}");
+            await _logger.ErrorAsync($"Error publishing outbox message {message.Id}: {ex.Message}", cancellation: cancellationToken);
 
             message.Attempts++;
 

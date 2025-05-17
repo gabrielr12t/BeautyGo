@@ -92,7 +92,7 @@ public class EventProcessor : IEventProcessor
 
                 pendingEvent.EventErrors.Add(EventError.Create(ex.Message, pendingEvent.Id));
 
-                await _logger.ErrorAsync($"Erro ao executar o evento: {pendingEvent.Id}", ex);
+                await _logger.ErrorAsync($"Erro ao executar o evento: {pendingEvent.Id}", ex, cancellation: cancellationToken);
 
                 if (pendingEvent.Attempts == eventSettings.MaxAttempsFailed)
                 {

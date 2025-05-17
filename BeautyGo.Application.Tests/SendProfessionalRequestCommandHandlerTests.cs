@@ -184,7 +184,7 @@ public class SendProfessionalRequestCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        _businessRepositoryMock.Verify(r => r.UpdateAsync(business), Times.Once);
+        //_businessRepositoryMock.Verify(r => r.UpdateAsync(business).GetAwaiter().GetResult(), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

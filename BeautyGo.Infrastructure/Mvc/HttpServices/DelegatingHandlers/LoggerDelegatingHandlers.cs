@@ -44,7 +44,7 @@ public class LoggerDelegatingHandler : DelegatingHandler
         }
         catch (Exception ex)
         {
-            await _logger.ErrorAsync($"{requestId} | Erro crítico ao enviar requisição para {request.RequestUri}", ex, user: await _authService.GetCurrentUserAsync());
+            await _logger.ErrorAsync($"{requestId} | Erro crítico ao enviar requisição para {request.RequestUri}", ex, user: await _authService.GetCurrentUserAsync(), cancellationToken);
             throw;
         }
         finally

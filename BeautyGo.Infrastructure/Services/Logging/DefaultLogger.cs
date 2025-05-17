@@ -4,7 +4,7 @@ using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.Entities.Logging;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Repositories;
+using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Infrastructure.Services.Logging;
 
@@ -12,7 +12,7 @@ public class DefaultLogger : ILogger
 {
     #region Fields
 
-    private readonly ILogRepository _repository;
+    private readonly IBaseRepository<Log> _repository;
     private readonly IWebHelper _webHelper;
 
     #endregion
@@ -21,7 +21,7 @@ public class DefaultLogger : ILogger
 
     public DefaultLogger(
          IWebHelper webHelper,
-         ILogRepository repository)
+         IBaseRepository<Log> repository)
     {
         _webHelper = webHelper;
         _repository = repository;
@@ -40,17 +40,17 @@ public class DefaultLogger : ILogger
         };
     }
 
-    public virtual void DeleteLog(Log log)
+    public virtual void DeleteLog(Log log, CancellationToken cancellation = default)
     {
         if (log == null)
             throw new ArgumentNullException(nameof(log));
 
-        _repository.RemoveAsync(log);
+        _repository.RemoveAsync(log, cancellation);
     }
 
-    public virtual void DeleteLogs(IReadOnlyCollection<Log> logs)
+    public virtual void DeleteLogs(IReadOnlyCollection<Log> logs, CancellationToken cancellation = default)
     {
-        _repository.RemoveAsync(logs);
+        _repository.RemoveAsync(logs, cancellation);
     }
 
     public virtual void ClearLog()
@@ -100,17 +100,17 @@ public class DefaultLogger : ILogger
 
     }
 
-    public virtual async Task<Log> GetLogByIdAsync(Guid logId)
+    public virtual async Task<Log> GetLogByIdAsync(Guid logId, CancellationToken cancellation = default)
     {
-        return await _repository.GetByIdAsync(logId);
+        return await _repository.GetByIdAsync(logId, cancellation);
     }
 
-    public virtual async Task<IList<Log>> GetLogByIdsAsync(IReadOnlyList<Guid> logIds)
+    public virtual async Task<IList<Log>> GetLogByIdsAsync(IReadOnlyList<Guid> logIds, CancellationToken cancellation = default)
     {
-        return await _repository.GetByIdAsync(logIds);
+        return await _repository.GetByIdAsync(logIds, cancellation);
     }
 
-    public virtual async Task<Log> InsertLogAsync(LogLevel logLevel, string shortMessage, string fullMessage = "", User user = null)
+    public virtual async Task<Log> InsertLogAsync(LogLevel logLevel, string shortMessage, string fullMessage = "", User user = null, CancellationToken cancellation = default)
     {
         var log = new Log
         {
@@ -123,39 +123,39 @@ public class DefaultLogger : ILogger
             ReferrerUrl = _webHelper.GetUrlReferrer(),
         };
 
-        await _repository.InsertAsync(log);
+        await _repository.InsertAsync(log, cancellation);
 
         return log;
     }
 
-    public virtual async Task InformationAsync(string message, Exception exception = null, User user = null)
+    public virtual async Task InformationAsync(string message, Exception exception = null, User user = null, CancellationToken cancellation = default)
     {
         //don't log thread abort exception
         if (exception is ThreadAbortException)
             return;
 
         if (IsEnabled(LogLevel.Information))
-            await InsertLogAsync(LogLevel.Information, message, exception?.ToString() ?? string.Empty, user);
+            await InsertLogAsync(LogLevel.Information, message, exception?.ToString() ?? string.Empty, user, cancellation);
     }
 
-    public virtual async Task WarningAsync(string message, Exception exception = null, User user = null)
+    public virtual async Task WarningAsync(string message, Exception exception = null, User user = null, CancellationToken cancellation = default)
     {
         //don't log thread abort exception
         if (exception is ThreadAbortException)
             return;
 
         if (IsEnabled(LogLevel.Warning))
-            await InsertLogAsync(LogLevel.Warning, message, exception?.ToString() ?? string.Empty, user);
+            await InsertLogAsync(LogLevel.Warning, message, exception?.ToString() ?? string.Empty, user, cancellation);
     }
 
-    public virtual async Task ErrorAsync(string message, Exception exception = null, User user = null)
+    public virtual async Task ErrorAsync(string message, Exception exception = null, User user = null, CancellationToken cancellation = default)
     {
         //don't log thread abort exception
         if (exception is ThreadAbortException)
             return;
 
         if (IsEnabled(LogLevel.Error))
-            await InsertLogAsync(LogLevel.Error, message, exception?.ToString() ?? string.Empty, user);
+            await InsertLogAsync(LogLevel.Error, message, exception?.ToString() ?? string.Empty, user, cancellation);
     }
 
     #endregion

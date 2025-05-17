@@ -63,7 +63,7 @@ internal class EmailNotificationConsumerBackgroundService : BackgroundService
         {
             var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
 
-            await logger.ErrorAsync($"ERROR: Failed to process the batch of notifications: {e.Message}", e);
+            await logger.ErrorAsync($"ERROR: Failed to process the batch of notifications: {e.Message}", e, cancellation: stoppingToken);
         }
         finally
         {

@@ -39,9 +39,11 @@ public class AuthBearerEvents : JwtBearerEvents
 
     public override async Task AuthenticationFailed(AuthenticationFailedContext context)
     {
-        await _logger.WarningAsync("Authentication Failed", context.Exception);
+        var cancellationToken = context.Request.HttpContext.RequestAborted;
 
-        await _unitOfWork.SaveChangesAsync();
+        await _logger.WarningAsync("Authentication Failed", context.Exception, cancellation: cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await base.AuthenticationFailed(context);
     }
@@ -53,7 +55,9 @@ public class AuthBearerEvents : JwtBearerEvents
 
     public override async Task Challenge(JwtBearerChallengeContext context)
     {
-        await _logger.WarningAsync($"Authentication Challenge: {context.Error}");
+        var cancellationToken = context.HttpContext.RequestAborted;
+
+        await _logger.WarningAsync($"Authentication Challenge: {context.Error}", cancellation: cancellationToken);
 
         context.HandleResponse();
 
@@ -63,10 +67,10 @@ public class AuthBearerEvents : JwtBearerEvents
         var originalBodyStream = context.Response.Body;
 
         var byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(DomainErrors.General.UnauthorizedUser));
-        await originalBodyStream.WriteAsync(byteArray, 0, byteArray.Length);
+        await originalBodyStream.WriteAsync(byteArray, 0, byteArray.Length, cancellationToken);
 
         context.Response.Body = originalBodyStream;
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

@@ -8,9 +8,9 @@ public interface ILogger
 {
     bool IsEnabled(LogLevel level);
 
-    void DeleteLog(Log log);
+    void DeleteLog(Log log, CancellationToken cancellation = default);
 
-    void DeleteLogs(IReadOnlyCollection<Log> logs);
+    void DeleteLogs(IReadOnlyCollection<Log> logs, CancellationToken cancellation = default);
 
     void ClearLog();
 
@@ -18,15 +18,15 @@ public interface ILogger
         string message = "", LogLevel? logLevel = null,
         int pageIndex = 0, int pageSize = int.MaxValue);
 
-    Task<Log> GetLogByIdAsync(Guid logId);
+    Task<Log> GetLogByIdAsync(Guid logId, CancellationToken cancellation = default);
 
-    Task<IList<Log>> GetLogByIdsAsync(IReadOnlyList<Guid> logIds);
+    Task<IList<Log>> GetLogByIdsAsync(IReadOnlyList<Guid> logIds, CancellationToken cancellation = default);
 
-    Task<Log> InsertLogAsync(LogLevel logLevel, string shortMessage, string fullMessage = "", User User = null);
+    Task<Log> InsertLogAsync(LogLevel logLevel, string shortMessage, string fullMessage = "", User User = null, CancellationToken cancellation = default);
 
-    Task InformationAsync(string message, Exception exception = null, User user = null);
+    Task InformationAsync(string message, Exception exception = null, User user = null, CancellationToken cancellation = default);
 
-    Task WarningAsync(string message, Exception exception = null, User user = null);
+    Task WarningAsync(string message, Exception exception = null, User user = null, CancellationToken cancellation = default);
 
-    Task ErrorAsync(string message, Exception exception = null, User user = null);
+    Task ErrorAsync(string message, Exception exception = null, User user = null, CancellationToken cancellation = default);
 }

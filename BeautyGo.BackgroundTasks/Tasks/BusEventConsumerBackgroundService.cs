@@ -161,7 +161,7 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
         }
         catch (Exception ex)
         {
-            await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex);
+            await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex, cancellation: stoppingToken);
 
             await mediator.Publish(new BusEventConsumerFailedEvent(body, ex));
 
