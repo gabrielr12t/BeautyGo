@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeautyGo.Api.Controllers.Bases
 {
+    [HttpsRequirement]
     [Authorize]
     [ApiController]
     [SaveLastActivity]

@@ -118,7 +118,7 @@ public partial class PictureService : IPictureService
     {
         var pathBase = _httpContextAccessor.HttpContext.Request?.PathBase.Value ?? string.Empty;
         var imagesPathUrl = _mediaSettings.UseAbsoluteImagePath ? businessLocation : $"{pathBase}/";
-        imagesPathUrl = string.IsNullOrEmpty(imagesPathUrl) ? _webHelper.GetBusinessLocation() : imagesPathUrl;
+        imagesPathUrl = string.IsNullOrEmpty(imagesPathUrl) ? _webHelper.GetLocation() : imagesPathUrl;
         imagesPathUrl += "images/";
 
         return Task.FromResult(imagesPathUrl);

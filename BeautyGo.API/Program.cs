@@ -40,9 +40,7 @@ EngineContext.Current.ConfigureRequestPipeline(app);
 
 app.UseBeautyGoStaticFiles();
 
-app.UseSession();
-
-app.UseHttpsRedirection();
+app.UseSession(); 
 
 app.BeautyGoUseMiddleware();
 

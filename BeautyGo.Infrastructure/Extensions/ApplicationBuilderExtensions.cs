@@ -4,6 +4,7 @@ using BeautyGo.Infrastructure.Core;
 using BeautyGo.Infrastructure.Mvc.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 

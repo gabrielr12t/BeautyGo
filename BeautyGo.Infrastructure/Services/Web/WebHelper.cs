@@ -92,10 +92,10 @@ public class WebHelper : IWebHelper
             return string.Empty;
 
         //get store location
-        var businessLocation = GetBusinessLocation(useSsl ?? IsCurrentConnectionSecured());
+        var location = GetLocation(useSsl ?? IsCurrentConnectionSecured());
 
         //add local path to the URL
-        var pageUrl = $"{businessLocation.TrimEnd('/')}{_httpContextAccessor.HttpContext.Request.Path}";
+        var pageUrl = $"{location.TrimEnd('/')}{_httpContextAccessor.HttpContext.Request.Path}";
 
         //add query string to the URL
         if (includeQueryString)
@@ -116,7 +116,7 @@ public class WebHelper : IWebHelper
         return _httpContextAccessor.HttpContext.Request.IsHttps;
     }
 
-    public virtual string GetBusinessHost(bool useSsl)
+    public virtual string GetHost(bool useSsl)
     {
         if (!IsRequestAvailable())
             return string.Empty;
@@ -127,30 +127,30 @@ public class WebHelper : IWebHelper
             return string.Empty;
 
         //add scheme to the URL
-        var businessHost = $"{(useSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp)}{Uri.SchemeDelimiter}{hostHeader.FirstOrDefault()}";
+        var host = $"{(useSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp)}{Uri.SchemeDelimiter}{hostHeader.FirstOrDefault()}";
 
         //ensure that host is ended with slash
-        businessHost = $"{businessHost.TrimEnd('/')}/";
+        host = $"{host.TrimEnd('/')}/";
 
-        return businessHost;
+        return host;
     }
 
-    public virtual string GetBusinessLocation(bool? useSsl = null)
+    public virtual string GetLocation(bool? useSsl = null)
     {
-        var businessLocation = string.Empty;
+        var location = string.Empty;
 
         //get store host
-        var businessHost = GetBusinessHost(useSsl ?? IsCurrentConnectionSecured());
-        if (!string.IsNullOrEmpty(businessHost))
+        var host = GetHost(useSsl ?? IsCurrentConnectionSecured());
+        if (!string.IsNullOrEmpty(host))
         {
             //add application path base if exists
-            businessLocation = IsRequestAvailable() ? $"{businessHost.TrimEnd('/')}{_httpContextAccessor.HttpContext.Request.PathBase}" : businessHost;
+            location = IsRequestAvailable() ? $"{host.TrimEnd('/')}{_httpContextAccessor.HttpContext.Request.PathBase}" : host;
         }
 
         //ensure that URL is ended with slash
-        businessLocation = $"{businessLocation.TrimEnd('/')}/";
+        location = $"{location.TrimEnd('/')}/";
 
-        return businessLocation;
+        return location;
     }
 
     public virtual bool IsStaticResource()
