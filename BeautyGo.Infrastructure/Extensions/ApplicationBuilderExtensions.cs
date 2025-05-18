@@ -33,6 +33,7 @@ public static class ApplicationBuilderExtensions
     public static IApplicationBuilder BeautyGoUseMiddleware(this IApplicationBuilder app)
     {
         app.UseMiddleware<ExceptionHandlerMiddleware>();
+        app.UseMiddleware<BeautyGoValidationValidationTokenMiddleware>();
         app.UseMiddleware<TransactionMiddleware>();
         app.UseMiddleware<InstallationMiddleware>();
 

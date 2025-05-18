@@ -4,6 +4,7 @@ using BeautyGo.Domain.Core.Abstractions;
 using BeautyGo.Domain.Entities.Logging;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
+using BeautyGo.Domain.Repositories;
 using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Infrastructure.Services.Logging;
@@ -12,7 +13,7 @@ public class DefaultLogger : ILogger
 {
     #region Fields
 
-    private readonly IBaseRepository<Log> _repository;
+    private readonly ILogRepository _repository;
     private readonly IWebHelper _webHelper;
 
     #endregion
@@ -21,7 +22,7 @@ public class DefaultLogger : ILogger
 
     public DefaultLogger(
          IWebHelper webHelper,
-         IBaseRepository<Log> repository)
+         ILogRepository repository)
     {
         _webHelper = webHelper;
         _repository = repository;

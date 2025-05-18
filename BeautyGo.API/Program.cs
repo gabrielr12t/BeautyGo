@@ -4,8 +4,10 @@ using BeautyGo.Infrastructure.Core;
 using BeautyGo.Infrastructure.Extensions;
 using BeautyGo.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Newtonsoft.Json;
 using Serilog;
+using System.Net.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 

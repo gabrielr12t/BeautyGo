@@ -9,6 +9,8 @@ public interface IAuthService
 {
     Task<TokenModel> AuthenticateAsync(User user);
 
+    Task<bool> IsValidTokenAsync(string token, CancellationToken cancellationToken = default);
+
     Task<Result<RefreshTokenModel>> RefreshTokenAsync(Guid userId, string refreshToken);
 
     Task<User> GetCurrentUserAsync(CancellationToken cancellationToken = default);

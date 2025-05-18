@@ -34,9 +34,9 @@ public class AuthService : IAuthService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IBeautyGoFileProvider _BeautyGoFileProvider;
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly IWebHelper _webHelper;
-    private readonly IWebWorkContext _webWorkContext;
+    private readonly IWebHelper _webHelper; 
     private readonly IMediator _mediator;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AppSettings _appSettings;
     private User _cachedUser;
 
@@ -49,21 +49,21 @@ public class AuthService : IAuthService
         AppSettings appSettings,
         IBeautyGoFileProvider BeautyGoFileProvider,
         IHttpContextAccessor contextAccessor,
-        IWebHelper webHelper,
-        IWebWorkContext webWorkContext,
+        IWebHelper webHelper, 
         IMediator mediator,
         IEFBaseRepository<UserRoleMapping> userRoleRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userRepository = userRepository;
         _appSettings = appSettings;
         _BeautyGoFileProvider = BeautyGoFileProvider;
         _contextAccessor = contextAccessor;
-        _webHelper = webHelper;
-        _webWorkContext = webWorkContext;
+        _webHelper = webHelper; 
         _mediator = mediator;
         _userRoleRepository = userRoleRepository;
         _unitOfWork = unitOfWork;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     #endregion
@@ -76,6 +76,7 @@ public class AuthService : IAuthService
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, BeautyGoAuthenticationDefaults.ClaimsIssuer),
             new(ClaimTypes.Role, string.Join(",", user.UserRoles.Select(p => p.UserRole.Description))),
+            new("agent", _webHelper.GetUserAgent())
         };
 
         claims.AddRange(user.UserRoles.Select(role => new Claim(ClaimTypes.Role, role.UserRole.Description)));
@@ -147,13 +148,39 @@ public class AuthService : IAuthService
         return new TokenModel(token, refreshToken.Token);
     }
 
+    public async Task<bool> IsValidTokenAsync(string token, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var rsa = await GetRsaKeyAsync();
+
+            var handler = new JwtSecurityTokenHandler();
+            var parameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new RsaSecurityKey(rsa)
+            };
+
+            var principal = handler.ValidateToken(token, parameters, out _);
+            var tokenThumb = principal.FindFirst("agent")?.Value;
+
+            return tokenThumb == _webHelper.GetUserAgent();
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<Result<RefreshTokenModel>> RefreshTokenAsync(Guid userId, string refreshToken)
     {
         if (string.IsNullOrEmpty(refreshToken))
             return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
 
-        ///AJUSTAR
-        RefreshTokenModel businessRefreshToken = null; //await _staticCacheManager.GetAsync<RefreshTokenModel>(cacheKey);
+        RefreshTokenModel businessRefreshToken = null; 
         if (businessRefreshToken == null)
             return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
 
