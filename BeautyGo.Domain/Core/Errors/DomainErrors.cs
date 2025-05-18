@@ -131,6 +131,10 @@ public static class DomainErrors
         public static Error PhoneNumberAlreadyExists => new(
             "User.PhoneNumberAlreadyExists",
             "Telefone já cadastrado.");
+
+        public static Error MustChangePassword => new(
+            "User.MustChangePassword",
+            "Necessário alterar a senha antes de prosseguir.");
     }
 
     public static class Authentication

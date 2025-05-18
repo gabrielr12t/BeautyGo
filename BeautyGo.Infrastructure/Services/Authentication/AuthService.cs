@@ -4,6 +4,7 @@ using BeautyGo.Application.Core.Abstractions.Web;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Core.Errors;
+using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.DomainEvents.Users;
 using BeautyGo.Domain.Entities.Persons;
@@ -76,7 +77,7 @@ public class AuthService : IAuthService
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, BeautyGoAuthenticationDefaults.ClaimsIssuer),
             new(ClaimTypes.Role, string.Join(",", user.UserRoles.Select(p => p.UserRole.Description))),
-            new("agent", _webHelper.GetUserAgent())
+            new("ua", _webHelper.GetUserAgent())
         };
 
         claims.AddRange(user.UserRoles.Select(role => new Claim(ClaimTypes.Role, role.UserRole.Description)));
@@ -165,7 +166,7 @@ public class AuthService : IAuthService
             };
 
             var principal = handler.ValidateToken(token, parameters, out _);
-            var tokenThumb = principal.FindFirst("agent")?.Value;
+            var tokenThumb = principal.FindFirst("ua")?.Value;
 
             return tokenThumb == _webHelper.GetUserAgent();
         }
@@ -221,6 +222,12 @@ public class AuthService : IAuthService
 
         if (!_cachedUser.IsActive)
             throw new InvalidOperationException($"Usuário '{_cachedUser.Id}' não está ativo.");
+
+        if (_cachedUser.MustChangePassword)
+            throw new DomainException(DomainErrors.User.MustChangePassword);
+
+        if (!_cachedUser.EmailConfirmed)
+            throw new DomainException(DomainErrors.User.EmailNotConfirmed);
 
         return _cachedUser;
     }

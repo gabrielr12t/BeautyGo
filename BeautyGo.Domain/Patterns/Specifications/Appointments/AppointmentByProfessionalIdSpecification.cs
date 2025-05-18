@@ -3,11 +3,11 @@ using System.Linq.Expressions;
 
 namespace BeautyGo.Domain.Patterns.Specifications.Appointments;
 
-public class AppointmentByProfessionalId : Specification<Appointment>
+public class AppointmentByProfessionalIdSpecification : Specification<Appointment>
 {
     private readonly Guid _professionalId;
 
-    public AppointmentByProfessionalId(Guid professionalId)
+    public AppointmentByProfessionalIdSpecification(Guid professionalId)
     {
         _professionalId = professionalId;
     }

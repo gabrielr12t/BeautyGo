@@ -1,10 +1,7 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Web;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Hosting;
 
 namespace BeautyGo.Infrastructure.Mvc.Filter;
 
@@ -67,11 +64,7 @@ public class HttpsRequirementAttribute : TypeFilterAttribute
             var currentConnectionSecured = _webHelper.IsCurrentConnectionSecured();
 
             if (!currentConnectionSecured)
-            {
-                var result = new { success = false, error = "HTTPSRequired", message = "HTTPS is required" };
-
                 context.Result = new ForbidResult();
-            }
 
             return Task.CompletedTask;
         }

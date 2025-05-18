@@ -65,7 +65,7 @@ internal class AcceptProfessionalRequestCommandHandler : ICommandHandler<AcceptP
 
     private async Task<bool> HasConfirmedAppointmentsAsync(User professional, CancellationToken cancellationToken)
     {
-        var appointmentByProfessionalIdSpec = new AppointmentByProfessionalId(professional.Id);
+        var appointmentByProfessionalIdSpec = new AppointmentByProfessionalIdSpecification(professional.Id);
         var confirmedAppointmentSpec = new ConfirmedAppointmentSpecification();
 
         var appointmentSpecification = appointmentByProfessionalIdSpec.And(confirmedAppointmentSpec);
