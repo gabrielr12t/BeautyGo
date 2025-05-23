@@ -4,6 +4,7 @@ using BeautyGo.Application.Core.Abstractions.Media;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
+using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories.Bases;
@@ -78,7 +79,7 @@ internal class UpdateBeautyBusinessImageCommandHandler : ICommandHandler<UpdateB
         var currentUser = await _authService.GetCurrentUserAsync(cancellationToken);
 
         var business = await _businessRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<Domain.Entities.Businesses.Business>(request.StoreId),
+            new EntityByIdSpecification<Business>(request.StoreId),
             cancellationToken: cancellationToken);
 
         if (business == null || currentUser == null)

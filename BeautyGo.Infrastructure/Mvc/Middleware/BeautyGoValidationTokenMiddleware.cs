@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace BeautyGo.Infrastructure.Mvc.Middleware;
 
-public class BeautyGoValidationValidationTokenMiddleware
+public class BeautyGoValidationTokenMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public BeautyGoValidationValidationTokenMiddleware(RequestDelegate next)
+    public BeautyGoValidationTokenMiddleware(RequestDelegate next)
     {
         _next = next;
     }

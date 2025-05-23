@@ -30,7 +30,7 @@ public class NotifySupportOnBackgroundServiceFailedEventHandler :
 
         var subject = $"Erro em BusEventConsumer";
 
-        await _notificationPublisher.PublishAsync(new SupportBackgroundFailedEmail(subject, body));
+        await _notificationPublisher.PublishAsync(new SupportBackgroundFailedEmail(subject, body), cancellationToken);
     }
 
     public async Task Handle(EmailNotificationFailedEvent notification, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public class NotifySupportOnBackgroundServiceFailedEventHandler :
 
         var subject = $"Erro em EmailNotification";
 
-        await _notificationPublisher.PublishAsync(new SupportBackgroundFailedEmail(subject, body));
+        await _notificationPublisher.PublishAsync(new SupportBackgroundFailedEmail(subject, body), cancellationToken);
     }
 
     public async Task Handle(EventProcessorFailedEvent notification, CancellationToken cancellationToken)
@@ -60,7 +60,7 @@ public class NotifySupportOnBackgroundServiceFailedEventHandler :
 
         var subject = $"Erro em EventProcessor";
 
-        await _notificationPublisher.PublishAsync(new SupportBackgroundFailedEmail(subject, body));
+        await _notificationPublisher.PublishAsync(new SupportBackgroundFailedEmail(subject, body), cancellationToken);
     }
 
     public async Task Handle(ProcessOuboxMessageFailedEvent notification, CancellationToken cancellationToken)
@@ -75,6 +75,6 @@ public class NotifySupportOnBackgroundServiceFailedEventHandler :
 
         var subject = $"Erro em ProcessOuboxMessage";
 
-        await _notificationPublisher.PublishAsync(new SupportBackgroundFailedEmail(subject, body));
+        await _notificationPublisher.PublishAsync(new SupportBackgroundFailedEmail(subject, body), cancellationToken);
     }
 }

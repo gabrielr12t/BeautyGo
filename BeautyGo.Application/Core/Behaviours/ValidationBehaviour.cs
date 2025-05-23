@@ -1,5 +1,4 @@
-﻿
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
 using MediatR;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Exceptions;

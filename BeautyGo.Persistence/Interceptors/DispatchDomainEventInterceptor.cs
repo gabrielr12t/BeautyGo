@@ -28,7 +28,7 @@ public class DispatchDomainEventInterceptor(IMediator _mediator)
         return savedChanges;
     }
 
-    private async Task DispatchDomainEventsAsync(DbContext context)
+    private async Task DispatchDomainEventsAsync(DbContext context, CancellationToken cancellationToken = default)
     {
         var entities = context.ChangeTracker
             .Entries<BaseEntity>()
@@ -42,7 +42,7 @@ public class DispatchDomainEventInterceptor(IMediator _mediator)
         entities.ToList().ForEach(p => p.ClearDomainEvents());
 
         foreach (var domainEvent in domainEvents)
-            await _mediator.Publish(domainEvent);
+            await _mediator.Publish(domainEvent, cancellationToken);
     }
 }
 

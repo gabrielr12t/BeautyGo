@@ -28,7 +28,7 @@ internal class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, Res
 
         currentUser.ChangeName(request.FirstName, request.LastName);
 
-        _userRepository.UpdateAsync(currentUser);
+        await _userRepository.UpdateAsync(currentUser);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

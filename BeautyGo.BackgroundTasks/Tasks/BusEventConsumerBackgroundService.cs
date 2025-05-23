@@ -149,21 +149,21 @@ internal sealed class BusEventConsumerBackgroundService : BackgroundService, IDi
             if (@event == null)
                 throw new Exception("Mensagem inválida ou não reconhecida.");
 
-            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Received - {@event}");
+            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Received - {@event}", cancellation: stoppingToken);
 
             await retryPolicy.ExecuteAsync(() => eventConsumer.ConsumeAsync(@event, stoppingToken));
 
-            await unitOfWork.SaveChangesAsync();
+            await unitOfWork.SaveChangesAsync(stoppingToken);
 
             _channel.BasicAck(eventArgs.DeliveryTag, false);
 
-            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Processed - {@event}");
+            await logger.InformationAsync($"MESSAGE: {@event.GetType()} - Processed - {@event}", cancellation: stoppingToken);
         }
         catch (Exception ex)
         {
             await logger.ErrorAsync($"MESSAGE: {@event?.GetType()} - Error - {ex.Message} -{@event}", ex, cancellation: stoppingToken);
 
-            await mediator.Publish(new BusEventConsumerFailedEvent(body, ex));
+            await mediator.Publish(new BusEventConsumerFailedEvent(body, ex), stoppingToken);
 
             await HandleFailedMessageAsync(eventArgs);
         }

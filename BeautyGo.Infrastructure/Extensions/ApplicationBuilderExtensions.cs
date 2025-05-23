@@ -4,7 +4,6 @@ using BeautyGo.Infrastructure.Core;
 using BeautyGo.Infrastructure.Mvc.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 
@@ -34,7 +33,7 @@ public static class ApplicationBuilderExtensions
     public static IApplicationBuilder BeautyGoUseMiddleware(this IApplicationBuilder app)
     {
         app.UseMiddleware<ExceptionHandlerMiddleware>();
-        app.UseMiddleware<BeautyGoValidationValidationTokenMiddleware>();
+        app.UseMiddleware<BeautyGoValidationTokenMiddleware>();
         app.UseMiddleware<TransactionMiddleware>();
         app.UseMiddleware<InstallationMiddleware>();
 

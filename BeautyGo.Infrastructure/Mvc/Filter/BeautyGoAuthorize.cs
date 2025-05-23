@@ -55,11 +55,10 @@ public sealed class BeautyGoAuthorize : TypeFilterAttribute
             {
                 foreach (var permissionRole in _permissions)
                 {
-                    if (!await _userService.AuthorizeAsync(permissionRole, context.HttpContext.RequestAborted))
-                    {
-                        context.Result = new ChallengeResult();
+                    if (await _userService.AuthorizeAsync(permissionRole, context.HttpContext.RequestAborted))
                         return;
-                    }
+
+                    context.Result = new ChallengeResult();
                 }
             }
         }

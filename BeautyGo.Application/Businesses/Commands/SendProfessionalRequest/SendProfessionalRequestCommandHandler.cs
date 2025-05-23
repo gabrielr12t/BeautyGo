@@ -79,7 +79,7 @@ public class SendProfessionalRequestCommandHandler : ICommandHandler<SendProfess
         var professionalRequestByBusinessIdSpec = new ProfessionalRequestByBusinessIdSpecification(request.BusinessId);
 
         var existingProfessionalRequest = await _professionalRequestRepository.GetFirstOrDefaultAsync(
-                professionalRequestByUserIdSpec.And(professionalRequestByBusinessIdSpec));
+                professionalRequestByUserIdSpec.And(professionalRequestByBusinessIdSpec), cancellationToken: cancellationToken);
 
         var alreadyExistProfessionalRequest = existingProfessionalRequest != null;
 

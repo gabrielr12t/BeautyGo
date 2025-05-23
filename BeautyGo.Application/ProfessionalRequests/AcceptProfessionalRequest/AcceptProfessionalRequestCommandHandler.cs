@@ -70,7 +70,7 @@ internal class AcceptProfessionalRequestCommandHandler : ICommandHandler<AcceptP
 
         var appointmentSpecification = appointmentByProfessionalIdSpec.And(confirmedAppointmentSpec);
 
-        return await _appointmentRepository.ExistAsync(appointmentSpecification, cancellationToken: cancellationToken);
+        return await _appointmentRepository.ExistAsync(appointmentSpecification, cancellationToken);
     }
 
     #endregion

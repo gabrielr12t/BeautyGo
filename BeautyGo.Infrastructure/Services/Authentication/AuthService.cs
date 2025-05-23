@@ -234,7 +234,7 @@ public class AuthService : IAuthService
 
     public async Task<bool> AuthorizeAsync(string role, CancellationToken cancellationToken = default)
     {
-        return await AuthorizeAsync(role, await GetCurrentUserAsync(cancellationToken));
+        return await AuthorizeAsync(role, await GetCurrentUserAsync(cancellationToken), cancellationToken);
     }
 
     public async Task<bool> AuthorizeAsync(string role, User user, CancellationToken cancellationToken = default)

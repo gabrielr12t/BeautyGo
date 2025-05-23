@@ -9,6 +9,7 @@ using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Patterns.Specifications.UserEmailValidationTokens;
 using BeautyGo.Domain.Patterns.Specifications.Users;
 using BeautyGo.Domain.Repositories.Bases;
+using System.Reflection.Metadata.Ecma335;
 
 namespace BeautyGo.Application.Authentication.Commands.Login;
 
@@ -88,7 +89,8 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
         if (!user.EmailConfirmed)
             return Result.Failure<TokenModel>(DomainErrors.UserEmailValidationToken.RequiredValidToken);
 
-        //Adicionar condition para MustChangePassword
+        if (user.MustChangePassword)
+            return Result.Failure<TokenModel>(DomainErrors.User.MustChangePassword);
 
         user.LastLoginDate = DateTime.Now;
         user.LastActivityDate = DateTime.Now;
