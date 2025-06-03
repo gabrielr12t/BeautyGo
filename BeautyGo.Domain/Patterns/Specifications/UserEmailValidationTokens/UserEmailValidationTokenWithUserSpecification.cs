@@ -3,13 +3,13 @@ using System.Linq.Expressions;
 
 namespace BeautyGo.Domain.Patterns.Specifications.UserEmailValidationTokens;
 
-public class UserEmailValidationTokenWithUserSpecification : Specification<UserEmailTokenValidation>
+public class UserEmailValidationTokenWithUserSpecification : Specification<UserEmailConfirmation>
 {
     public UserEmailValidationTokenWithUserSpecification()
     {
         AddInclude(p => p.User);
     }
 
-    public override Expression<Func<UserEmailTokenValidation, bool>> ToExpression() =>
+    public override Expression<Func<UserEmailConfirmation, bool>> ToExpression() =>
         p => true;
 }

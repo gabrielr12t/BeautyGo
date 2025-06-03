@@ -4,13 +4,13 @@ using Newtonsoft.Json;
 
 namespace BeautyGo.Application.EmailValidationToken.EntityEmailValidationTokenCreated;
 
-public class EmailValidationTokenCreatedIntegrationEvent : IIntegrationEvent
+public class EmailConfirmationCreatedIntegrationEvent : IIntegrationEvent
 {
-    internal EmailValidationTokenCreatedIntegrationEvent(EmailTokenValidation BeautyGoEmailToken) =>
+    internal EmailConfirmationCreatedIntegrationEvent(EmailConfirmation BeautyGoEmailToken) =>
         BeautyGoEmailTokenId = BeautyGoEmailToken.Id;
 
     [JsonConstructor]
-    private EmailValidationTokenCreatedIntegrationEvent(Guid beautyGoEmailTokenId) => BeautyGoEmailTokenId = beautyGoEmailTokenId;
+    private EmailConfirmationCreatedIntegrationEvent(Guid beautyGoEmailTokenId) => BeautyGoEmailTokenId = beautyGoEmailTokenId;
 
     public Guid BeautyGoEmailTokenId { get; }
 }

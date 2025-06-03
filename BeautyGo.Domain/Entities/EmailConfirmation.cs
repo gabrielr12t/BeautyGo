@@ -2,7 +2,7 @@
 
 namespace BeautyGo.Domain.Entities;
 
-public abstract class EmailTokenValidation : BaseEntity
+public abstract class EmailConfirmation : BaseEntity
 {
     public string Token { get; set; }
 
@@ -20,7 +20,7 @@ public abstract class EmailTokenValidation : BaseEntity
 
     public abstract void Validate();
 
-    public abstract Task Handle(IEntityValidationTokenHandle visitor);
+    public abstract Task Handle(IEntityConfirmationHandle visitor);
 
     public void GenerateNewToken() =>
         string.Concat(Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"));

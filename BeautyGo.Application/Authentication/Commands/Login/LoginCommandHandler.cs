@@ -18,7 +18,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
     #region Fields
 
     private readonly IEFBaseRepository<User> _userRepository;
-    private readonly IEFBaseRepository<UserEmailTokenValidation> _userEmailValidationTokenRepository;
+    private readonly IEFBaseRepository<UserEmailConfirmation> _userEmailValidationTokenRepository;
     private readonly IAuthService _authService;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -28,7 +28,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 
     public LoginCommandHandler(
         IEFBaseRepository<User> userRepository,
-        IEFBaseRepository<UserEmailTokenValidation> userEmailValidationTokenRepository,
+        IEFBaseRepository<UserEmailConfirmation> userEmailValidationTokenRepository,
         IAuthService authService,
         IUnitOfWork unitOfWork)
     {
@@ -52,7 +52,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 
     private async Task CreateNewUserEmailValidationTokenAsync(User user, CancellationToken cancellationToken)
     {
-        var userEmailToken = UserEmailTokenValidation.Create(user.Id);
+        var userEmailToken = UserEmailConfirmation.Create(user.Id);
         await _userEmailValidationTokenRepository.InsertAsync(userEmailToken, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

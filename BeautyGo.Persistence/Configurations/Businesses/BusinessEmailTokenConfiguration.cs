@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BeautyGo.Persistence.Configurations.Businesses;
 
-internal class BusinessEmailTokenConfiguration : BaseEntityConfiguration<BusinessEmailTokenValidation>
+internal class BusinessEmailTokenConfiguration : BaseEntityConfiguration<BusinessEmailConfirmation>
 {
-    public override void Configure(EntityTypeBuilder<BusinessEmailTokenValidation> builder)
+    public override void Configure(EntityTypeBuilder<BusinessEmailConfirmation> builder)
     {
         builder.ToTable("EmailTokens", "Businesses");
 

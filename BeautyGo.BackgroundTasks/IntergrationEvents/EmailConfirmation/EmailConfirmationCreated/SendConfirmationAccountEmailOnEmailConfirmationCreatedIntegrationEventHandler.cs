@@ -18,15 +18,15 @@ using BeautyGo.Domain.Settings;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.EntityEmailTokenValidations.EntityEmailTokenValidationCreated;
 
-public class SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler :
-    IIntegrationEventHandler<EmailValidationTokenCreatedIntegrationEvent>,
-    IEntityValidationTokenHandle
+public class SendConfirmationAccountEmailOnEmailConfirmationCreatedIntegrationEventHandler :
+    IIntegrationEventHandler<EmailConfirmationCreatedIntegrationEvent>,
+    IEntityConfirmationHandle
 {
     #region Fields
 
-    private readonly IEFBaseRepository<UserEmailTokenValidation> _userEmailTokenValidationRepository;
-    private readonly IEFBaseRepository<BusinessEmailTokenValidation> _businessEmailTokenValidationRepository;
-    private readonly IEFBaseRepository<EmailTokenValidation> _emailValidationTokenRepository;
+    private readonly IEFBaseRepository<UserEmailConfirmation> _userEmailTokenValidationRepository;
+    private readonly IEFBaseRepository<BusinessEmailConfirmation> _businessEmailTokenValidationRepository;
+    private readonly IEFBaseRepository<EmailConfirmation> _emailValidationTokenRepository;
     private readonly IEFBaseRepository<EmailNotification> _emailRespotory;
 
     private readonly IReceitaFederalIntegrationService _receitaFederalIntegration;
@@ -39,10 +39,10 @@ public class SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedInte
 
     #region Ctor
 
-    public SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedIntegrationEventHandler(
-        IEFBaseRepository<UserEmailTokenValidation> userEmailTokenValidationRepository,
-        IEFBaseRepository<BusinessEmailTokenValidation> businessEmailTokenValidationRepository,
-        IEFBaseRepository<EmailTokenValidation> emailValidationTokenRepository,
+    public SendConfirmationAccountEmailOnEmailConfirmationCreatedIntegrationEventHandler(
+        IEFBaseRepository<UserEmailConfirmation> userEmailTokenValidationRepository,
+        IEFBaseRepository<BusinessEmailConfirmation> businessEmailTokenValidationRepository,
+        IEFBaseRepository<EmailConfirmation> emailValidationTokenRepository,
         IReceitaFederalIntegrationService receitaFederalIntegration,
         IUnitOfWork unitOfWork,
         AppSettings appSettings,
@@ -63,9 +63,9 @@ public class SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedInte
 
     #endregion
 
-    public async Task Handle(EmailValidationTokenCreatedIntegrationEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(EmailConfirmationCreatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        var spec = new EntityByIdSpecification<EmailTokenValidation>(
+        var spec = new EntityByIdSpecification<EmailConfirmation>(
             notification.BeautyGoEmailTokenId);
 
         var emailTokenValidation = await _emailValidationTokenRepository.GetFirstOrDefaultAsync(
@@ -79,9 +79,9 @@ public class SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedInte
 
     #region Token validation implementations
 
-    public async Task Handle(BusinessEmailTokenValidation element)
+    public async Task Handle(BusinessEmailConfirmation element)
     {
-        var spec = new EntityByIdSpecification<BusinessEmailTokenValidation>(element.Id)
+        var spec = new EntityByIdSpecification<BusinessEmailConfirmation>(element.Id)
             .AddInclude(p => p.Business);
 
         var businessEmailToken = await _businessEmailTokenValidationRepository.GetFirstOrDefaultAsync(spec);
@@ -97,9 +97,9 @@ public class SendConfirmationAccountEmailOnEntityEmailTokenValidationCreatedInte
         await _businessEmailNotificationPublisher.PublishAsync(message);
     }
 
-    public async Task Handle(UserEmailTokenValidation element)
+    public async Task Handle(UserEmailConfirmation element)
     {
-        var spec = new EntityByIdSpecification<UserEmailTokenValidation>(element.Id)
+        var spec = new EntityByIdSpecification<UserEmailConfirmation>(element.Id)
             .AddInclude(p => p.User);
 
         var userEmailToken = await _userEmailTokenValidationRepository.GetFirstOrDefaultAsync(spec);

@@ -10,11 +10,11 @@ namespace BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate
 
 internal class ConfirmAccountCommandHandler : ICommandHandler<ConfirmAccountCommand, Result>
 {
-    private readonly IEFBaseRepository<EmailTokenValidation> _businessEmailTokenValidationRepository;
+    private readonly IEFBaseRepository<EmailConfirmation> _businessEmailTokenValidationRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public ConfirmAccountCommandHandler(
-        IEFBaseRepository<EmailTokenValidation> businessEmailTokenValidationRepository,
+        IEFBaseRepository<EmailConfirmation> businessEmailTokenValidationRepository,
         IUnitOfWork unitOfWork)
     {
         _businessEmailTokenValidationRepository = businessEmailTokenValidationRepository;

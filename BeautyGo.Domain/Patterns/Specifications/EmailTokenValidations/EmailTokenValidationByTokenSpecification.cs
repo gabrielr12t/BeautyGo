@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace BeautyGo.Domain.Patterns.Specifications.EmailTokenValidations;
 
-public class EmailTokenValidationByTokenSpecification : Specification<EmailTokenValidation>
+public class EmailTokenValidationByTokenSpecification : Specification<EmailConfirmation>
 {
     private readonly string _token;
 
@@ -12,6 +12,6 @@ public class EmailTokenValidationByTokenSpecification : Specification<EmailToken
         _token = token;
     }
 
-    public override Expression<Func<EmailTokenValidation, bool>> ToExpression() =>
+    public override Expression<Func<EmailConfirmation, bool>> ToExpression() =>
         p => string.Equals(p.Token, _token);
 }

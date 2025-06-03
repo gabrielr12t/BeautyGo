@@ -15,7 +15,7 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         UserRoles = new HashSet<UserRoleMapping>();
         Passwords = new List<UserPassword>();
         Addresses = new List<UserAddressMapping>();
-        ValidationTokens = new List<UserEmailTokenValidation>();
+        ValidationTokens = new List<UserEmailConfirmation>();
         ProfessionalInvitations = new List<ProfessionalRequest>();
     }
 
@@ -63,7 +63,7 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     public ICollection<UserRoleMapping> UserRoles { get; set; }
     public ICollection<UserAddressMapping> Addresses { get; set; }
     public ICollection<UserPassword> Passwords { get; set; }
-    public ICollection<UserEmailTokenValidation> ValidationTokens { get; set; }
+    public ICollection<UserEmailConfirmation> ValidationTokens { get; set; }
     public ICollection<ProfessionalRequest> ProfessionalInvitations { get; set; }
 
     #endregion
@@ -157,13 +157,13 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
         Passwords.Add(UserPassword.Create(password, salt));
 
     public void AddValidationToken() =>
-        ValidationTokens.Add(UserEmailTokenValidation.Create(Id));
+        ValidationTokens.Add(UserEmailConfirmation.Create(Id));
 
-    public EmailTokenValidation CreateEmailValidationToken()
+    public EmailConfirmation CreateEmailValidationToken()
     {
         var token = string.Concat(Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"));
 
-        return new UserEmailTokenValidation
+        return new UserEmailConfirmation
         {
             Token = token,
             CreatedAt = DateTime.Now,

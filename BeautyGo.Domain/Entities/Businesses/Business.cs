@@ -20,7 +20,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
         Professionals = new List<Professional>();
         WorkingHours = new List<BusinessWorkingHours>(7);
         ClosedDays = new List<BusinessClosedDay>();
-        ValidationTokens = new List<BusinessEmailTokenValidation>();
+        ValidationTokens = new List<BusinessEmailConfirmation>();
         ProfessionalRequests = new List<ProfessionalRequest>();
     }
 
@@ -67,7 +67,7 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
     public ICollection<Service> Services { get; set; }
     public ICollection<BusinessWorkingHours> WorkingHours { get; set; }
     public ICollection<BusinessClosedDay> ClosedDays { get; set; }
-    public ICollection<BusinessEmailTokenValidation> ValidationTokens { get; set; }
+    public ICollection<BusinessEmailConfirmation> ValidationTokens { get; set; }
     public ICollection<ProfessionalRequest> ProfessionalRequests { get; set; }
 
     #endregion
@@ -145,18 +145,18 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
         Pictures.Add(new BusinessPicture { BeautyBusinessId = Id, PictureId = Id });
 
     public void AddValidationToken() =>
-        ValidationTokens.Add(BusinessEmailTokenValidation.Create(Id));
+        ValidationTokens.Add(BusinessEmailConfirmation.Create(Id));
 
     public bool IsOwner(User user) =>
         user != null &&
         user is BusinessOwner &&
         OwnerId == user.Id;
 
-    public EmailTokenValidation CreateEmailValidationToken()
+    public EmailConfirmation CreateEmailValidationToken()
     {
         var token = string.Concat(Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"));
 
-        return new BusinessEmailTokenValidation
+        return new BusinessEmailConfirmation
         {
             Token = token,
             CreatedAt = DateTime.Now,

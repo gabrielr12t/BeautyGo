@@ -4,17 +4,17 @@ using BeautyGo.Domain.DomainEvents.EmailValidationToken;
 
 namespace BeautyGo.Application.EmailValidationToken.EntityEmailValidationTokenCreated;
 
-internal class EnqueueIntegrationEventOnEntityEmailValidationTokenCreatedEventHandler : IDomainEventHandler<EmailValidationTokenCreatedEvent>
+internal class EnqueueIntegrationEventOnEmailConfirmationCreatedEventHandler : IDomainEventHandler<EmailValidationTokenCreatedEvent>
 {
     private readonly IOutboxMessageService _outboxMessageService;
 
-    public EnqueueIntegrationEventOnEntityEmailValidationTokenCreatedEventHandler(IOutboxMessageService outboxMessageService)
+    public EnqueueIntegrationEventOnEmailConfirmationCreatedEventHandler(IOutboxMessageService outboxMessageService)
     {
         _outboxMessageService = outboxMessageService;
     }
 
     public async Task Handle(EmailValidationTokenCreatedEvent notification, CancellationToken cancellationToken)
     {
-        await _outboxMessageService.PublishAsync(new EmailValidationTokenCreatedIntegrationEvent(notification.Entity), cancellationToken);
+        await _outboxMessageService.PublishAsync(new EmailConfirmationCreatedIntegrationEvent(notification.Entity), cancellationToken);
     }
 }

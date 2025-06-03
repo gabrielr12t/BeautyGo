@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BeautyGo.Persistence.Configurations.Users;
 
-internal class UserEmailTokenConfiguration : BaseEntityConfiguration<UserEmailTokenValidation>
+internal class UserEmailTokenConfiguration : BaseEntityConfiguration<UserEmailConfirmation>
 {
-    public override void Configure(EntityTypeBuilder<UserEmailTokenValidation> builder)
+    public override void Configure(EntityTypeBuilder<UserEmailConfirmation> builder)
     {
         builder.ToTable("EmailTokens", "Users");
 
