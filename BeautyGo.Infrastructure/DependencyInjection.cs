@@ -1,4 +1,6 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Authentication;
+using BeautyGo.Application.Core.Abstractions.Business;
+using BeautyGo.Application.Core.Abstractions.Caching;
 using BeautyGo.Application.Core.Abstractions.Cryptography;
 using BeautyGo.Application.Core.Abstractions.Emails;
 using BeautyGo.Application.Core.Abstractions.FakeData;
@@ -7,8 +9,8 @@ using BeautyGo.Application.Core.Abstractions.Logging;
 using BeautyGo.Application.Core.Abstractions.Media;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Application.Core.Abstractions.Notifications;
+using BeautyGo.Application.Core.Abstractions.OutboxMessages;
 using BeautyGo.Application.Core.Abstractions.Security;
-using BeautyGo.Application.Core.Abstractions.Business;
 using BeautyGo.Application.Core.Abstractions.Users;
 using BeautyGo.Application.Core.Abstractions.Web;
 using BeautyGo.Domain.Core.Configurations;
@@ -22,30 +24,29 @@ using BeautyGo.Infrastructure.Messaging;
 using BeautyGo.Infrastructure.Mvc.HttpServices.DelegatingHandlers;
 using BeautyGo.Infrastructure.Notifications;
 using BeautyGo.Infrastructure.Services.Authentication;
+using BeautyGo.Infrastructure.Services.Authentication.Events;
+using BeautyGo.Infrastructure.Services.Business;
+using BeautyGo.Infrastructure.Services.Caching;
+using BeautyGo.Infrastructure.Services.Caching.DistributedCache;
+using BeautyGo.Infrastructure.Services.Cryptography;
+using BeautyGo.Infrastructure.Services.Installation;
 using BeautyGo.Infrastructure.Services.Integrations;
+using BeautyGo.Infrastructure.Services.Logging;
 using BeautyGo.Infrastructure.Services.Media;
+using BeautyGo.Infrastructure.Services.OutboxMessages;
+using BeautyGo.Infrastructure.Services.Security;
+using BeautyGo.Infrastructure.Services.Users;
+using BeautyGo.Infrastructure.Services.Web;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection; 
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Cryptography;
-using BeautyGo.Infrastructure.Services.Users;
-using BeautyGo.Infrastructure.Services.Installation;
-using BeautyGo.Infrastructure.Services.Security;
-using BeautyGo.Infrastructure.Services.Web;
-using BeautyGo.Infrastructure.Services.Logging;
-using BeautyGo.Infrastructure.Services.Cryptography;
-using BeautyGo.Infrastructure.Services.Business;
-using BeautyGo.Infrastructure.Services.Authentication.Events;
-using BeautyGo.Application.Core.Abstractions.OutboxMessages;
-using BeautyGo.Infrastructure.Services.OutboxMessages;
-using System.Buffers.Text;
-using System.Web;
 
 namespace BeautyGo.Infrastructure;
 
@@ -107,6 +108,42 @@ public static class DependencyInjection
         });
 
         services.RegisterIntegrations();
+        services.AddBeautyGoMemoryCache();
+
+        return services;
+    }
+
+    internal static IServiceCollection AddBeautyGoMemoryCache(this IServiceCollection services)
+    {
+        var appSettings = Singleton<AppSettings>.Instance;
+        var distributedCacheConfig = appSettings.Get<DistributedCacheSettings>();
+
+        services.AddTransient(typeof(IConcurrentCollection<>), typeof(ConcurrentTrie<>));
+        services.AddSingleton<ICacheKeyManager, CacheKeyManager>();
+        services.AddScoped<IShortTermCacheManager, PerRequestCacheManager>();
+
+        if (distributedCacheConfig.Enabled)
+        {
+            switch (distributedCacheConfig.DistributedCacheType)
+            {
+                case DistributedCacheType.Memory:
+                    services.AddScoped<IStaticCacheManager, MemoryDistributedCacheManager>();
+                    services.AddScoped<ICacheKeyService, MemoryDistributedCacheManager>();
+                    break;
+                case DistributedCacheType.SqlServer:
+                    services.AddScoped<IStaticCacheManager, MsSqlServerCacheManager>();
+                    services.AddScoped<ICacheKeyService, MsSqlServerCacheManager>();
+                    break;
+            }
+
+            services.AddSingleton<ILocker, DistributedCacheLocker>();
+        }
+        else
+        {
+            services.AddSingleton<ILocker, MemoryCacheLocker>();
+            services.AddSingleton<IStaticCacheManager, MemoryCacheManager>();
+            services.AddScoped<ICacheKeyService, MemoryCacheManager>();
+        }
 
         return services;
     }
