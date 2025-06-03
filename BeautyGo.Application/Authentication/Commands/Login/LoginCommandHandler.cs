@@ -6,7 +6,7 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Helpers;
-using BeautyGo.Domain.Patterns.Specifications.UserEmailValidationTokens;
+using BeautyGo.Domain.Patterns.Specifications.UserEmailConfirmations;
 using BeautyGo.Domain.Patterns.Specifications.Users;
 using BeautyGo.Domain.Repositories.Bases;
 using System.Reflection.Metadata.Ecma335;
@@ -18,7 +18,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
     #region Fields
 
     private readonly IEFBaseRepository<User> _userRepository;
-    private readonly IEFBaseRepository<UserEmailConfirmation> _userEmailValidationTokenRepository;
+    private readonly IEFBaseRepository<UserEmailConfirmation> _userEmailConfirmationRepository;
     private readonly IAuthService _authService;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -33,7 +33,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
         IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
-        _userEmailValidationTokenRepository = userEmailValidationTokenRepository;
+        _userEmailConfirmationRepository = userEmailValidationTokenRepository;
         _authService = authService;
         _unitOfWork = unitOfWork;
     }
@@ -44,16 +44,16 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<TokenM
 
     private async Task<bool> HasEmailTokenPendingValidationAsync(User user, CancellationToken cancellationToken)
     {
-        var userEmailValidationTokenValid = new UserEmailValidationTokenByUserIdSpecification(user.Id)
-            .And(new ValidUserEmailValidationTokenSpecification(DateTime.Now));
+        var userEmailValidationTokenValid = new UserEmailConfirmationByUserIdSpecification(user.Id)
+            .And(new ValidUserEmailConfirmationSpecification(DateTime.Now));
 
-        return await _userEmailValidationTokenRepository.ExistAsync(userEmailValidationTokenValid);
+        return await _userEmailConfirmationRepository.ExistAsync(userEmailValidationTokenValid);
     }
 
     private async Task CreateNewUserEmailValidationTokenAsync(User user, CancellationToken cancellationToken)
     {
         var userEmailToken = UserEmailConfirmation.Create(user.Id);
-        await _userEmailValidationTokenRepository.InsertAsync(userEmailToken, cancellationToken);
+        await _userEmailConfirmationRepository.InsertAsync(userEmailToken, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

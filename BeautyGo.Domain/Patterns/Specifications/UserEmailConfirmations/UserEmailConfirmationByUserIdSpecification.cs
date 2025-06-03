@@ -1,13 +1,13 @@
 ﻿using BeautyGo.Domain.Entities.Users;
 using System.Linq.Expressions;
 
-namespace BeautyGo.Domain.Patterns.Specifications.UserEmailValidationTokens;
+namespace BeautyGo.Domain.Patterns.Specifications.UserEmailConfirmations;
 
-public class UserEmailValidationTokenByUserIdSpecification : Specification<UserEmailConfirmation>
+public class UserEmailConfirmationByUserIdSpecification : Specification<UserEmailConfirmation>
 {
     private readonly Guid _userId;
 
-    public UserEmailValidationTokenByUserIdSpecification(Guid userId) => 
+    public UserEmailConfirmationByUserIdSpecification(Guid userId) => 
         _userId = userId;
 
     public override Expression<Func<UserEmailConfirmation, bool>> ToExpression() =>
