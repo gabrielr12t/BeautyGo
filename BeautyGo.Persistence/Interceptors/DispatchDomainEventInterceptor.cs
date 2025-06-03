@@ -9,16 +9,6 @@ namespace BeautyGo.Persistence.Interceptors;
 public class DispatchDomainEventInterceptor(IMediator _mediator)
     : SaveChangesInterceptor
 {
-    public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
-    {
-        var savedChanges = base.SavedChanges(eventData, result);
-
-        if (savedChanges > 0)
-            DispatchDomainEventsAsync(eventData.Context).GetAwaiter().GetResult();
-
-        return savedChanges;
-    }
-
     public override async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result, CancellationToken cancellationToken = default)
     {
         var savedChanges = await base.SavedChangesAsync(eventData, result, cancellationToken);
