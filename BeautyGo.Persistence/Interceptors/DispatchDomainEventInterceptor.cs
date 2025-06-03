@@ -1,7 +1,9 @@
-﻿using BeautyGo.Domain.Entities;
+﻿using BeautyGo.Domain.Core.Events;
+using BeautyGo.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using SharpCompress.Common;
 
 namespace BeautyGo.Persistence.Interceptors;
 
@@ -23,7 +25,10 @@ public class DispatchDomainEventInterceptor(IMediator _mediator)
         var savedChanges = await base.SavedChangesAsync(eventData, result, cancellationToken);
 
         if (savedChanges > 0)
-            await DispatchDomainEventsAsync(eventData.Context);
+        {
+            await DispatchDomainEventsAsync(eventData.Context, cancellationToken);
+            await DispatchEntityChangeEventsAsync(eventData.Context, cancellationToken);
+        }
 
         return savedChanges;
     }
@@ -43,6 +48,28 @@ public class DispatchDomainEventInterceptor(IMediator _mediator)
 
         foreach (var domainEvent in domainEvents)
             await _mediator.Publish(domainEvent, cancellationToken);
+    }
+
+    private async Task DispatchEntityChangeEventsAsync(DbContext context, CancellationToken cancellationToken = default)
+    {
+        var entries = context.ChangeTracker
+            .Entries<BaseEntity>();
+
+        foreach (var entry in entries)
+        {
+            if (entry.State == EntityState.Added)
+            {
+                await _mediator.Publish(new EntityInsertedEvent<BaseEntity>(entry.Entity), cancellationToken);
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                await _mediator.Publish(new EntityUpdatedEvent<BaseEntity>(entry.Entity), cancellationToken);
+            }
+            else if (entry.State == EntityState.Deleted)
+            {
+                await _mediator.Publish(new EntityDeletedEvent<BaseEntity>(entry.Entity), cancellationToken);
+            }
+        }
     }
 }
 

@@ -1,5 +1,4 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
-using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Extensions;
 using BeautyGo.Domain.Patterns.Specifications;
@@ -37,15 +36,15 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
     {
         await _dbSet.AddAsync(entity, cancellationToken);
 
-        entity.AddDomainEvent(new EntityInsertedEvent<TEntity>(entity));
+        //entity.AddDomainEvent(new EntityInsertedEvent<TEntity>(entity));
     }
 
     public virtual async Task InsertRangeAsync(IReadOnlyCollection<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await _dbSet.AddRangeAsync(entities);
 
-        foreach (var entity in entities)
-            entity.AddDomainEvent(new EntityInsertedEvent<TEntity>(entity));
+        //foreach (var entity in entities)
+            //entity.AddDomainEvent(new EntityInsertedEvent<TEntity>(entity));
     }
 
     #endregion
@@ -56,7 +55,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
     {
         _dbSet.Update(entity);
 
-        entity.AddDomainEvent(new EntityUpdatedEvent<TEntity>(entity));
+        //entity.AddDomainEvent(new EntityUpdatedEvent<TEntity>(entity));
 
         return Task.CompletedTask;
     }
@@ -69,7 +68,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
     {
         _dbSet.Remove(entity);
 
-        entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
+        //entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
 
         return Task.CompletedTask;
     }
@@ -78,8 +77,8 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
     {
         _dbSet.RemoveRange(entities);
 
-        foreach (var entity in entities)
-            entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
+        //foreach (var entity in entities)
+            //entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
 
         return Task.CompletedTask;
     }
@@ -96,7 +95,7 @@ internal class EFBaseRepository<TEntity> : IEFBaseRepository<TEntity>
         foreach (TEntity entity in Query())
         {
             _dbSet.Entry(entity).State = EntityState.Deleted;
-            entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
+            //entity.AddDomainEvent(new EntityDeletedEvent<TEntity>(entity));
         }
 
         return Task.CompletedTask;
