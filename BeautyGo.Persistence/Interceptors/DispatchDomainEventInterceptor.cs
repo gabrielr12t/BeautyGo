@@ -3,7 +3,6 @@ using BeautyGo.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using SharpCompress.Common;
 
 namespace BeautyGo.Persistence.Interceptors;
 
