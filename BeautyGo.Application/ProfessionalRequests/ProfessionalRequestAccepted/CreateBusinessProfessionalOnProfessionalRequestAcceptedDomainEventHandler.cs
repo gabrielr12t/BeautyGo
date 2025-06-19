@@ -6,6 +6,7 @@ using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories.Bases;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeautyGo.Application.ProfessionalRequests.ProfessionalRequestAccepted;
 
@@ -35,7 +36,7 @@ internal class CreateBusinessProfessionalOnProfessionalRequestAcceptedDomainEven
     private async Task<Business> GetBusinessByIdAsync(Guid businessId, CancellationToken cancellationToken)
     {
         var businessByIdSpec = new EntityByIdSpecification<Business>(businessId);
-        businessByIdSpec.AddInclude(p => p.Professionals);
+        businessByIdSpec.AddInclude(q => q.Include(i => i.Professionals));
 
         return await _businessRepository.GetFirstOrDefaultAsync(businessByIdSpec, true, cancellationToken);
     }

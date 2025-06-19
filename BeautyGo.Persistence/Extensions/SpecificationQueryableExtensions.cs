@@ -1,7 +1,5 @@
 ﻿using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Patterns.Specifications;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
 namespace BeautyGo.Persistence.Extensions;
@@ -15,14 +13,6 @@ internal static class SpecificationQueryableExtensions
 
         if (criteria != null)
             query = query.Where(criteria);
-
-        query = specification.IncludeExpression
-            .Aggregate(query,
-            (current, include) => current.Include(include));
-
-        query = specification.IncludeStrings
-            .Aggregate(query,
-            (current, include) => current.Include(include));
 
         query = specification.Includes
             .Aggregate(query,

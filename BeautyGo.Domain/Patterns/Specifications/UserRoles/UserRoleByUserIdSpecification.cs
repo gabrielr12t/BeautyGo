@@ -9,10 +9,7 @@ public sealed class UserRoleByUserIdSpecification : Specification<UserRoleMappin
 
     public UserRoleByUserIdSpecification(Guid userId)
     {
-        _userId = userId;
-
-        AddInclude(p => p.User);
-        AddInclude(p => p.UserRole);
+        _userId = userId; 
     }
 
     public override Expression<Func<UserRoleMapping, bool>> ToExpression() =>

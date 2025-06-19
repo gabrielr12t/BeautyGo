@@ -11,20 +11,18 @@ using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Security;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Patterns.Specifications.RefreshTokens;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
-using BeautyGo.Domain.Patterns.Specifications.Users;
 using BeautyGo.Domain.Providers.Files;
 using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace BeautyGo.Infrastructure.Services.Authentication;
 
@@ -160,9 +158,12 @@ public class AuthService : IAuthService
 
         var userId = new Guid(authenticateResult.Principal.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value);
 
-        _cachedUser = await _userRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<User>(userId).And(
-                new UserWithRolesSpecification()), cancellationToken: cancellationToken);
+        var userByIdSpec = new EntityByIdSpecification<User>(userId)
+            .AddInclude(q =>
+                q.Include(i => i.UserRoles)
+                    .ThenInclude(t => t.UserRole));
+
+        _cachedUser = await _userRepository.GetFirstOrDefaultAsync(userByIdSpec, cancellationToken: cancellationToken);
 
         if (_cachedUser is null)
             return default;

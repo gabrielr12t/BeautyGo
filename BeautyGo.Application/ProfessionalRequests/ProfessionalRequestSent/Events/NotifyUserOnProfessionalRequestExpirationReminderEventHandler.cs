@@ -6,6 +6,7 @@ using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories.Bases;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeautyGo.Application.ProfessionalRequests.ProfessionalRequestSent.Events;
 
@@ -27,8 +28,9 @@ public class NotifyUserOnProfessionalRequestExpirationReminderEventHandler : IEv
     private async Task<ProfessionalRequest> GetProfessionalRequestAsync(Guid professionalRequestId, CancellationToken cancellationToken)
     {
         var professionalRequestByIdSpec = new EntityByIdSpecification<ProfessionalRequest>(professionalRequestId)
-            .AddInclude(p => p.User)
-            .AddInclude(p => p.Business);
+            .AddInclude(
+                q => q.Include(i => i.User),
+                q => q.Include(i => i.Business));
 
         return await _professionalRequestRepository.GetFirstOrDefaultAsync(professionalRequestByIdSpec, cancellationToken: cancellationToken);
     }

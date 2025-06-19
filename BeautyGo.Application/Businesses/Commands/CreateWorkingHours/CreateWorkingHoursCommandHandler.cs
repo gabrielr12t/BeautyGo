@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using BeautyGo.Application.Core.Abstractions.Authentication;
+﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Messaging;
 using BeautyGo.Domain.Core.Errors;
@@ -8,7 +7,7 @@ using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.Businesses;
 using BeautyGo.Domain.Repositories.Bases;
-using System.Threading;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeautyGo.Application.Businesses.Commands.CreateWorkingHours;
 
@@ -57,7 +56,7 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
 
         var businesSpec = businessByIdSpecification
             .And(businessOwnerSpecification)
-            .AddInclude(p => p.WorkingHours);
+            .AddInclude(q => q.Include(i => i.WorkingHours));
 
         return await _businessRepository.GetFirstOrDefaultAsync(businesSpec, true, cancellationToken);
     }
@@ -67,7 +66,7 @@ internal class CreateWorkingHoursCommandHandler : ICommandHandler<CreateWorkingH
     #region Handle
 
     public async Task<Result> Handle(CreateWorkingHoursCommand request, CancellationToken cancellationToken)
-    { 
+    {
         if (HasDuplicateDayOfWeek(request.WorkingHours))
             return Result.Failure(DomainErrors.WorkingHours.DuplicateDayOfWeek);
 

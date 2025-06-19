@@ -15,6 +15,7 @@ using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Visitor.EmailTokenValidation;
 using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.EmailConfirmations.EmailConfirmationCreated;
 
@@ -82,7 +83,7 @@ public class SendConfirmationAccountEmailOnEmailConfirmationCreatedIntegrationEv
     public async Task Handle(BusinessEmailConfirmation element)
     {
         var spec = new EntityByIdSpecification<BusinessEmailConfirmation>(element.Id)
-            .AddInclude(p => p.Business);
+            .AddInclude(p => p.Include(i => i.Business));
 
         var businessEmailToken = await _businessEmailTokenValidationRepository.GetFirstOrDefaultAsync(spec);
 
@@ -100,7 +101,7 @@ public class SendConfirmationAccountEmailOnEmailConfirmationCreatedIntegrationEv
     public async Task Handle(UserEmailConfirmation element)
     {
         var spec = new EntityByIdSpecification<UserEmailConfirmation>(element.Id)
-            .AddInclude(p => p.User);
+            .AddInclude(p => p.Include(i => i.User));
 
         var userEmailToken = await _userEmailTokenValidationRepository.GetFirstOrDefaultAsync(spec);
 
