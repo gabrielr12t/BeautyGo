@@ -2,6 +2,11 @@
 
 public class OutboxMessageError : BaseEntity
 {
+    public OutboxMessageError()
+    {
+        
+    }
+
     public OutboxMessageError(string error, string stackTrace)
     {
         Error = error;

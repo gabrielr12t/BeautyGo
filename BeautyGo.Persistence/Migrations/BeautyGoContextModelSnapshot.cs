@@ -466,7 +466,7 @@ namespace BeautyGo.Persistence.Migrations
 
                     b.HasIndex("ServiceId1");
 
-                    b.ToTable("ServicePicture");
+                    b.ToTable("ServicePicture", (string)null);
                 });
 
             modelBuilder.Entity("BeautyGo.Domain.Entities.Common.Address", b =>
@@ -537,7 +537,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.ToTable("Addresses", "Common");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.EmailTokenValidation", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.EmailConfirmation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -931,6 +931,40 @@ namespace BeautyGo.Persistence.Migrations
                     b.ToTable("ProfessionalServices", "Professionals");
                 });
 
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Security.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpireAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken", "Security");
+                });
+
             modelBuilder.Entity("BeautyGo.Domain.Entities.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1113,9 +1147,9 @@ namespace BeautyGo.Persistence.Migrations
                     b.ToTable("UserRolesMapping", "Users");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessEmailTokenValidation", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessEmailConfirmation", b =>
                 {
-                    b.HasBaseType("BeautyGo.Domain.Entities.EmailTokenValidation");
+                    b.HasBaseType("BeautyGo.Domain.Entities.EmailConfirmation");
 
                     b.Property<Guid>("BusinessId")
                         .HasColumnType("uniqueidentifier");
@@ -1128,9 +1162,9 @@ namespace BeautyGo.Persistence.Migrations
                     b.ToTable("EmailTokens", "Businesses");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserEmailTokenValidation", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserEmailConfirmation", b =>
                 {
-                    b.HasBaseType("BeautyGo.Domain.Entities.EmailTokenValidation");
+                    b.HasBaseType("BeautyGo.Domain.Entities.EmailConfirmation");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -1439,6 +1473,17 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("Service");
                 });
 
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Security.RefreshToken", b =>
+                {
+                    b.HasOne("BeautyGo.Domain.Entities.Users.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserAddressMapping", b =>
                 {
                     b.HasOne("BeautyGo.Domain.Entities.Common.Address", "Address")
@@ -1488,7 +1533,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("UserRole");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessEmailTokenValidation", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Businesses.BusinessEmailConfirmation", b =>
                 {
                     b.HasOne("BeautyGo.Domain.Entities.Businesses.Business", "Business")
                         .WithMany("ValidationTokens")
@@ -1499,7 +1544,7 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("Business");
                 });
 
-            modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserEmailTokenValidation", b =>
+            modelBuilder.Entity("BeautyGo.Domain.Entities.Users.UserEmailConfirmation", b =>
                 {
                     b.HasOne("BeautyGo.Domain.Entities.Users.User", "User")
                         .WithMany("ValidationTokens")
@@ -1576,6 +1621,8 @@ namespace BeautyGo.Persistence.Migrations
                     b.Navigation("Passwords");
 
                     b.Navigation("ProfessionalInvitations");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("UserRoles");
 

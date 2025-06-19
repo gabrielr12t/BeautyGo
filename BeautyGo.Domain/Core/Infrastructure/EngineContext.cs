@@ -1,7 +1,7 @@
 ﻿using BeautyGo.Domain.Patterns.Singletons;
 using System.Runtime.CompilerServices;
 
-namespace BeautyGo.Infrastructure.Core;
+namespace BeautyGo.Domain.Core.Infrastructure;
 
 public class EngineContext
 {

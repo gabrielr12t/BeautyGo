@@ -46,8 +46,8 @@ namespace BeautyGo.Persistence.Migrations
                                         ))
                                     ELSE NULL
                                 END
-                        FROM [BeautyGo-staging].[Businesses].[Business] b
-                        INNER JOIN [BeautyGo-staging].[Common].[Addresses] a ON b.AddressId = a.Id
+                        FROM [Businesses].[Business] b
+                        INNER JOIN [Common].[Addresses] a ON b.AddressId = a.Id
                         WHERE
                             b.IsActive = 1
                             AND b.EmailConfirmed = 1
@@ -84,8 +84,8 @@ namespace BeautyGo.Persistence.Migrations
                     SELECT COUNT(*) AS TotalCount
                     FROM (
                         SELECT 1 Dummy
-                        FROM [BeautyGo-staging].[Businesses].[Business] b
-                        INNER JOIN [BeautyGo-staging].[Common].[Addresses] a ON b.AddressId = a.Id
+                        FROM [Businesses].[Business] b
+                        INNER JOIN [Common].[Addresses] a ON b.AddressId = a.Id
                         WHERE
                             b.IsActive = 1
                             AND b.EmailConfirmed = 1

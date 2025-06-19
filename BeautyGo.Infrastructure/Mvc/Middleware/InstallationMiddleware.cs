@@ -14,11 +14,10 @@ public sealed class InstallationMiddleware
 
     public async Task Invoke(HttpContext context, IInstallationService installation)
     {
-        //var key = staticCache.PrepareKeyForDefaultCache(BeautyGoInstallationDefaults.InstallationAdminInsertedCacheKey, "installed");
-
-        await installation.InstallAsync();
-
-        //await staticCache.GetAsync(key, )
+        if (!await installation.IsInstalledAsync())
+        {
+            await installation.InstallAsync();
+        }
 
         await _next(context);
     }

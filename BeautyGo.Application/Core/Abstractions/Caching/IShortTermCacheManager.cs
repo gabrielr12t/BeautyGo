@@ -1,4 +1,6 @@
-﻿namespace BeautyGo.Application.Core.Abstractions.Caching;
+﻿using BeautyGo.Domain.Caching;
+
+namespace BeautyGo.Application.Core.Abstractions.Caching;
 
 
 /// <summary>

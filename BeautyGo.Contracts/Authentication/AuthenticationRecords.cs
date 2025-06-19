@@ -8,4 +8,8 @@ public record LoginRequest(string Email, string Password);
 
 public record RefreshTokenModel(Guid UserId, string Token, DateTime Expires, DateTime Created, string CreatedByIp, string FingerPrint, bool IsRevoked);
 
-public record TokenModel(string AccessToken, string RefreshToken);
+public record TokenResponse(string AccessToken);
+
+public record AuthResponse(string AccessToken, string RefreshToken);
+
+public record RefreshTokenResponse(string RefreshToken);

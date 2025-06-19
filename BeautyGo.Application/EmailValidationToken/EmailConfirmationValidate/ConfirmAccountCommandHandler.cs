@@ -4,9 +4,10 @@ using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Patterns.Specifications.EmailTokenValidations;
+using BeautyGo.Domain.Patterns.Specifications.UserEmailConfirmations;
 using BeautyGo.Domain.Repositories.Bases;
 
-namespace BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
+namespace BeautyGo.Application.EmailValidationToken.EmailConfirmationValidate;
 
 internal class ConfirmAccountCommandHandler : ICommandHandler<ConfirmAccountCommand, Result>
 {

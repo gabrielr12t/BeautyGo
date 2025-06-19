@@ -1,5 +1,5 @@
 ﻿using BeautyGo.Api.Controllers.Bases;
-using BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
+using BeautyGo.Application.EmailValidationToken.EmailConfirmationValidate;
 using BeautyGo.Application.Users.Commands.CreateUser;
 using BeautyGo.Application.Users.Commands.UpdateUser;
 using BeautyGo.Application.Users.Queries.GetOnlineUsers;
@@ -21,7 +21,7 @@ public class UserController : BaseController
 
     [AllowAnonymous]
     [HttpPost("register/customer")]
-    [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterCustomer([FromBody] CreateUserRequest request) =>
         await Result.Create(request, DomainErrors.General.UnProcessableRequest)
@@ -30,7 +30,7 @@ public class UserController : BaseController
 
     [AllowAnonymous]
     [HttpPost("register/professional")]
-    [ProducesResponseType(typeof(TokenModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterProfessional([FromBody] CreateUserRequest request) =>
         await Result.Create(request, DomainErrors.General.UnProcessableRequest)

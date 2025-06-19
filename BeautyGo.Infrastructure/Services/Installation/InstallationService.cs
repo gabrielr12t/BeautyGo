@@ -1,45 +1,57 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Security;
-using BeautyGo.Domain.Common.Defaults;
+using BeautyGo.Domain.Core.Configurations;
+using BeautyGo.Domain.Patterns.Singletons;
+using BeautyGo.Domain.Providers.Files;
+using BeautyGo.Domain.Settings;
 using System.Security.Cryptography;
 
 namespace BeautyGo.Infrastructure.Services.Installation;
 
 internal class InstallationService : IInstallationService
 {
-    private IEncryptionService _encryptionService;
+    private readonly IEncryptionService _encryptionService;
+    private readonly IBeautyGoFileProvider _fileProvider;
+    private readonly SecuritySettings _securitySettings;
 
-    public InstallationService(IEncryptionService encryptionService)
+    public InstallationService(
+        IEncryptionService encryptionService,
+        IBeautyGoFileProvider fileProvider)
     {
+        _securitySettings = Singleton<AppSettings>.Instance.Get<SecuritySettings>();
         _encryptionService = encryptionService;
+        _fileProvider = fileProvider;
     }
 
-    private string GenerateSecureKeyString(int length)
+    #region Utilities
+
+    private async Task ConfigureRSA()
     {
-        byte[] randomBytes = new byte[length];
-        using (var rng = new RNGCryptoServiceProvider())
-        {
-            rng.GetBytes(randomBytes);
-        }
-        return Convert.ToBase64String(randomBytes);
+        var fileNamePublicKey = _fileProvider.GetFileName(_securitySettings.PublicKeyFilePath);
+        var fileNamePrivateKey = _fileProvider.GetFileName(_securitySettings.PrivateKeyFilePath);
+        var directoryName = _fileProvider.GetDirectoryName(_securitySettings.PublicKeyFilePath);
+
+        _fileProvider.CreateDirectory(directoryName);
+        _fileProvider.CreateFile(_fileProvider.Combine(directoryName, fileNamePublicKey));
+        _fileProvider.CreateFile(_fileProvider.Combine(directoryName, fileNamePrivateKey));
+
+        var rsa = RSA.Create(2048);
+
+        var privateKey = rsa.ExportRSAPrivateKey();
+        await _fileProvider.WriteAllBytesAsync(_securitySettings.PrivateKeyFilePath, privateKey);
+
+        var publicKey = rsa.ExportRSAPublicKey();
+        await _fileProvider.WriteAllBytesAsync(_securitySettings.PublicKeyFilePath, publicKey);
     }
 
-    private void CreateSecurityPrivateKey()
-    {
-        var securityPrivateKey = _encryptionService.EncryptText(
-            GenerateSecureKeyString(32),
-            BeautyGoCommonDefault.EnvironmentVariablePrivateKey);
+    #endregion
 
-        Environment.SetEnvironmentVariable(BeautyGoCommonDefault.PrivateKeyName, securityPrivateKey, EnvironmentVariableTarget.User);
+    public Task<bool> IsInstalledAsync()
+    {
+        return Task.FromResult(_fileProvider.FileExists(_securitySettings.PublicKeyFilePath));
     }
 
     public async Task InstallAsync()
     {
-        var environmentVariable = Environment.GetEnvironmentVariable(BeautyGoCommonDefault.PrivateKeyName, EnvironmentVariableTarget.User);
-        if (environmentVariable == null)
-        {
-            CreateSecurityPrivateKey();
-        }
-
-        await Task.CompletedTask;
+        await ConfigureRSA();
     }
 }

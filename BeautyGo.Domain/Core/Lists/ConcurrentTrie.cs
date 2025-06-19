@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace BeautyGo.Infrastructure.Core;
+namespace BeautyGo.Domain.Core.Lists;
 
 public partial class ConcurrentTrie<TValue> : IConcurrentCollection<TValue>
 {

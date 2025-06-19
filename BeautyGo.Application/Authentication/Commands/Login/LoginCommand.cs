@@ -6,4 +6,4 @@ namespace BeautyGo.Application.Authentication.Commands.Login;
 
 public record class LoginCommand(
     string Email,
-    string Password) : ICommand<Result<TokenModel>>;
+    string Password) : ICommand<Result<AuthResponse>>;

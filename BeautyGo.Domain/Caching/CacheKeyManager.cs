@@ -1,7 +1,6 @@
-﻿using BeautyGo.Application.Core.Abstractions.Caching;
-using BeautyGo.Infrastructure.Core;
+﻿using BeautyGo.Domain.Core.Lists;
 
-namespace BeautyGo.Infrastructure.Services.Caching;
+namespace BeautyGo.Domain.Caching;
 
 public partial class CacheKeyManager : ICacheKeyManager
 {

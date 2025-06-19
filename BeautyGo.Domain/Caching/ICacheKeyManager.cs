@@ -1,4 +1,4 @@
-﻿namespace BeautyGo.Application.Core.Abstractions.Caching;
+﻿namespace BeautyGo.Domain.Caching;
 
 /// <summary>
 /// Represents a cache key manager

@@ -14,6 +14,7 @@ public abstract class Specification<T>
 
     public Expression<Func<T, object>> OrderByDescExpression { get; private set; }
     public Expression<Func<T, object>> ThenByDescExpression { get; private set; }
+    public List<Func<IQueryable<T>, IQueryable<T>>> Includes { get; } = new();
 
     public int? Limit { get; private set; }
 
@@ -62,6 +63,12 @@ public abstract class Specification<T>
         return this;
     }
 
+    public Specification<T> AddInclude(params Func<IQueryable<T>, IQueryable<T>>[] includes)
+    {
+        Includes.AddRange(includes);
+        return this;
+    }
+
     public Specification<T> ApplyOrderBy(Expression<Func<T, object>> orderByExpression)
     {
         OrderByExpression = orderByExpression;
@@ -90,5 +97,5 @@ public abstract class Specification<T>
     {
         Limit = size;
         return this;
-    }
+    } 
 }

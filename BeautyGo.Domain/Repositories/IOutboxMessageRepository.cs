@@ -7,5 +7,5 @@ public interface IOutboxMessageRepository : IEFBaseRepository<OutboxMessage>
 {
     Task<ICollection<OutboxMessage>> GetRecentUnprocessedOutboxMessages(int size, CancellationToken cancellation = default);
 
-    Task UpdateAsync(OutboxMessage message);
+    //Task UpdateAsync(OutboxMessage message);
 }

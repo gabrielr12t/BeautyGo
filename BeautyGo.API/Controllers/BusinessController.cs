@@ -3,7 +3,7 @@ using BeautyGo.Application.Businesses.Commands.CreateBusiness;
 using BeautyGo.Application.Businesses.Commands.CreateWorkingHours;
 using BeautyGo.Application.Businesses.Commands.SendProfessionalRequest;
 using BeautyGo.Application.Businesses.Queries.GetBusinessesFilter;
-using BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
+using BeautyGo.Application.EmailValidationToken.EmailConfirmationValidate;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Infrastructure.Contracts;

@@ -1,9 +1,8 @@
-﻿using BeautyGo.Application.Core.Abstractions.Caching;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace BeautyGo.Infrastructure.Services.Caching;
+namespace BeautyGo.Domain.Caching;
 
 public partial class DistributedCacheLocker : ILocker
 {

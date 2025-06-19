@@ -21,8 +21,45 @@ internal class OutboxMessagerepository : EFBaseRepository<OutboxMessage>, IOutbo
 
     public override async Task<OutboxMessage> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        const string query = "SELECT Id, ProcessedOn, OccurredOn, Content, Type, Error FROM OutboxMessage WHERE Id = @Id";
-        return await _connetion.QueryFirstOrDefaultAsync<OutboxMessage>(query, new { Id = id });
+        const string sql = @"
+        SELECT 
+            OM.Id, 
+            OM.ProcessedOn,
+            OM.OccurredOn,
+            OM.Content, 
+            OM.Type,
+            EE.Id AS ErrorId,
+            EE.EventId AS ErrorEventId,
+            EE.Message AS ErrorMessage
+        FROM OutboxMessage OM
+        LEFT JOIN Events.EventError EE ON OM.Id = EE.EventId
+        WHERE OM.Id = @Id";
+
+        var outboxDictionary = new Dictionary<Guid, OutboxMessage>();
+
+        await _connetion.QueryAsync<OutboxMessage, OutboxMessageError, OutboxMessage>(
+            sql,
+            (outbox, error) =>
+            {
+                if (!outboxDictionary.TryGetValue(outbox.Id, out var outboxEntry))
+                {
+                    outboxEntry = outbox;
+                    outboxEntry.Errors = new List<OutboxMessageError>();
+                    outboxDictionary.Add(outboxEntry.Id, outboxEntry);
+                }
+
+                if (error != null && error.Id != Guid.Empty)
+                {
+                    outboxEntry.Errors.Add(error);
+                }
+
+                return outboxEntry;
+            },
+            new { Id = id },
+            splitOn: "ErrorId"
+        );
+
+        return outboxDictionary.Values.FirstOrDefault();
     }
 
     public async Task<ICollection<OutboxMessage>> GetRecentUnprocessedOutboxMessages(int size, CancellationToken cancellation = default)

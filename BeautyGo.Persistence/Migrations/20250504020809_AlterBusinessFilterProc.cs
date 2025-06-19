@@ -11,13 +11,12 @@ namespace BeautyGo.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            USE [BeautyGo-staging]
                 GO 
                 SET ANSI_NULLS ON
                 GO
                 SET QUOTED_IDENTIFIER ON
                 GO
-                ALTER PROCEDURE [dbo].[GetFilteredBusinesses]
+                ALTER PROCEDURE [Businesses].[GetFilteredBusinesses]
                     @Latitude FLOAT = NULL,
                     @Longitude FLOAT = NULL,
                     @RadiusKm FLOAT = NULL,
@@ -52,8 +51,8 @@ namespace BeautyGo.Persistence.Migrations
                                         ))
                                     ELSE NULL
                                 END
-                        FROM [BeautyGo-staging].[Businesses].[Business] b
-                        INNER JOIN [BeautyGo-staging].[Common].[Addresses] a ON b.AddressId = a.Id
+                        FROM [Businesses].[Business] b
+                        INNER JOIN [Common].[Addresses] a ON b.AddressId = a.Id
                         WHERE 
                             b.IsActive = 1
                             AND b.EmailConfirmed = 1
@@ -88,8 +87,8 @@ namespace BeautyGo.Persistence.Migrations
                     SELECT COUNT(*) AS TotalCount
                     FROM (
                         SELECT 1 AS Dummy
-                        FROM [BeautyGo-staging].[Businesses].[Business] b
-                        INNER JOIN [BeautyGo-staging].[Common].[Addresses] a ON b.AddressId = a.Id
+                        FROM [Businesses].[Business] b
+                        INNER JOIN [Common].[Addresses] a ON b.AddressId = a.Id
                         WHERE
                             b.IsActive = 1
                             AND b.EmailConfirmed = 1

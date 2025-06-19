@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using static BeautyGo.Domain.Core.Errors.DomainErrors;
 
-namespace BeautyGo.Infrastructure.Core;
+namespace BeautyGo.Domain.Core.Infrastructure;
 
 public class BeautyGoEngine : IEngine
 {
@@ -79,3 +79,4 @@ public class BeautyGoEngine : IEngine
 
     #endregion
 }
+

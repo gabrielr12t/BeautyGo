@@ -1,6 +1,6 @@
 ﻿using BeautyGo.Domain.Common.Defaults;
+using BeautyGo.Domain.Core.Infrastructure;
 using BeautyGo.Domain.Providers.Files;
-using BeautyGo.Infrastructure.Core;
 using BeautyGo.Infrastructure.Mvc.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

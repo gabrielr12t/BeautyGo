@@ -2,7 +2,7 @@
 using BeautyGo.Application.Core.Extensions;
 using FluentValidation;
 
-namespace BeautyGo.Application.EmailValidationToken.EmailTokenValidationValidate;
+namespace BeautyGo.Application.EmailValidationToken.EmailConfirmationValidate;
 
 internal class ConfirmAccountCommandValidator : AbstractValidator<ConfirmAccountCommand>
 {

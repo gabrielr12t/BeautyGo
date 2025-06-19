@@ -2,7 +2,7 @@
 using BeautyGo.Domain.Entities;
 using Newtonsoft.Json;
 
-namespace BeautyGo.Application.EmailValidationToken.EntityEmailValidationTokenCreated;
+namespace BeautyGo.Application.EmailValidationToken.EmailConfirmationCreated;
 
 public class EmailConfirmationCreatedIntegrationEvent : IIntegrationEvent
 {

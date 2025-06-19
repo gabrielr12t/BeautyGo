@@ -47,7 +47,7 @@ namespace BeautyGo.Persistence.Migrations
                                         COS(RADIANS(a.Longitude) - RADIANS(@UserLongitude)) +
                                         SIN(RADIANS(@UserLatitude)) * SIN(RADIANS(a.Latitude))
                                     )) AS DistanceKm
-                                FROM [BeautyGo-staging].[Common].[Addresses] a
+                                FROM [Common].[Addresses] a
                                 WHERE 
                                     -- Filtrar os endereços dentro do raio especificado
                                     (6371 * ACOS(

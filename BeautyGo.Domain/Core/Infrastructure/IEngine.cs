@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BeautyGo.Infrastructure.Core;
+namespace BeautyGo.Domain.Core.Infrastructure;
 
 public interface IEngine
 {

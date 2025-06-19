@@ -64,15 +64,15 @@ public interface IBeautyGoFileProvider : IFileProvider
 
     string MapPath(string path);
 
-    Task<byte[]> ReadAllBytesAsync(string filePath);
+    Task<byte[]> ReadAllBytesAsync(string filePath, CancellationToken cancellationToken = default);
 
-    Task<string> ReadAllTextAsync(string path, Encoding encoding);
+    Task<string> ReadAllTextAsync(string path, Encoding encoding, CancellationToken cancellationToken = default);
 
     string ReadAllText(string path, Encoding encoding);
 
-    Task WriteAllBytesAsync(string filePath, byte[] bytes);
+    Task WriteAllBytesAsync(string filePath, byte[] bytes, CancellationToken cancellationToken = default);
 
-    Task WriteAllTextAsync(string path, string contents, Encoding encoding);
+    Task WriteAllTextAsync(string path, string contents, Encoding encoding, CancellationToken cancellationToken = default);
 
     void WriteAllText(string path, string contents, Encoding encoding);
 }

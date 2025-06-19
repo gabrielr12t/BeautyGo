@@ -2,7 +2,7 @@
 using BeautyGo.Domain.Patterns.Singletons;
 using BeautyGo.Domain.Settings;
 
-namespace BeautyGo.Application.Core.Abstractions.Caching;
+namespace BeautyGo.Domain.Caching;
 
 public partial class CacheKey
 {

@@ -1,9 +1,9 @@
-﻿using BeautyGo.Application.Core.Abstractions.Caching;
+﻿using BeautyGo.Domain.Caching;
 using BeautyGo.Domain.Core.Configurations;
-using BeautyGo.Infrastructure.Core;
+using BeautyGo.Domain.Core.Lists;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace BeautyGo.Infrastructure.Services.Caching.DistributedCache;
+namespace BeautyGo.Infrastructure.Services.Caching;
 
 public partial class MemoryDistributedCacheManager : DistributedCacheManager
 {

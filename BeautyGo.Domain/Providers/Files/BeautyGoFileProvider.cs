@@ -266,17 +266,17 @@ public class BeautyGoFileProvider : PhysicalFileProvider, IBeautyGoFileProvider
         return Combine(Root ?? string.Empty, path) + pathEnd;
     }
 
-    public virtual async Task<byte[]> ReadAllBytesAsync(string filePath)
+    public virtual async Task<byte[]> ReadAllBytesAsync(string filePath, CancellationToken cancellationToken = default)
     {
-        return File.Exists(filePath) ? await File.ReadAllBytesAsync(filePath) : Array.Empty<byte>();
+        return File.Exists(filePath) ? await File.ReadAllBytesAsync(filePath, cancellationToken) : Array.Empty<byte>();
     }
 
-    public virtual async Task<string> ReadAllTextAsync(string path, Encoding encoding)
+    public virtual async Task<string> ReadAllTextAsync(string path, Encoding encoding, CancellationToken cancellationToken = default)
     {
         await using var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using var streamReader = new StreamReader(fileStream, encoding);
 
-        return await streamReader.ReadToEndAsync();
+        return await streamReader.ReadToEndAsync(cancellationToken);
     }
 
     public virtual string ReadAllText(string path, Encoding encoding)
@@ -287,14 +287,14 @@ public class BeautyGoFileProvider : PhysicalFileProvider, IBeautyGoFileProvider
         return streamReader.ReadToEnd();
     }
 
-    public virtual async Task WriteAllBytesAsync(string filePath, byte[] bytes)
+    public virtual async Task WriteAllBytesAsync(string filePath, byte[] bytes, CancellationToken cancellationToken = default)
     {
-        await File.WriteAllBytesAsync(filePath, bytes);
+        await File.WriteAllBytesAsync(filePath, bytes, cancellationToken);
     }
 
-    public virtual async Task WriteAllTextAsync(string path, string contents, Encoding encoding)
+    public virtual async Task WriteAllTextAsync(string path, string contents, Encoding encoding, CancellationToken cancellationToken = default)
     {
-        await File.WriteAllTextAsync(path, contents, encoding);
+        await File.WriteAllTextAsync(path, contents, encoding, cancellationToken);
     }
 
     public virtual void WriteAllText(string path, string contents, Encoding encoding)

@@ -2,14 +2,16 @@
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Web;
 using BeautyGo.Contracts.Authentication;
+using BeautyGo.Domain.Caching;
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
-using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.DomainEvents.Users;
 using BeautyGo.Domain.Entities.Persons;
+using BeautyGo.Domain.Entities.Security;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
+using BeautyGo.Domain.Patterns.Specifications.RefreshTokens;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
 using BeautyGo.Domain.Patterns.Specifications.Users;
 using BeautyGo.Domain.Providers.Files;
@@ -32,12 +34,15 @@ public class AuthService : IAuthService
 
     private readonly IEFBaseRepository<User> _userRepository;
     private readonly IEFBaseRepository<UserRoleMapping> _userRoleRepository;
+    private readonly IEFBaseRepository<RefreshToken> _refreshTokenRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IBeautyGoFileProvider _BeautyGoFileProvider;
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly IWebHelper _webHelper; 
+    private readonly IWebHelper _webHelper;
     private readonly IMediator _mediator;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ITokenService _tokenService;
+    private readonly IStaticCacheManager _staticCacheManager;
     private readonly AppSettings _appSettings;
     private User _cachedUser;
 
@@ -50,110 +55,73 @@ public class AuthService : IAuthService
         AppSettings appSettings,
         IBeautyGoFileProvider BeautyGoFileProvider,
         IHttpContextAccessor contextAccessor,
-        IWebHelper webHelper, 
+        IWebHelper webHelper,
         IMediator mediator,
         IEFBaseRepository<UserRoleMapping> userRoleRepository,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ITokenService tokenService,
+        IStaticCacheManager staticCacheManager,
+        IEFBaseRepository<RefreshToken> refreshTokenRepository)
     {
         _userRepository = userRepository;
         _appSettings = appSettings;
         _BeautyGoFileProvider = BeautyGoFileProvider;
         _contextAccessor = contextAccessor;
-        _webHelper = webHelper; 
+        _webHelper = webHelper;
         _mediator = mediator;
         _userRoleRepository = userRoleRepository;
         _unitOfWork = unitOfWork;
         _httpContextAccessor = httpContextAccessor;
+        _tokenService = tokenService;
+        _staticCacheManager = staticCacheManager;
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
     #endregion
 
     #region Utilities
 
-    private List<Claim> GenerateUserClaims(User user)
+    private async Task<RefreshTokenResponse> GetOrCreateValidRefreshTokenAsync(User user)
     {
-        var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, BeautyGoAuthenticationDefaults.ClaimsIssuer),
-            new(ClaimTypes.Role, string.Join(",", user.UserRoles.Select(p => p.UserRole.Description))),
-            new("ua", _webHelper.GetUserAgent())
-        };
+        var existingToken = user.RefreshTokens.FirstOrDefault(p => p.IsValid());
 
-        claims.AddRange(user.UserRoles.Select(role => new Claim(ClaimTypes.Role, role.UserRole.Description)));
+        if (existingToken != null && existingToken.IsValid())
+            return new(existingToken.Token);
 
-        return claims;
+        return await _tokenService.GenerateRefreshTokenAsync(user);
     }
 
-    private async Task<RSA> GetRsaKeyAsync()
+    private async Task<RSA> GetRSAPublicKeyAsync()
     {
-        var rsa = RSA.Create();
-        var key = await _BeautyGoFileProvider.ReadAllTextAsync(
-            _appSettings.Get<SecuritySettings>().PrivateKeyFilePath,
-            Encoding.UTF8);
+        var publicKey = await _BeautyGoFileProvider.ReadAllBytesAsync(_appSettings.Get<SecuritySettings>().PublicKeyFilePath);
+        using var rsa = RSA.Create();
+        rsa.ImportRSAPublicKey(publicKey, out _);
 
-        rsa.FromXmlString(key);
         return rsa;
-    }
-
-    private async Task<string> GenerateJwtTokenAsync(User user)
-    {
-        var claims = GenerateUserClaims(user);
-
-        var rsa = await GetRsaKeyAsync();
-
-        var credentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256);
-
-        var authSettings = _appSettings.Get<AuthSettings>();
-
-        var tokenDescriptor = new JwtSecurityToken(
-            issuer: authSettings.Issuer,
-            audience: authSettings.Audience,
-            claims: claims,
-            notBefore: DateTime.UtcNow,
-            expires: DateTime.UtcNow.AddMinutes(authSettings.ExpirationTokenMinutes),
-
-            signingCredentials: credentials
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
-    }
-
-    private async Task<RefreshTokenModel> GenerateRefreshTokenAsync(User user)
-    {
-        var refreshToken = new RefreshTokenModel(
-            user.Id,
-            Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            DateTime.UtcNow.AddDays(7),
-            DateTime.UtcNow,
-            await _webHelper.GetCurrentIpAddressAsync(),
-            _webHelper.GetUserAgent(),
-            true);
-
-        return refreshToken;
     }
 
     #endregion
 
     #region Methods
 
-    public async Task<TokenModel> AuthenticateAsync(User user)
+    public async Task<AuthResponse> AuthenticateAsync(User user)
     {
-        var token = await GenerateJwtTokenAsync(user);
-        var refreshToken = await GenerateRefreshTokenAsync(user);
+        var refreshTokenResponse = await GetOrCreateValidRefreshTokenAsync(user);
+        var tokenResponse = await _tokenService.GenerateTokenAsync(user);
 
         _cachedUser = user;
 
         await _mediator.Publish(new UserLoggedinEvent(user));
 
-        return new TokenModel(token, refreshToken.Token);
+        return new AuthResponse(tokenResponse.AccessToken, refreshTokenResponse.RefreshToken);
     }
 
     public async Task<bool> IsValidTokenAsync(string token, CancellationToken cancellationToken = default)
     {
         try
         {
-            var rsa = await GetRsaKeyAsync();
+            var rsa = await GetRSAPublicKeyAsync();
 
             var handler = new JwtSecurityTokenHandler();
             var parameters = new TokenValidationParameters
@@ -174,27 +142,6 @@ public class AuthService : IAuthService
         {
             return false;
         }
-    }
-
-    public async Task<Result<RefreshTokenModel>> RefreshTokenAsync(Guid userId, string refreshToken)
-    {
-        if (string.IsNullOrEmpty(refreshToken))
-            return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
-
-        RefreshTokenModel businessRefreshToken = null; 
-        if (businessRefreshToken == null)
-            return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
-
-        if (businessRefreshToken.IsRevoked)
-            return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
-
-        if (_webHelper.GetUserAgent() != businessRefreshToken.FingerPrint)
-            return Result.Failure<RefreshTokenModel>(DomainErrors.Authentication.InvalidRefreshToken);
-
-        var user = await _userRepository.GetByIdAsync(userId);
-        var newRefreshToken = await GenerateRefreshTokenAsync(user);
-
-        return newRefreshToken;
     }
 
     //AJUSTAR PARA RETORNAR RESULT

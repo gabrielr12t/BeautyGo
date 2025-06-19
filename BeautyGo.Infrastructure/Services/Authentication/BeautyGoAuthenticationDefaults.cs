@@ -1,4 +1,6 @@
-﻿namespace BeautyGo.Infrastructure.Services.Authentication;
+﻿using BeautyGo.Domain.Caching;
+
+namespace BeautyGo.Infrastructure.Services.Authentication;
 
 public static partial class BeautyGoAuthenticationDefaults
 {
@@ -10,5 +12,5 @@ public static partial class BeautyGoAuthenticationDefaults
 
     public static string SaltDefault => "=kL5rAAEneWO7";
 
-    public static string RelatedRefreshTokenPrefix => "BeautyGo.relatedrefreshtoken.byrefreshtoken.{0}";
+    public static CacheKey RefreshTokenByUserId => new("BeautyGo.refreshtoken.byuserid.{0}");
 }

@@ -1,11 +1,10 @@
-﻿using BeautyGo.Application.Core.Abstractions.Caching;
-using BeautyGo.Domain.Core.Configurations;
-using BeautyGo.Infrastructure.Core;
+﻿using BeautyGo.Domain.Core.Configurations;
+using BeautyGo.Domain.Core.Lists;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
 
-namespace BeautyGo.Infrastructure.Services.Caching;
+namespace BeautyGo.Domain.Caching;
 
 public abstract class DistributedCacheManager : CacheKeyService, IStaticCacheManager
 {
@@ -179,7 +178,7 @@ public abstract class DistributedCacheManager : CacheKeyService, IStaticCacheMan
 
                 setTask = _distributedCache.SetStringAsync(
                     key.Key,
-                    JsonConvert.SerializeObject(item),
+                    JsonConvert.SerializeObject(item, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }),
                     PrepareEntryOptions(key));
             }
 

@@ -2,6 +2,7 @@
 using BeautyGo.Domain.DomainEvents.Users;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Professionals;
+using BeautyGo.Domain.Entities.Security;
 using BeautyGo.Domain.Patterns.Visitor.Users;
 
 namespace BeautyGo.Domain.Entities.Users;
@@ -65,6 +66,7 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     public ICollection<UserPassword> Passwords { get; set; }
     public ICollection<UserEmailConfirmation> ValidationTokens { get; set; }
     public ICollection<ProfessionalRequest> ProfessionalInvitations { get; set; }
+    public ICollection<RefreshToken> RefreshTokens { get; set; }
 
     #endregion
 
@@ -111,6 +113,12 @@ public abstract class User : BaseEntity, IAuditableEntity, IEmailValidationToken
     #endregion 
 
     public abstract Task HandleUserRoleAccept(IUserRoleHandlerVisitor visitor);
+
+    public RefreshToken GetValidRefreshToken()
+    {
+        return RefreshTokens
+            .SingleOrDefault(p => p.IsValid());
+    }
 
     public void ActivateUser()
     {

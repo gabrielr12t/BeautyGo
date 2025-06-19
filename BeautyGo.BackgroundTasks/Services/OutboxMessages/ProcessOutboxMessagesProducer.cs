@@ -106,6 +106,8 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
         }
 
         await _outboxRepository.UpdateAsync(message);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     private void UpdateMessageState(OutboxMessage message, OutboxUpdate updatedMessage)
@@ -151,7 +153,7 @@ internal class ProcessOutboxMessagesProducer : IProcessOutboxMessagesProducer
             foreach (var updatedMessage in updateQueue)
             {
                 await ProcessUpdateAsync(updatedMessage, cancellationToken);
-            }
+            } 
         }
     }
 }

@@ -1,12 +1,12 @@
-﻿using BeautyGo.Application.Core.Abstractions.Caching;
+﻿using BeautyGo.Domain.Caching;
 using BeautyGo.Domain.Core.Configurations;
+using BeautyGo.Domain.Core.Lists;
 using BeautyGo.Domain.Settings;
-using BeautyGo.Infrastructure.Core;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Data;
 
-namespace BeautyGo.Infrastructure.Services.Caching.DistributedCache;
+namespace BeautyGo.Infrastructure.Services.Caching;
 
 public partial class MsSqlServerCacheManager : DistributedCacheManager
 {

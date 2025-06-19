@@ -1,6 +1,7 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Caching;
+using BeautyGo.Domain.Caching;
 using BeautyGo.Domain.Core.Configurations;
-using BeautyGo.Infrastructure.Core;
+using BeautyGo.Domain.Core.Lists;
 
 namespace BeautyGo.Infrastructure.Services.Caching;
 

@@ -1,4 +1,4 @@
-﻿namespace BeautyGo.Application.Core.Abstractions.Caching;
+﻿namespace BeautyGo.Domain.Caching;
 
 public partial interface ILocker
 {

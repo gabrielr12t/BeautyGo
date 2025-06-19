@@ -1,12 +1,11 @@
-﻿using BeautyGo.Application.Core.Abstractions.Caching;
-using BeautyGo.Domain.Core.Configurations;
+﻿using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Entities;
 using BeautyGo.Domain.Helpers;
 using BeautyGo.Domain.Settings;
 using System.Globalization;
 using System.Text;
 
-namespace BeautyGo.Infrastructure.Services.Caching;
+namespace BeautyGo.Domain.Caching;
 
 public abstract partial class CacheKeyService : ICacheKeyService
 {
@@ -72,6 +71,15 @@ public abstract partial class CacheKeyService : ICacheKeyService
         var key = cacheKey.Create(CreateCacheKeyParameters, cacheKeyParameters);
 
         key.CacheTime = _appSettings.Get<CacheSettings>().DefaultCacheTime;
+
+        return key;
+    }
+
+    public virtual CacheKey PrepareKeyForShortTermCache(CacheKey cacheKey, params object[] cacheKeyParameters)
+    {
+        var key = cacheKey.Create(CreateCacheKeyParameters, cacheKeyParameters);
+
+        key.CacheTime = _appSettings.Get<CacheSettings>().ShortTermCacheTime;
 
         return key;
     }

@@ -1,7 +1,7 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Integrations;
 using BeautyGo.Application.Core.Abstractions.Notifications;
-using BeautyGo.Application.EmailValidationToken.EntityEmailValidationTokenCreated;
+using BeautyGo.Application.EmailValidationToken.EmailConfirmationCreated;
 using BeautyGo.BackgroundTasks.Abstractions.Messaging;
 using BeautyGo.Contracts.Emails;
 using BeautyGo.Domain.Core.Configurations;
@@ -16,7 +16,7 @@ using BeautyGo.Domain.Patterns.Visitor.EmailTokenValidation;
 using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 
-namespace BeautyGo.BackgroundTasks.IntergrationEvents.EntityEmailTokenValidations.EntityEmailTokenValidationCreated;
+namespace BeautyGo.BackgroundTasks.IntergrationEvents.EmailConfirmations.EmailConfirmationCreated;
 
 public class SendConfirmationAccountEmailOnEmailConfirmationCreatedIntegrationEventHandler :
     IIntegrationEventHandler<EmailConfirmationCreatedIntegrationEvent>,

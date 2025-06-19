@@ -1,9 +1,8 @@
-﻿using BeautyGo.Application.Core.Abstractions.Caching;
-using BeautyGo.Domain.Core.Configurations;
+﻿using BeautyGo.Domain.Core.Configurations;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 
-namespace BeautyGo.Infrastructure.Services.Caching;
+namespace BeautyGo.Domain.Caching;
 
 public partial class MemoryCacheManager : CacheKeyService, IStaticCacheManager
 {

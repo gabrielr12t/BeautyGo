@@ -8,8 +8,11 @@
 
   <ItemGroup>
     <Compile Remove="Interfaces\**" />
+    <Compile Remove="Patterns\Specifications\Professionals\**" />
     <EmbeddedResource Remove="Interfaces\**" />
+    <EmbeddedResource Remove="Patterns\Specifications\Professionals\**" />
     <None Remove="Interfaces\**" />
+    <None Remove="Patterns\Specifications\Professionals\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,7 +40,6 @@
   <ItemGroup>
     <Folder Include="Entities\Media\" />
     <Folder Include="Entities\Logging\" />
-    <Folder Include="Patterns\Specifications\Professionals\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,13 +1,11 @@
 using BeautyGo.Application;
+using BeautyGo.Domain.Core.Infrastructure;
 using BeautyGo.Infrastructure;
-using BeautyGo.Infrastructure.Core;
 using BeautyGo.Infrastructure.Extensions;
 using BeautyGo.Persistence;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Newtonsoft.Json;
 using Serilog;
-using System.Net.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,11 +38,11 @@ EngineContext.Current.ConfigureRequestPipeline(app);
 
 app.UseBeautyGoStaticFiles();
 
-app.UseSession(); 
-
-app.BeautyGoUseMiddleware();
+app.UseSession();
 
 app.UseRouting();
+
+app.BeautyGoUseMiddleware();
 
 app.UseAuthentication();
 app.UseAuthorization();

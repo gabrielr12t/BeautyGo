@@ -2,7 +2,7 @@
 using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.DomainEvents.EmailValidationToken;
 
-namespace BeautyGo.Application.EmailValidationToken.EntityEmailValidationTokenCreated;
+namespace BeautyGo.Application.EmailValidationToken.EmailConfirmationCreated;
 
 internal class EnqueueIntegrationEventOnEmailConfirmationCreatedEventHandler : IDomainEventHandler<EmailValidationTokenCreatedEvent>
 {

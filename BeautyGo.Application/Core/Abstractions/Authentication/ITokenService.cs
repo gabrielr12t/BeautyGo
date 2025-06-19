@@ -5,7 +5,7 @@ namespace BeautyGo.Application.Core.Abstractions.Authentication;
 
 public interface ITokenService
 {
-    Task<TokenModel> GenerateTokenAsync(User user);
+    Task<TokenResponse> GenerateTokenAsync(User user);
 
-    Task<TokenModel> RefreshTokenAsync(Guid userId);
+    Task<RefreshTokenResponse> GenerateRefreshTokenAsync(User user);
 }

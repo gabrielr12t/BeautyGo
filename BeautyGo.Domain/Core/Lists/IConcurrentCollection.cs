@@ -1,4 +1,4 @@
-﻿namespace BeautyGo.Infrastructure.Core;
+﻿namespace BeautyGo.Domain.Core.Lists;
 
 public partial interface IConcurrentCollection<TValue>
 {

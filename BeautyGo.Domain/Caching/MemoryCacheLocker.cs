@@ -1,7 +1,6 @@
-﻿using BeautyGo.Application.Core.Abstractions.Caching;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 
-namespace BeautyGo.Infrastructure.Services.Caching;
+namespace BeautyGo.Domain.Caching;
 
 public partial class MemoryCacheLocker : ILocker
 {

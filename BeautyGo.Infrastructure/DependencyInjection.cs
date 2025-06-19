@@ -13,7 +13,10 @@ using BeautyGo.Application.Core.Abstractions.OutboxMessages;
 using BeautyGo.Application.Core.Abstractions.Security;
 using BeautyGo.Application.Core.Abstractions.Users;
 using BeautyGo.Application.Core.Abstractions.Web;
+using BeautyGo.Domain.Caching;
 using BeautyGo.Domain.Core.Configurations;
+using BeautyGo.Domain.Core.Infrastructure;
+using BeautyGo.Domain.Core.Lists;
 using BeautyGo.Domain.Patterns.Singletons;
 using BeautyGo.Domain.Providers.Files;
 using BeautyGo.Domain.Settings;
@@ -27,7 +30,6 @@ using BeautyGo.Infrastructure.Services.Authentication;
 using BeautyGo.Infrastructure.Services.Authentication.Events;
 using BeautyGo.Infrastructure.Services.Business;
 using BeautyGo.Infrastructure.Services.Caching;
-using BeautyGo.Infrastructure.Services.Caching.DistributedCache;
 using BeautyGo.Infrastructure.Services.Cryptography;
 using BeautyGo.Infrastructure.Services.Installation;
 using BeautyGo.Infrastructure.Services.Integrations;
@@ -42,7 +44,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection; 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -66,7 +69,7 @@ public static class DependencyInjection
 
         services.AddSettings(webHostEnvironment, configuration);
 
-        services.AddBearerAuthentication(configuration); 
+        services.AddBearerAuthentication(configuration);
         services.AddRateLimiterIp();
         services.AddHttpContextAccessor();
 
@@ -83,10 +86,11 @@ public static class DependencyInjection
         services.AddScoped<IInstallationService, InstallationService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFakeDataService, FakeDataService>();
-        services.AddScoped<IOutboxMessageService, OutboxMessageService>(); 
+        services.AddScoped<IOutboxMessageService, OutboxMessageService>();
         services.AddScoped<IReceitaFederalIntegrationService, ReceitaFederalIntegrationService>();
         services.AddScoped<IViaCepIntegrationService, ViaCepIntegration>();
         services.AddScoped<ILocationIQIntegrationService, LocationIQIntegrationServiceIntegrationService>();
+        services.AddScoped<ITokenService, TokenService>();
 
         services.AddSingleton<IPushNotificationService, PushNotificationService>();
         services.AddSingleton<IPublisherBusEvent, RabbitMqBusEvent>();
@@ -219,9 +223,10 @@ public static class DependencyInjection
         })
         .AddJwtBearer(options =>
         {
-            var rsa = RSA.Create();
-            var key = File.ReadAllText(security.PublicKeyFilePath);
-            rsa.FromXmlString(key);
+            var publicKey = File.ReadAllBytes(security.PublicKeyFilePath);
+
+            using var rsa = RSA.Create();
+            rsa.ImportRSAPublicKey(publicKey, out _);
 
             options.EventsType = typeof(AuthBearerEvents);
             options.SaveToken = true;

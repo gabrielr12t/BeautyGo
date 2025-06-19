@@ -2,6 +2,8 @@
 {
     public interface IInstallationService
     {
+        Task<bool> IsInstalledAsync();
+
         Task InstallAsync();
     }
 }
