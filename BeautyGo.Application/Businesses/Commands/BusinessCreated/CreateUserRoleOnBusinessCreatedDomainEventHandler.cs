@@ -1,18 +1,12 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Data;
-using BeautyGo.Domain.Common.Defaults;
-using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Events;
-using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Users;
-using BeautyGo.Domain.Patterns.Specifications;
-using BeautyGo.Domain.Patterns.Specifications.UserRoles;
-using BeautyGo.Domain.Patterns.Specifications.Users;
 using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Application.Businesses.Commands.BusinessCreated;
 
-internal class CreateUserRoleOnBusinessCreatedDomainEventHandler : IDomainEventHandler<EntityInsertedEvent<Business>>
+internal class CreateUserRoleOnBusinessCreatedDomainEventHandler : IDomainEventHandler<EntityInsertedDomainEvent<Business>>
 {
     private readonly IEFBaseRepository<UserRole> _userRoleRepository;
     private readonly IEFBaseRepository<User> _userRepository;
@@ -29,7 +23,7 @@ internal class CreateUserRoleOnBusinessCreatedDomainEventHandler : IDomainEventH
         _unitOfWork = unitOfWork;
     }
 
-    public   Task Handle(EntityInsertedEvent<Business> notification, CancellationToken cancellationToken)
+    public   Task Handle(EntityInsertedDomainEvent<Business> notification, CancellationToken cancellationToken)
     {
         //var user = await _userRepository.GetFirstOrDefaultAsync(
         //    new EntityByIdSpecification<User>(notification.Entity.OwnerId).And(

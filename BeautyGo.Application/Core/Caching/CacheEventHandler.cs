@@ -7,9 +7,9 @@ using BeautyGo.Domain.Entities;
 namespace BeautyGo.Application.Core.Caching;
 
 public abstract class CacheEventHandler<TEntity> :
-    IDomainEventHandler<EntityInsertedEvent<TEntity>>,
-    IDomainEventHandler<EntityUpdatedEvent<TEntity>>,
-    IDomainEventHandler<EntityDeletedEvent<TEntity>>
+    IDomainEventHandler<EntityInsertedDomainEvent<TEntity>>,
+    IDomainEventHandler<EntityUpdatedDomainEvent<TEntity>>,
+    IDomainEventHandler<EntityDeletedDomainEvent<TEntity>>
     where TEntity : BaseEntity
 {
     #region Fields
@@ -59,17 +59,17 @@ public abstract class CacheEventHandler<TEntity> :
 
     #region Methods
 
-    public async Task Handle(EntityInsertedEvent<TEntity> notification, CancellationToken cancellationToken)
+    public async Task Handle(EntityInsertedDomainEvent<TEntity> notification, CancellationToken cancellationToken)
     {
         await ClearCacheAsync(notification.Entity, EntityEventType.Insert, cancellationToken);
     }
 
-    public async Task Handle(EntityUpdatedEvent<TEntity> notification, CancellationToken cancellationToken)
+    public async Task Handle(EntityUpdatedDomainEvent<TEntity> notification, CancellationToken cancellationToken)
     {
         await ClearCacheAsync(notification.Entity, EntityEventType.Update, cancellationToken);
     }
 
-    public async Task Handle(EntityDeletedEvent<TEntity> notification, CancellationToken cancellationToken)
+    public async Task Handle(EntityDeletedDomainEvent<TEntity> notification, CancellationToken cancellationToken)
     {
         await ClearCacheAsync(notification.Entity, EntityEventType.Delete, cancellationToken);
     }

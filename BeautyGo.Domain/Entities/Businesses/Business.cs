@@ -94,6 +94,8 @@ public class Business : BaseEntity, IAuditableEntity, ISoftDeletableEntity, IEma
             DocumentValidated = false,
         };
 
+        business.AddDomainEvent(new BusinessCreatedDomainEvent(business));
+
         return business;
     }
 

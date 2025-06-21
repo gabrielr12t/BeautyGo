@@ -4,7 +4,7 @@ using BeautyGo.Domain.Entities.Businesses;
 
 namespace BeautyGo.Application.Businesses.Commands.BusinessCreated;
 
-internal class EnqueueIntegrationEventOnBusinessCreatedDomainEventHandler : IDomainEventHandler<EntityInsertedEvent<Business>>
+public class EnqueueIntegrationEventOnBusinessCreatedDomainEventHandler : IDomainEventHandler<EntityInsertedDomainEvent<Business>>
 {
     private readonly IOutboxMessageService _outboxMessageService;
 
@@ -13,7 +13,7 @@ internal class EnqueueIntegrationEventOnBusinessCreatedDomainEventHandler : IDom
         _outboxMessageService = outboxMessageService;
     }
 
-    public async Task Handle(EntityInsertedEvent<Business> notification, CancellationToken cancellationToken)
+    public async Task Handle(EntityInsertedDomainEvent<Business> notification, CancellationToken cancellationToken)
     {
         await _outboxMessageService.PublishAsync(
             new BusinessCreatedIntegrationEvent(notification.Entity), 

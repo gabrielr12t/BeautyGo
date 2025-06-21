@@ -15,10 +15,12 @@ using BeautyGo.Application.Core.Abstractions.Web;
 using BeautyGo.Application.Core.Providers;
 using BeautyGo.Domain.Caching;
 using BeautyGo.Domain.Core.Configurations;
+using BeautyGo.Domain.Core.Events;
 using BeautyGo.Domain.Core.Lists;
 using BeautyGo.Domain.Patterns.Singletons;
 using BeautyGo.Domain.Settings;
 using BeautyGo.Infrastructure.Core;
+using BeautyGo.Infrastructure.Core.Events;
 using BeautyGo.Infrastructure.Core.Providers;
 using BeautyGo.Infrastructure.Emails;
 using BeautyGo.Infrastructure.Extensions;
@@ -55,10 +57,11 @@ public static class DependencyInjection
         IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
         services.AddResponseCompression();
-
+         
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
+         
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         services.AddMvc();
         services.AddSession();
