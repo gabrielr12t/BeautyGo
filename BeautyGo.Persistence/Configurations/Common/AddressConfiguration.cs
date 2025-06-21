@@ -20,6 +20,10 @@ internal class AddressConfiguration : BaseEntityConfiguration<Address>
         builder.Property(p => p.PhoneNumber).IsRequired().HasMaxLength(15);
 
         builder
+            .Property(p => p.Location)
+            .HasColumnType("geography");
+
+        builder
             .HasIndex(p => p.Latitude)
             .HasDatabaseName("IX_LATITUDE");
 

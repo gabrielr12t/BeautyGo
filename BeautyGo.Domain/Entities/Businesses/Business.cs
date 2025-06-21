@@ -1,6 +1,5 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
-using BeautyGo.Domain.DomainEvents.Businesses;
-using BeautyGo.Domain.DomainEvents.Professionals;
+using BeautyGo.Domain.DomainEvents;
 using BeautyGo.Domain.Entities.Common;
 using BeautyGo.Domain.Entities.Media;
 using BeautyGo.Domain.Entities.Persons;

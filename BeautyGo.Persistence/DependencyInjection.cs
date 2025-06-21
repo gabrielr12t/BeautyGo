@@ -33,7 +33,10 @@ public static class DependencyInjection
 
         services.AddDbContext<BeautyGoContext>((sp, options) =>
                 options
-                    .UseSqlServer(connectionSettings.Value)
+                    .UseSqlServer(
+                        connectionSettings.Value,
+                        x => x.UseNetTopologySuite()
+                    )
                     .AddInterceptors(
                         sp.GetRequiredService<AuditableEntitySaveChangesInterceptor>(),
                         sp.GetRequiredService<DispatchDomainEventInterceptor>(),

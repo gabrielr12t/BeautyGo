@@ -1,7 +1,7 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Domain.Core.Events;
-using BeautyGo.Domain.DomainEvents.Professionals;
+using BeautyGo.Domain.DomainEvents;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Patterns.Specifications;

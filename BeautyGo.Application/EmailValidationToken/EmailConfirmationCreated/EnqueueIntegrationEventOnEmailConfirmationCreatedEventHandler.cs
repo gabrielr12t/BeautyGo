@@ -1,6 +1,6 @@
 ﻿using BeautyGo.Application.Core.Abstractions.OutboxMessages;
 using BeautyGo.Domain.Core.Events;
-using BeautyGo.Domain.DomainEvents.EmailValidationToken;
+using BeautyGo.Domain.DomainEvents;
 
 namespace BeautyGo.Application.EmailValidationToken.EmailConfirmationCreated;
 

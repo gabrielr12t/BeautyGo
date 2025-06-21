@@ -21,7 +21,8 @@ public sealed class OutboxMessage : BaseEntity
             Id = Guid.NewGuid(),
             OccurredOn = DateTime.Now,
             Type = type,
-            Content = content
+            Content = content,
+            CreatedOn = DateTime.Now
         };
     }
 }

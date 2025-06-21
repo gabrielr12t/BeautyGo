@@ -5,7 +5,7 @@ using BeautyGo.Application.Core.Providers;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
-using BeautyGo.Domain.DomainEvents.Users;
+using BeautyGo.Domain.DomainEvents;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;

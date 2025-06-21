@@ -82,7 +82,7 @@ public class DispatchDomainEventInterceptor(IMediator _mediator)
         if (savedChanges > 0)
         {
             await DispatchDomainEventsAsync(eventData.Context, cancellationToken);
-            await DispatchEntityChangeEventsAsync(eventData.Context, cancellationToken);
+            //await DispatchEntityChangeEventsAsync(eventData.Context, cancellationToken);
         }
 
         return savedChanges;

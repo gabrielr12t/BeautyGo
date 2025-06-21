@@ -1,5 +1,5 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
-using BeautyGo.Domain.DomainEvents.Events;
+using BeautyGo.Domain.DomainEvents;
 
 namespace BeautyGo.Domain.Entities.Events;
 

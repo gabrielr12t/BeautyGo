@@ -1,5 +1,5 @@
 ﻿using BeautyGo.Domain.Core.Abstractions;
-using BeautyGo.Domain.DomainEvents.Users;
+using BeautyGo.Domain.DomainEvents;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Professionals;
 using BeautyGo.Domain.Entities.Security;

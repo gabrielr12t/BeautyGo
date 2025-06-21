@@ -1,4 +1,6 @@
 ﻿using BeautyGo.Domain.Helpers;
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
 
 namespace BeautyGo.Domain.Entities.Common;
 
@@ -28,10 +30,15 @@ public partial class Address : BaseEntity
 
     public double Longitude { get; set; }
 
+    public Point? Location { get; set; }
+
     public void ChangeCoordinates(double latitude, double longitude)
     {
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+
         Latitude = latitude;
         Longitude = longitude;
+        Location = geometryFactory.CreatePoint(new Coordinate(Longitude, Latitude));
     }
 
     public static Address Create(string firstName, string lastName, string city, string state, string stateAbbreviation,
@@ -48,7 +55,7 @@ public partial class Address : BaseEntity
             Number = number,
             Street = street,
             PostalCode = CommonHelper.EnsureNumericOnly(postalCode),
-            PhoneNumber = phoneNumber,
+            PhoneNumber = phoneNumber
         };
     }
 }

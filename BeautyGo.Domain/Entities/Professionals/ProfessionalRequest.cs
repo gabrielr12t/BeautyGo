@@ -1,4 +1,4 @@
-﻿using BeautyGo.Domain.DomainEvents.Professionals;
+﻿using BeautyGo.Domain.DomainEvents;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Entities.Users;
 

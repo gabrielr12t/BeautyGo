@@ -1,6 +1,6 @@
 ﻿using BeautyGo.Application.Core.Abstractions.OutboxMessages;
 using BeautyGo.Domain.Core.Events;
-using BeautyGo.Domain.DomainEvents.Businesses;
+using BeautyGo.Domain.DomainEvents;
 
 namespace BeautyGo.Application.Businesses.Commands.DocumentValidated;
 
@@ -15,6 +15,6 @@ internal class EnqueueIntegrationEventOnBusinessDocumentValidatedEventHandler : 
 
     public async Task Handle(BusinessDocumentValidatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        await _outboxMessageService.PublishAsync(new BusinessDocumentValidatedIntegrationEvent(notification.Entity.Id), cancellationToken);
+        await _outboxMessageService.PublishAsync(new BusinessDocumentValidatedIntegrationEvent(notification.Business.Id), cancellationToken);
     }
 }
