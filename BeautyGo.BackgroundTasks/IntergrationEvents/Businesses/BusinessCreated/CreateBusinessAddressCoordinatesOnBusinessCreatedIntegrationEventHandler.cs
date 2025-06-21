@@ -7,6 +7,7 @@ using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories.Bases;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.Businesses.BusinessCreated;
 
@@ -38,7 +39,7 @@ internal class CreateBusinessAddressCoordinatesOnBusinessCreatedIntegrationEvent
     public async Task Handle(BusinessCreatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
         var business = await _businessRepository.GetFirstOrDefaultAsync(
-            new EntityByIdSpecification<Business>(notification.BusinessId).AddInclude(p => p.Address),
+            new EntityByIdSpecification<Business>(notification.BusinessId).AddInclude(i => i.Include(p => p.Address)),
             asTracking: true,
             cancellationToken);
 

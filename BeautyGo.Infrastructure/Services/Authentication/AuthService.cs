@@ -1,20 +1,16 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Web;
+using BeautyGo.Application.Core.Providers;
 using BeautyGo.Contracts.Authentication;
-using BeautyGo.Domain.Caching;
-using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Core.Errors;
 using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.DomainEvents.Users;
 using BeautyGo.Domain.Entities.Persons;
-using BeautyGo.Domain.Entities.Security;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
-using BeautyGo.Domain.Providers.Files;
 using BeautyGo.Domain.Repositories.Bases;
-using BeautyGo.Domain.Settings;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +18,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 
 namespace BeautyGo.Infrastructure.Services.Authentication;
 
@@ -32,16 +27,12 @@ public class AuthService : IAuthService
 
     private readonly IEFBaseRepository<User> _userRepository;
     private readonly IEFBaseRepository<UserRoleMapping> _userRoleRepository;
-    private readonly IEFBaseRepository<RefreshToken> _refreshTokenRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IBeautyGoFileProvider _BeautyGoFileProvider;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IWebHelper _webHelper;
     private readonly IMediator _mediator;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ITokenService _tokenService;
-    private readonly IStaticCacheManager _staticCacheManager;
-    private readonly AppSettings _appSettings;
+    private readonly IRsaKeyProvider _rsaKeyProvider;
     private User _cachedUser;
 
     #endregion
@@ -50,62 +41,45 @@ public class AuthService : IAuthService
 
     public AuthService(
         IEFBaseRepository<User> userRepository,
-        AppSettings appSettings,
-        IBeautyGoFileProvider BeautyGoFileProvider,
-        IHttpContextAccessor contextAccessor,
         IWebHelper webHelper,
         IMediator mediator,
         IEFBaseRepository<UserRoleMapping> userRoleRepository,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
         ITokenService tokenService,
-        IStaticCacheManager staticCacheManager,
-        IEFBaseRepository<RefreshToken> refreshTokenRepository)
+        IRsaKeyProvider rsaKeyProvider,
+        IHttpContextAccessor contextAccessor)
     {
         _userRepository = userRepository;
-        _appSettings = appSettings;
-        _BeautyGoFileProvider = BeautyGoFileProvider;
-        _contextAccessor = contextAccessor;
         _webHelper = webHelper;
         _mediator = mediator;
         _userRoleRepository = userRoleRepository;
         _unitOfWork = unitOfWork;
-        _httpContextAccessor = httpContextAccessor;
         _tokenService = tokenService;
-        _staticCacheManager = staticCacheManager;
-        _refreshTokenRepository = refreshTokenRepository;
+        _rsaKeyProvider = rsaKeyProvider;
+        _contextAccessor = contextAccessor;
     }
 
     #endregion
 
     #region Utilities
 
-    private async Task<RefreshTokenResponse> GetOrCreateValidRefreshTokenAsync(User user)
+    private async Task<RefreshTokenResponse> GetOrCreateValidRefreshTokenAsync(User user, CancellationToken cancellationToken = default)
     {
         var existingToken = user.RefreshTokens.FirstOrDefault(p => p.IsValid());
 
         if (existingToken != null && existingToken.IsValid())
             return new(existingToken.Token);
 
-        return await _tokenService.GenerateRefreshTokenAsync(user);
-    }
-
-    private async Task<RSA> GetRSAPublicKeyAsync()
-    {
-        var publicKey = await _BeautyGoFileProvider.ReadAllBytesAsync(_appSettings.Get<SecuritySettings>().PublicKeyFilePath);
-        using var rsa = RSA.Create();
-        rsa.ImportRSAPublicKey(publicKey, out _);
-
-        return rsa;
+        return await _tokenService.GenerateRefreshTokenAsync(user, cancellationToken);
     }
 
     #endregion
 
     #region Methods
 
-    public async Task<AuthResponse> AuthenticateAsync(User user)
+    public async Task<AuthResponse> AuthenticateAsync(User user, CancellationToken cancellationToken = default)
     {
-        var refreshTokenResponse = await GetOrCreateValidRefreshTokenAsync(user);
+        var refreshTokenResponse = await GetOrCreateValidRefreshTokenAsync(user, cancellationToken);
         var tokenResponse = await _tokenService.GenerateTokenAsync(user);
 
         _cachedUser = user;
@@ -115,11 +89,11 @@ public class AuthService : IAuthService
         return new AuthResponse(tokenResponse.AccessToken, refreshTokenResponse.RefreshToken);
     }
 
-    public async Task<bool> IsValidTokenAsync(string token, CancellationToken cancellationToken = default)
+    public Task<bool> IsValidTokenAsync(string token, CancellationToken cancellationToken = default)
     {
         try
         {
-            var rsa = await GetRSAPublicKeyAsync();
+            var rsa = _rsaKeyProvider.GetPublicKey();
 
             var handler = new JwtSecurityTokenHandler();
             var parameters = new TokenValidationParameters
@@ -134,11 +108,11 @@ public class AuthService : IAuthService
             var principal = handler.ValidateToken(token, parameters, out _);
             var tokenThumb = principal.FindFirst("ua")?.Value;
 
-            return tokenThumb == _webHelper.GetUserAgent();
+            return Task.FromResult(tokenThumb == _webHelper.GetUserAgent());
         }
         catch
         {
-            return false;
+            return Task.FromResult(false);
         }
     }
 

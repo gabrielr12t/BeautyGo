@@ -7,6 +7,7 @@ using BeautyGo.Domain.Core.Exceptions;
 using BeautyGo.Domain.Entities.Businesses;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories.Bases;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeautyGo.BackgroundTasks.IntergrationEvents.Businesses.DocumentValidated;
 
@@ -27,7 +28,7 @@ internal class SendDocumentValidateOnBusinessConfirmedAccountlntegrationEventHan
     public async Task Handle(BusinessDocumentValidatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
         var businessByIdSpecification = new EntityByIdSpecification<Business>(notification.BusinessId)
-            .AddInclude(p => p.Owner);
+            .AddInclude(p => p.Include(i => i.Owner));
 
         var business = await _businessRepository.GetFirstOrDefaultAsync(businessByIdSpecification);
 

@@ -83,7 +83,7 @@ internal class LoginCommandHandler : ICommandHandler<LoginCommand, Result<AuthRe
                     .ThenInclude(t => t.UserRole)
             );
 
-        var cacheKey = _staticCacheManager.PrepareKeyForShortTermCache(BeautyGoAuthenticationDefaults.UserByUserEmail, request.Email);
+        //var cacheKey = _staticCacheManager.PrepareKeyForShortTermCache(BeautyGoAuthenticationDefaults.UserByUserEmail, request.Email);
 
         //var user = await _staticCacheManager.GetAsync(cacheKey, async () => await _userRepository.GetFirstOrDefaultAsync(userByEmailSpec, true, cancellationToken));
 

@@ -1,7 +1,7 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Security;
+using BeautyGo.Application.Core.Providers;
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Patterns.Singletons;
-using BeautyGo.Domain.Providers.Files;
 using BeautyGo.Domain.Settings;
 using System.Security.Cryptography;
 

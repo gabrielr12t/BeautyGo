@@ -1,7 +1,6 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Business;
 using BeautyGo.Application.Core.Abstractions.Caching;
-using BeautyGo.Application.Core.Abstractions.Cryptography;
 using BeautyGo.Application.Core.Abstractions.Emails;
 using BeautyGo.Application.Core.Abstractions.FakeData;
 using BeautyGo.Application.Core.Abstractions.Integrations;
@@ -13,14 +12,14 @@ using BeautyGo.Application.Core.Abstractions.OutboxMessages;
 using BeautyGo.Application.Core.Abstractions.Security;
 using BeautyGo.Application.Core.Abstractions.Users;
 using BeautyGo.Application.Core.Abstractions.Web;
+using BeautyGo.Application.Core.Providers;
 using BeautyGo.Domain.Caching;
 using BeautyGo.Domain.Core.Configurations;
-using BeautyGo.Domain.Core.Infrastructure;
 using BeautyGo.Domain.Core.Lists;
 using BeautyGo.Domain.Patterns.Singletons;
-using BeautyGo.Domain.Providers.Files;
 using BeautyGo.Domain.Settings;
 using BeautyGo.Infrastructure.Core;
+using BeautyGo.Infrastructure.Core.Providers;
 using BeautyGo.Infrastructure.Emails;
 using BeautyGo.Infrastructure.Extensions;
 using BeautyGo.Infrastructure.Messaging;
@@ -30,7 +29,6 @@ using BeautyGo.Infrastructure.Services.Authentication;
 using BeautyGo.Infrastructure.Services.Authentication.Events;
 using BeautyGo.Infrastructure.Services.Business;
 using BeautyGo.Infrastructure.Services.Caching;
-using BeautyGo.Infrastructure.Services.Cryptography;
 using BeautyGo.Infrastructure.Services.Installation;
 using BeautyGo.Infrastructure.Services.Integrations;
 using BeautyGo.Infrastructure.Services.Logging;
@@ -45,11 +43,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Security.Cryptography;
 
 namespace BeautyGo.Infrastructure;
 
@@ -68,14 +64,10 @@ public static class DependencyInjection
         services.AddSession();
 
         services.AddSettings(webHostEnvironment, configuration);
-
-        services.AddBearerAuthentication(configuration);
-        services.AddRateLimiterIp();
         services.AddHttpContextAccessor();
 
         services.AddScoped<IUserIdentifierProvider, UserIdentifierProvider>();
         services.AddScoped<IPictureService, PictureService>();
-        services.AddScoped<IBeautyGoFileProvider, BeautyGoFileProvider>();
         services.AddScoped<IWebHelper, WebHelper>();
         services.AddScoped<IWebWorkContext, WebWorkContext>();
         services.AddScoped<ILogger, DefaultLogger>();
@@ -92,17 +84,17 @@ public static class DependencyInjection
         services.AddScoped<ILocationIQIntegrationService, LocationIQIntegrationServiceIntegrationService>();
         services.AddScoped<ITokenService, TokenService>();
 
+        services.AddSingleton<IBeautyGoFileProvider, BeautyGoFileProvider>();
         services.AddSingleton<IPushNotificationService, PushNotificationService>();
         services.AddSingleton<IPublisherBusEvent, RabbitMqBusEvent>();
 
-        services.AddTransient<IPasswordHasher, PasswordHasher>();
-        services.AddTransient<IPasswordHashChecker, PasswordHasher>();
         services.AddTransient<IEmailNotificationService, EmailNotificationService>();
         services.AddTransient<IUserEmailNotificationPublisher, UserEmailNotificationPublisher>();
         services.AddTransient<IBusinessEmailNotificationPublisher, BusinessEmailNotificationPublisher>();
         services.AddTransient<IProfessionalEmailNotificationPublisher, ProfessionalEmailNotificationPublisher>();
         services.AddTransient<ISupportNotificationPublisher, SupportNotificationPublisher>();
         services.AddTransient<IProfessionalRequestEmailNotificationPublisher, ProfessionalRequestEmailNotificationPublisher>();
+
         services.AddTransient<EmailService>();
         services.AddTransient<IEmailService>(serviceProvicer =>
         {
@@ -110,6 +102,10 @@ public static class DependencyInjection
             var emailSettings = serviceProvicer.GetRequiredService<AppSettings>().Get<RedirectMailSettings>();
             return new RedirectEmailSenderDecorator(realSender, emailSettings);
         });
+
+        services.AddRSA();
+        services.AddBearerAuthentication(configuration);
+        services.AddRateLimiterIp();
 
         services.RegisterIntegrations();
         services.AddBeautyGoMemoryCache();
@@ -208,6 +204,18 @@ public static class DependencyInjection
             .SetHandlerLifetime(handlerLifetime);
     }
 
+    internal static IServiceCollection AddRSA(this IServiceCollection services)
+    {
+        var securitySettings = Singleton<AppSettings>.Instance.Get<SecuritySettings>();
+
+        services.AddSingleton<IRsaKeyProvider>(provider =>
+        {
+            var fileProvider = provider.GetRequiredService<IBeautyGoFileProvider>();
+            return new RsaKeyProvider(securitySettings, fileProvider);
+        });
+
+        return services;
+    }
 
     internal static IServiceCollection AddBearerAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
@@ -223,10 +231,9 @@ public static class DependencyInjection
         })
         .AddJwtBearer(options =>
         {
-            var publicKey = File.ReadAllBytes(security.PublicKeyFilePath);
-
-            using var rsa = RSA.Create();
-            rsa.ImportRSAPublicKey(publicKey, out _);
+            using var scope = services.BuildServiceProvider().CreateScope();
+            var rsaProvider = scope.ServiceProvider.GetRequiredService<IRsaKeyProvider>();
+            var publicKey = rsaProvider.GetPublicKey();
 
             options.EventsType = typeof(AuthBearerEvents);
             options.SaveToken = true;
@@ -238,7 +245,7 @@ public static class DependencyInjection
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = auth.Issuer,
                 ValidAudience = auth.Audience,
-                IssuerSigningKey = new RsaSecurityKey(rsa),
+                IssuerSigningKey = new RsaSecurityKey(publicKey),
                 ClockSkew = TimeSpan.Zero,
             };
         });

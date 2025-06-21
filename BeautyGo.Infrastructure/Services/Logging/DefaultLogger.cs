@@ -5,7 +5,6 @@ using BeautyGo.Domain.Entities.Logging;
 using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Patterns.Specifications;
 using BeautyGo.Domain.Repositories;
-using BeautyGo.Domain.Repositories.Bases;
 
 namespace BeautyGo.Infrastructure.Services.Logging;
 

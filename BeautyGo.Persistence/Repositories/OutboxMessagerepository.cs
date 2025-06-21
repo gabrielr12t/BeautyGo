@@ -74,14 +74,4 @@ internal class OutboxMessagerepository : EFBaseRepository<OutboxMessage>, IOutbo
 
         return await query.ToListAsync(cancellation);
     }
-
-    public async Task UpdateAsync(OutboxMessage message)
-    {
-        const string query = @"
-            UPDATE OutboxMessage
-            SET ProcessedOn = @ProcessedOn, Error = @Error
-            WHERE Id = @Id";
-
-        await _connetion.ExecuteAsync(query, message);
-    }
 }

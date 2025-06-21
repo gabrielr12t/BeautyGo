@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using BeautyGo.Application.Core.Providers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using System.Runtime.Versioning;
 using System.Security.AccessControl;
 using System.Text;
 
-namespace BeautyGo.Domain.Providers.Files;
+namespace BeautyGo.Infrastructure.Core.Providers;
 
 public class BeautyGoFileProvider : PhysicalFileProvider, IBeautyGoFileProvider
 {

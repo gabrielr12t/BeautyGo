@@ -1,4 +1,4 @@
-﻿using BeautyGo.Domain.Providers.Files;
+﻿using BeautyGo.Application.Core.Providers;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;

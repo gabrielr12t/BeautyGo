@@ -8,6 +8,7 @@ using BeautyGo.Domain.Entities.Users;
 using BeautyGo.Domain.Extensions;
 using BeautyGo.Domain.Patterns.Specifications.UserRoles;
 using BeautyGo.Domain.Repositories.Bases;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeautyGo.Infrastructure.Services.Users;
 
@@ -48,7 +49,8 @@ internal class UserService : IUserService
         if (string.IsNullOrEmpty(role))
             return false;
 
-        var userRoleSpecification = new UserRoleByUserIdSpecification(user.Id);
+        var userRoleSpecification = new UserRoleByUserIdSpecification(user.Id)
+            .AddInclude(p => p.Include(i => i.UserRole));
         var userRoles = await _userRoleRepository.GetAsync(userRoleSpecification, cancellationToken: cancellationToken);
 
         return userRoles.Any(p => string.Equals(p.UserRole.Description, role, StringComparison.InvariantCultureIgnoreCase));

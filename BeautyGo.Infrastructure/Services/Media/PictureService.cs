@@ -1,6 +1,7 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Media;
 using BeautyGo.Application.Core.Abstractions.Web;
+using BeautyGo.Application.Core.Providers;
 using BeautyGo.Domain.Common.Defaults;
 using BeautyGo.Domain.Core;
 using BeautyGo.Domain.Core.Abstractions;
@@ -8,7 +9,6 @@ using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Entities.Media;
 using BeautyGo.Domain.Extensions;
 using BeautyGo.Domain.Helpers;
-using BeautyGo.Domain.Providers.Files;
 using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 using Microsoft.AspNetCore.Http;

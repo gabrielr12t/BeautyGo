@@ -4,8 +4,6 @@
     {
         public string SettingsKey => "Connection";
 
-        public string Name => "ConnectionStrings";
-
         public ConnectionStringSettings(string value) => Value = value;
 
         public ConnectionStringSettings() { }

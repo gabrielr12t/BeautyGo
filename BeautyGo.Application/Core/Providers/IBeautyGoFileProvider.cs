@@ -2,7 +2,7 @@
 using System.Security.AccessControl;
 using System.Text;
 
-namespace BeautyGo.Domain.Providers.Files;
+namespace BeautyGo.Application.Core.Providers;
 
 public interface IBeautyGoFileProvider : IFileProvider
 {

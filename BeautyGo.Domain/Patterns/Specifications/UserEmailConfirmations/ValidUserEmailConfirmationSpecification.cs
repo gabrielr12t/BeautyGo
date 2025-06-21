@@ -1,5 +1,4 @@
-﻿using BeautyGo.Domain.Entities;
-using BeautyGo.Domain.Entities.Users;
+﻿using BeautyGo.Domain.Entities.Users;
 using System.Linq.Expressions;
 
 namespace BeautyGo.Domain.Patterns.Specifications.UserEmailConfirmations;

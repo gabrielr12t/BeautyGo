@@ -1,5 +1,4 @@
 ﻿using BeautyGo.Contracts.Authentication;
-using BeautyGo.Domain.Core.Primitives.Results;
 using BeautyGo.Domain.Entities.Persons;
 using BeautyGo.Domain.Entities.Users;
 
@@ -7,7 +6,7 @@ namespace BeautyGo.Application.Core.Abstractions.Authentication;
 
 public interface IAuthService
 {
-    Task<AuthResponse> AuthenticateAsync(User user);
+    Task<AuthResponse> AuthenticateAsync(User user, CancellationToken cancellationToken = default);
 
     Task<bool> IsValidTokenAsync(string token, CancellationToken cancellationToken = default);
 

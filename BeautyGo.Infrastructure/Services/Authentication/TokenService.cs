@@ -1,18 +1,16 @@
 ﻿using BeautyGo.Application.Core.Abstractions.Authentication;
 using BeautyGo.Application.Core.Abstractions.Data;
 using BeautyGo.Application.Core.Abstractions.Web;
+using BeautyGo.Application.Core.Providers;
 using BeautyGo.Contracts.Authentication;
 using BeautyGo.Domain.Core.Configurations;
 using BeautyGo.Domain.Entities.Security;
 using BeautyGo.Domain.Entities.Users;
-using BeautyGo.Domain.Providers.Files;
 using BeautyGo.Domain.Repositories.Bases;
 using BeautyGo.Domain.Settings;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace BeautyGo.Infrastructure.Services.Authentication;
 
@@ -25,6 +23,7 @@ internal class TokenService : ITokenService
     private readonly IWebHelper _webHelper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IBeautyGoFileProvider _BeautyGoFileProvider;
+    private readonly IRsaKeyProvider _rsaKeyProvider;
     private readonly AppSettings _appSettings;
 
     #endregion
@@ -37,13 +36,15 @@ internal class TokenService : ITokenService
         IWebHelper webHelper,
         IBeautyGoFileProvider beautyGoFileProvider,
         AppSettings appSettings,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IRsaKeyProvider rsaKeyProvider)
     {
         _refreshTokenRepository = refreshTokenRepository;
         _webHelper = webHelper;
         _BeautyGoFileProvider = beautyGoFileProvider;
         _appSettings = appSettings;
         _unitOfWork = unitOfWork;
+        _rsaKeyProvider = rsaKeyProvider;
     }
 
     #endregion
@@ -64,22 +65,13 @@ internal class TokenService : ITokenService
         return claims;
     }
 
-    private async Task<RSA> GetRSAPrivateKeyAsync()
-    {
-        var privateKey = await _BeautyGoFileProvider.ReadAllBytesAsync(_appSettings.Get<SecuritySettings>().PrivateKeyFilePath);
-        using var rsa = RSA.Create();
-        rsa.ImportRSAPrivateKey(privateKey, out _);
-
-        return rsa;
-    }
-
     #endregion
 
-    public async Task<TokenResponse> GenerateTokenAsync(User user)
+    public Task<TokenResponse> GenerateTokenAsync(User user)
     {
         var claims = GenerateUserClaims(user);
 
-        var rsa = await GetRSAPrivateKeyAsync();
+        var rsa = _rsaKeyProvider.GetPrivateKey();
 
         var credentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256);
 
@@ -99,16 +91,16 @@ internal class TokenService : ITokenService
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        return new(tokenHandler.WriteToken(token));
+        return Task.FromResult(new TokenResponse(tokenHandler.WriteToken(token)));
     }
 
-    public async Task<RefreshTokenResponse> GenerateRefreshTokenAsync(User user)
+    public async Task<RefreshTokenResponse> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken = default)
     {
         var refreshToken = RefreshToken.Create(user.Id, _webHelper.GetUserAgent(), await _webHelper.GetCurrentIpAddressAsync());
 
-        await _refreshTokenRepository.InsertAsync(refreshToken);
+        await _refreshTokenRepository.InsertAsync(refreshToken, cancellationToken);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new RefreshTokenResponse(refreshToken.Token);
     }
